@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">TimeCrunch</string>
+    <string name="title_activity_todo_categories">Categories</string>
+    <string name="app_name" translatable="false">TimeCrunch</string>
+    <string name="title_activity_new_category">New Category</string>
+    <string name="new_category_hint">Category name</string>
+    <string name="color">Color</string>
+    <string name="has_timeblock">Has a time-block</string>
 </resources>

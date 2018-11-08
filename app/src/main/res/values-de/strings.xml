@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_activity_todo_categories">Kategorien</string>
+    <string name="title_activity_new_category">Neue Kategorie</string>
+    <string name="new_category_hint">Kategoriename</string>
+    <string name="color">Farbe</string>
+    <string name="has_timeblock">Hat einen Zeitblock</string>
+</resources>
