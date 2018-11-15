@@ -1,4 +1,4 @@
-package de.timecrunch.timecrunch;
+package de.timecrunch.timecrunch.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,6 +11,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
+import de.timecrunch.timecrunch.R;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
 

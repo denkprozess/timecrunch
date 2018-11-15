@@ -1,4 +1,4 @@
-package de.timecrunch.timecrunch;
+package de.timecrunch.timecrunch.view;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -13,12 +13,14 @@ import android.view.Display;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import de.timecrunch.timecrunch.R;
+import de.timecrunch.timecrunch.model.Category;
 
 public class TodoCategoriesActivity extends AppCompatActivity {
     ImageButton backButton;
@@ -102,7 +104,5 @@ public class TodoCategoriesActivity extends AppCompatActivity {
                     categoryList.setAdapter(new ExpandableListAdapter(this,dummyCategories,dummyChildrenMap));
                  }
         }
-
-
     }
 }

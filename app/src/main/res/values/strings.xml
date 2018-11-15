@@ -5,4 +5,9 @@
     <string name="new_category_hint">Category name</string>
     <string name="color">Color</string>
     <string name="has_timeblock">Has a time-block</string>
+
+    <!-- Bottom Menu -->
+    <string name="tasks">Tasks</string>
+    <string name="dayView">Planner</string>
+    <string name="templates">Templates</string>
 </resources>

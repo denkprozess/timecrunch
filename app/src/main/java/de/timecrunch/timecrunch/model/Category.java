@@ -1,6 +1,4 @@
-package de.timecrunch.timecrunch;
-
-import android.graphics.Color;
+package de.timecrunch.timecrunch.model;
 
 public class Category {
 

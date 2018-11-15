@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_tasks"
+        android:enabled="true"
+        android:icon="@drawable/ic_playlist_add_check_black_24dp"
+        android:title="@string/tasks"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_dayview"
+        android:enabled="true"
+        android:icon="@drawable/ic_today_black_24dp"
+        android:title="@string/dayView"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_templates"
+        android:enabled="true"
+        android:icon="@drawable/ic_content_copy_black_24dp"
+        android:title="@string/templates"
+        app:showAsAction="ifRoom"/>
+
+</menu>

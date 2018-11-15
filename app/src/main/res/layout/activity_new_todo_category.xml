@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NewTodoCategoryActivity">
+    tools:context=".view.NewTodoCategoryActivity">
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/category_name_input"

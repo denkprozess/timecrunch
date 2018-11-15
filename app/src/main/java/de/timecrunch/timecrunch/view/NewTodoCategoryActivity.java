@@ -1,4 +1,4 @@
-package de.timecrunch.timecrunch;
+package de.timecrunch.timecrunch.view;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import de.timecrunch.timecrunch.R;
 
 public class NewTodoCategoryActivity extends AppCompatActivity {
 

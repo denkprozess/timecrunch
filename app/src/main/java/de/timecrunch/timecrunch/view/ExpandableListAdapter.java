@@ -1,20 +1,19 @@
-package de.timecrunch.timecrunch;
+package de.timecrunch.timecrunch.view;
 
 import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import de.timecrunch.timecrunch.R;
+import de.timecrunch.timecrunch.model.Category;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private Context context;
