@@ -17,7 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.TodoCategoriesActivity"></activity>
-        <activity android:name=".view.NewTodoCategoryActivity"></activity>
+        <activity android:name=".view.NewTaskCategoryActivity"></activity>
     </application>
 
 </manifest>
