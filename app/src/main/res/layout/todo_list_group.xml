@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:layout_toStartOf="@id/colorNavigator"
+            android:layout_toStartOf="@id/color_navigator"
             android:src="@drawable/ic_fiber_manual_record_black_24dp" />
 
         <TextView

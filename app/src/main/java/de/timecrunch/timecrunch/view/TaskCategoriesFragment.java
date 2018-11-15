@@ -1,16 +1,22 @@
 package de.timecrunch.timecrunch.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 
@@ -22,8 +28,8 @@ import java.util.Map;
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.Category;
 
-public class TodoCategoriesActivity extends AppCompatActivity {
-    ImageButton backButton;
+public class TaskCategoriesFragment extends Fragment {
+    ActionBar actionBar;
     ImageButton addButton;
     ExpandableListView categoryList;
     List<Category> dummyCategories;
@@ -32,17 +38,33 @@ public class TodoCategoriesActivity extends AppCompatActivity {
     static final int NEW_CATEGORY_REQUEST=1;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_task_categories);
+        setRetainInstance(true);
+    }
 
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setDisplayShowCustomEnabled(true);
-        getSupportActionBar().setCustomView(R.layout.action_bar_task_categories);
-        View view =getSupportActionBar().getCustomView();
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        backButton= (ImageButton)view.findViewById(R.id.action_bar_back);
-        addButton= (ImageButton)view.findViewById(R.id.action_bar_add);
+        return inflater.inflate(R.layout.fragment_task_categories, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setCustomView(R.layout.action_bar_task_categories);
+        View actionBarView =actionBar.getCustomView();
+
+        addButton= (ImageButton)actionBarView.findViewById(R.id.action_bar_add);
 
         dummyCategories= new ArrayList<>();
         dummyCategories.add(new Category("Testcategory1", Color.GREEN));
@@ -62,10 +84,10 @@ public class TodoCategoriesActivity extends AppCompatActivity {
         dummyChildrenMap.put(dummyCategories.get(0), testChildren1);
         dummyChildrenMap.put(dummyCategories.get(1), testChildren2);
         dummyChildrenMap.put(dummyCategories.get(2),testChildren3);
-        categoryList = (ExpandableListView)findViewById(R.id.category_list);
-        categoryList.setAdapter(new ExpandableListAdapter(this,dummyCategories,dummyChildrenMap));
+        categoryList = (ExpandableListView)view.findViewById(R.id.category_list);
+        categoryList.setAdapter(new ExpandableListAdapter(this.getContext(),dummyCategories,dummyChildrenMap));
 
-        Display display = getWindowManager().getDefaultDisplay();
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
@@ -73,13 +95,12 @@ public class TodoCategoriesActivity extends AppCompatActivity {
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 50, r.getDisplayMetrics());
         categoryList.setIndicatorBoundsRelative(width - px, width);
+    }
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,8 +109,8 @@ public class TodoCategoriesActivity extends AppCompatActivity {
                 startActivityForResult(intent, NEW_CATEGORY_REQUEST);
             }
         });
-    }
 
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
@@ -101,8 +122,10 @@ public class TodoCategoriesActivity extends AppCompatActivity {
                     Category newCategory = new Category(categoryName,categoryColor);
                     dummyCategories.add(newCategory);
                     dummyChildrenMap.put(newCategory,new ArrayList<String>());
-                    categoryList.setAdapter(new ExpandableListAdapter(this,dummyCategories,dummyChildrenMap));
-                 }
+                    categoryList.setAdapter(new ExpandableListAdapter(this.getContext(),dummyCategories,dummyChildrenMap));
+                }
         }
     }
+
+
 }
