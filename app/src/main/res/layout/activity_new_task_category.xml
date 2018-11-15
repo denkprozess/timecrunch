@@ -32,13 +32,13 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="7dp"
         android:background="@color/colorBackground"
-        app:layout_constraintBottom_toTopOf="@+id/color_layout"
+        app:layout_constraintBottom_toTopOf="@+id/color_layout_area"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/category_name_input" />
 
     <RelativeLayout
-        android:id="@+id/color_layout"
+        android:id="@+id/color_layout_area"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="20dp"
@@ -76,8 +76,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toStartOf="@id/color_navigator"
-            android:src="@drawable/ic_fiber_manual_record_black_24dp"
-            android:tint="@color/colorAccent" />
+            android:src="@drawable/ic_fiber_manual_record_white_24dp" />
 
         <ImageView
             android:id="@+id/color_navigator"
@@ -100,7 +99,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/color_layout">
+        app:layout_constraintTop_toBottomOf="@+id/color_layout_area">
 
         <ImageView
             android:id="@+id/time_block_symbol"

@@ -32,8 +32,9 @@ public class TaskCategoriesFragment extends Fragment {
     ActionBar actionBar;
     ImageButton addButton;
     ExpandableListView categoryList;
-    List<Category> dummyCategories;
-    Map<Category,List<String>> dummyChildrenMap;
+    static  List<Category> dummyCategories;
+    static Map<Category,List<String>> dummyChildrenMap;
+    static boolean initialized;
 
     static final int NEW_CATEGORY_REQUEST=1;
 
@@ -65,25 +66,27 @@ public class TaskCategoriesFragment extends Fragment {
         View actionBarView =actionBar.getCustomView();
 
         addButton= (ImageButton)actionBarView.findViewById(R.id.action_bar_add);
-
-        dummyCategories= new ArrayList<>();
-        dummyCategories.add(new Category("Testcategory1", Color.GREEN));
-        dummyCategories.add(new Category("Testcategory2", Color.YELLOW));
-        dummyCategories.add(new Category("Testcategory3", Color.BLUE));
-        dummyChildrenMap = new HashMap<>();
-        List<String> testChildren1= new ArrayList<>();
-        testChildren1.add("TestChild1");
-        testChildren1.add("TestChild2");
-        testChildren1.add("TestChild3");
-        testChildren1.add("TestChild4");
-        List<String> testChildren2= new ArrayList<>();
-        testChildren2.add("TestChild5");
-        testChildren2.add("TestChild6");
-        testChildren2.add("TestChild7");
-        List<String> testChildren3= new ArrayList<>();
-        dummyChildrenMap.put(dummyCategories.get(0), testChildren1);
-        dummyChildrenMap.put(dummyCategories.get(1), testChildren2);
-        dummyChildrenMap.put(dummyCategories.get(2),testChildren3);
+        if(!initialized) {
+            dummyCategories = new ArrayList<>();
+            dummyCategories.add(new Category("Testcategory1", Color.GREEN));
+            dummyCategories.add(new Category("Testcategory2", Color.YELLOW));
+            dummyCategories.add(new Category("Testcategory3", Color.BLUE));
+            dummyChildrenMap = new HashMap<>();
+            List<String> testChildren1 = new ArrayList<>();
+            testChildren1.add("TestChild1");
+            testChildren1.add("TestChild2");
+            testChildren1.add("TestChild3");
+            testChildren1.add("TestChild4");
+            List<String> testChildren2 = new ArrayList<>();
+            testChildren2.add("TestChild5");
+            testChildren2.add("TestChild6");
+            testChildren2.add("TestChild7");
+            List<String> testChildren3 = new ArrayList<>();
+            dummyChildrenMap.put(dummyCategories.get(0), testChildren1);
+            dummyChildrenMap.put(dummyCategories.get(1), testChildren2);
+            dummyChildrenMap.put(dummyCategories.get(2), testChildren3);
+            initialized = true;
+        }
         categoryList = (ExpandableListView)view.findViewById(R.id.category_list);
         categoryList.setAdapter(new ExpandableListAdapter(this.getContext(),dummyCategories,dummyChildrenMap));
 
