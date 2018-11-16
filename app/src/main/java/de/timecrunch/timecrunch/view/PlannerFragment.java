@@ -4,11 +4,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
@@ -19,6 +19,7 @@ import de.timecrunch.timecrunch.R;
 public class PlannerFragment extends Fragment {
 
     private MaterialCalendarView mcv;
+    private LinearLayout plannerContainer;
     private ArrayList<String> mHours = new ArrayList<String>();
     private View view;
 
@@ -31,26 +32,36 @@ public class PlannerFragment extends Fragment {
          mcv = view.findViewById(R.id.calendarView);
          mcv.setTopbarVisible(false);
 
-         initHours();
+         plannerContainer = view.findViewById(R.id.planner_container);
+
+         ScrollView sv = view.findViewById(R.id.planner_scrollview);
+         sv.requestDisallowInterceptTouchEvent(true);
+
+         initRows(plannerContainer);
 
         return this.view;
     }
 
-    private void initHours() {
-        for(int i = 0; i < 24; i++) {
-            if(i < 10) {
-                mHours.add("0" + String.valueOf(i) + ":00");
+    private void initRows(LinearLayout ll) {
+        for (int i = 0; i < 25; i++) {
+            HourView row = new HourView(this.getContext());
+            row.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+            if (i == 0) {
+                row.setPadding(20, 5, 20, 60);
+            } else if (i > 0 && i < 25) {
+                row.setPadding(20, 0, 20, 60);
             } else {
-                mHours.add(String.valueOf(i) + ":00");
+                row.setPadding(20, 0, 20, 0);
             }
-        }
-        initRecyclerView();
-    }
 
-    private void initRecyclerView() {
-        RecyclerView rv = view.findViewById(R.id.recycler_view);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this.getContext(), mHours);
-        rv.setAdapter(adapter);
-        rv.setLayoutManager(new LinearLayoutManager(this.getContext()));
+            if(i < 10) {
+                row.setText("0" + i + ":00");
+            } else {
+                row.setText(i + ":00");
+            }
+
+            ll.addView(row);
+        }
     }
 }
