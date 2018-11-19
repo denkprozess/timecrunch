@@ -12,7 +12,11 @@ import android.view.View;
 
 public class EventView extends View {
 
-    private static final int SQUARE_SIZE = 200;
+    // 18 - 1 = 0.25h
+    // 36 - 1 = 0.50h
+    // 54 - 1 = 0.75h
+    // 72 - 1 = 1.00h
+    private final int SQUARE_SIZE = dpToPx(71);
 
     private Rect mRectSquare;
     private Paint mPaintSquare;
@@ -51,7 +55,7 @@ public class EventView extends View {
         super.onDraw(canvas);
 
         if(offsetY == 0 && offsetX == 0) {
-            setRectBounds(mRectSquare, 50, 50);
+            setRectBounds(mRectSquare, SQUARE_SIZE, SQUARE_SIZE);
         }
         canvas.drawRect(mRectSquare, mPaintSquare);
     }
@@ -63,12 +67,20 @@ public class EventView extends View {
         r.bottom = r.top + SQUARE_SIZE;
     }
 
+    private int dpToPx(int dp) {
+        float density = this.getContext().getResources()
+                .getDisplayMetrics()
+                .density;
+        return Math.round((float) dp * density);
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         boolean value = super.onTouchEvent(event);
 
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
+                getParent().requestDisallowInterceptTouchEvent(true);
                 float x = event.getX();
                 float y = event.getY();
 
@@ -76,8 +88,8 @@ public class EventView extends View {
                     if (mRectSquare.top < y && mRectSquare.bottom > y) {
                         offsetX = (int) (x - mRectSquare.top);
                         offsetY = (int) (y - mRectSquare.left);
+                        return true;
                     }
-                    return true;
                 }
                 return value;
             }
@@ -85,10 +97,14 @@ public class EventView extends View {
                 float x = event.getX();
                 float y = event.getY();
 
-                setRectBounds(mRectSquare, (int) x - ((mRectSquare.bottom - mRectSquare.top) / 2), (int) y - ((mRectSquare.right - mRectSquare.left) / 2));
+                setRectBounds(mRectSquare, (int) x - ((mRectSquare.bottom - mRectSquare.top) / 2),
+                        (int) y - ((mRectSquare.right - mRectSquare.left) / 2));
                 postInvalidate();
 
                 return true;
+            }
+            case MotionEvent.ACTION_UP: {
+                getParent().requestDisallowInterceptTouchEvent(false);
             }
         }
         return value;
