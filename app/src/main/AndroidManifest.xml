@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.timecrunch.timecrunch">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -16,8 +20,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.TodoCategoriesActivity"></activity>
-        <activity android:name=".view.NewTaskCategoryActivity"></activity>
+        <activity android:name=".view.NewTaskCategoryActivity" />
+        <activity android:name=".view.TaskOverviewActivity">
+
+        </activity>
     </application>
 
 </manifest>

@@ -4,10 +4,12 @@ public class Category {
 
     private String name;
     private int color;
+    private boolean hasTimeBlock;
 
-    public Category(String name, int color){
+    public Category(String name, int color, boolean hasTimeBlock){
         this.name=name;
         this.color=color;
+        this.hasTimeBlock = hasTimeBlock;
     }
 
     public String getName() {
@@ -16,6 +18,10 @@ public class Category {
 
     public int getColor() {
         return color;
+    }
+
+    public boolean hasTimeBlock(){
+        return hasTimeBlock;
     }
 
     @Override

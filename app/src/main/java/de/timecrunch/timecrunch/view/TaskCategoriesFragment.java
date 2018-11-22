@@ -1,10 +1,11 @@
 package de.timecrunch.timecrunch.view;
 
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,22 +20,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.Category;
+import de.timecrunch.timecrunch.viewModel.TaskViewModel;
 
 public class TaskCategoriesFragment extends Fragment {
     ActionBar actionBar;
     ImageButton addButton;
     ExpandableListView categoryList;
-    static  List<Category> dummyCategories;
-    static Map<Category,List<String>> dummyChildrenMap;
-    static boolean initialized;
+    TaskViewModel taskViewModel;
 
     static final int NEW_CATEGORY_REQUEST=1;
 
@@ -48,6 +48,14 @@ public class TaskCategoriesFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        //get ViewModel from parent activity to sync with other fragments
+        taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
+        taskViewModel.getSubCategoryMap().observe(this, new Observer<Map<Category,List<Category>>>() {
+            @Override
+            public void onChanged(@Nullable final Map<Category,List<Category>> subcategoryMapLiveData) {
+                setUpListAdapter(subcategoryMapLiveData);
+            }
+        });
     }
 
     @Nullable
@@ -60,36 +68,30 @@ public class TaskCategoriesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setUpActionBar();
+        setUpDataView(view);
+        moveIndicatorToRight();
+
+    }
+
+    private void setUpActionBar(){
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setDisplayShowCustomEnabled(true);
         actionBar.setCustomView(R.layout.action_bar_task_categories);
         View actionBarView =actionBar.getCustomView();
 
         addButton= (ImageButton)actionBarView.findViewById(R.id.action_bar_add);
-        if(!initialized) {
-            dummyCategories = new ArrayList<>();
-            dummyCategories.add(new Category("Testcategory1", Color.GREEN));
-            dummyCategories.add(new Category("Testcategory2", Color.YELLOW));
-            dummyCategories.add(new Category("Testcategory3", Color.BLUE));
-            dummyChildrenMap = new HashMap<>();
-            List<String> testChildren1 = new ArrayList<>();
-            testChildren1.add("TestChild1");
-            testChildren1.add("TestChild2");
-            testChildren1.add("TestChild3");
-            testChildren1.add("TestChild4");
-            List<String> testChildren2 = new ArrayList<>();
-            testChildren2.add("TestChild5");
-            testChildren2.add("TestChild6");
-            testChildren2.add("TestChild7");
-            List<String> testChildren3 = new ArrayList<>();
-            dummyChildrenMap.put(dummyCategories.get(0), testChildren1);
-            dummyChildrenMap.put(dummyCategories.get(1), testChildren2);
-            dummyChildrenMap.put(dummyCategories.get(2), testChildren3);
-            initialized = true;
-        }
-        categoryList = (ExpandableListView)view.findViewById(R.id.category_list);
-        categoryList.setAdapter(new ExpandableListAdapter(this.getContext(),dummyCategories,dummyChildrenMap));
+    }
 
+    private void setUpDataView(View view){
+        Map<Category,List<Category>> subcategoryMap = taskViewModel.getSubCategoryMap().getValue();
+        categoryList = (ExpandableListView)view.findViewById(R.id.category_list);
+        setUpListAdapter(subcategoryMap);
+
+    }
+
+
+    private void moveIndicatorToRight(){
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -122,12 +124,33 @@ public class TaskCategoriesFragment extends Fragment {
                 if (resultCode == Activity.RESULT_OK) {
                     String categoryName = data.getStringExtra("name");
                     int categoryColor = data.getIntExtra("color", -1);
-                    Category newCategory = new Category(categoryName,categoryColor);
-                    dummyCategories.add(newCategory);
-                    dummyChildrenMap.put(newCategory,new ArrayList<String>());
-                    categoryList.setAdapter(new ExpandableListAdapter(this.getContext(),dummyCategories,dummyChildrenMap));
+                    boolean hasTimeBlock = data.getBooleanExtra("hasTimeBlock", false);
+                    Category newCategory = new Category(categoryName,categoryColor, hasTimeBlock);
+                    taskViewModel.addCategory(newCategory);
+                    categoryList.invalidate();
                 }
         }
+    }
+
+    private void setUpListAdapter(Map<Category,List<Category>> subcategoryMap){
+        categoryList.setAdapter(new ExpandableListAdapter(this.getContext(),subcategoryMap){
+            @Override
+            public void onCategoryClick(){
+                Intent intent = new Intent(getContext(), TaskOverviewActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onIndicatorClick(ImageButton indicator, boolean isExpanded, int position){
+                if(isExpanded){
+                    indicator.setImageResource(R.drawable.ic_keyboard_arrow_down_white_24dp);
+                    categoryList.collapseGroup(position);
+                }else{
+                    indicator.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp);
+                    categoryList.expandGroup(position);
+                }
+            }
+        });
     }
 
 
