@@ -1,15 +1,12 @@
 package de.timecrunch.timecrunch.view;
 
 import android.app.Activity;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -21,7 +18,6 @@ import android.widget.TextView;
 import com.pes.androidmaterialcolorpickerdialog.ColorPicker;
 
 import de.timecrunch.timecrunch.R;
-import de.timecrunch.timecrunch.viewModel.TaskViewModel;
 
 public class NewTaskCategoryActivity extends AppCompatActivity {
 

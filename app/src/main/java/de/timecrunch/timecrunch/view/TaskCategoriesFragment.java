@@ -20,21 +20,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.Category;
-import de.timecrunch.timecrunch.viewModel.TaskViewModel;
+import de.timecrunch.timecrunch.viewModel.CategoryViewModel;
 
 public class TaskCategoriesFragment extends Fragment {
     ActionBar actionBar;
     ImageButton addButton;
     ExpandableListView categoryList;
-    TaskViewModel taskViewModel;
+    CategoryViewModel categoryViewModel;
 
     static final int NEW_CATEGORY_REQUEST=1;
 
@@ -49,8 +47,8 @@ public class TaskCategoriesFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         //get ViewModel from parent activity to sync with other fragments
-        taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
-        taskViewModel.getSubCategoryMap().observe(this, new Observer<Map<Category,List<Category>>>() {
+        categoryViewModel = ViewModelProviders.of(getActivity()).get(CategoryViewModel.class);
+        categoryViewModel.getSubCategoryMap().observe(this, new Observer<Map<Category,List<Category>>>() {
             @Override
             public void onChanged(@Nullable final Map<Category,List<Category>> subcategoryMapLiveData) {
                 setUpListAdapter(subcategoryMapLiveData);
@@ -70,7 +68,7 @@ public class TaskCategoriesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         setUpActionBar();
         setUpDataView(view);
-        moveIndicatorToRight();
+        //moveIndicatorToRight();
 
     }
 
@@ -84,7 +82,7 @@ public class TaskCategoriesFragment extends Fragment {
     }
 
     private void setUpDataView(View view){
-        Map<Category,List<Category>> subcategoryMap = taskViewModel.getSubCategoryMap().getValue();
+        Map<Category,List<Category>> subcategoryMap = categoryViewModel.getSubCategoryMap().getValue();
         categoryList = (ExpandableListView)view.findViewById(R.id.category_list);
         setUpListAdapter(subcategoryMap);
 
@@ -126,7 +124,7 @@ public class TaskCategoriesFragment extends Fragment {
                     int categoryColor = data.getIntExtra("color", -1);
                     boolean hasTimeBlock = data.getBooleanExtra("hasTimeBlock", false);
                     Category newCategory = new Category(categoryName,categoryColor, hasTimeBlock);
-                    taskViewModel.addCategory(newCategory);
+                    categoryViewModel.addCategory(newCategory);
                     categoryList.invalidate();
                 }
         }
