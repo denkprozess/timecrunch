@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 
 public class HourView extends android.support.v7.widget.AppCompatTextView {
 
-    private static final int PADDING = 16;
+    private static final int PADDING = 24;
 
     public HourView(Context context) {
         super(context);
@@ -27,7 +27,7 @@ public class HourView extends android.support.v7.widget.AppCompatTextView {
         super.onDraw(canvas);
 
         drawFullHourLine(canvas);
-        drawHalfHourLine(canvas);
+       // drawHalfHourLine(canvas);
     }
 
     private void drawFullHourLine(Canvas canvas) {
