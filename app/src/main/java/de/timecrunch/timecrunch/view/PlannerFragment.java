@@ -1,9 +1,11 @@
 package de.timecrunch.timecrunch.view;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,25 +45,47 @@ public class PlannerFragment extends Fragment {
     }
 
     private void initRows(LinearLayout ll) {
-        for (int i = 0; i < 25; i++) {
+        int j = 0;
+        for (int i = 0; i < 48; i++) {
             HourView row = new HourView(this.getContext());
             row.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT));
-            if (i == 0) {
-                row.setPadding(20, 5, 20, 60);
-            } else if (i > 0 && i < 25) {
-                row.setPadding(20, 0, 20, 60);
+            row.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
+            row.setHeight(dpToPx(36));
+
+            if(j == 0) {
+                j++;
+                row.setTextColor(Color.BLACK);
             } else {
-                row.setPadding(20, 0, 20, 0);
+                j--;
+                row.setTextColor(Color.TRANSPARENT);
             }
 
-            if(i < 10) {
-                row.setText("0" + i + ":00");
+            int padd = 9;
+
+            if (i == 0) {
+                row.setPadding(24, this.dpToPx(padd), 0, this.dpToPx(padd));
+            } else if (i > 0 && i < 25) {
+                row.setPadding(24, this.dpToPx(padd), 0, this.dpToPx(padd));
             } else {
-                row.setText(i + ":00");
+                row.setPadding(24, this.dpToPx(padd), 0, this.dpToPx(padd));
+            }
+
+            if(i < 20) {
+                // row.setTextColor(Color.TRANSPARENT);
+                row.setText("0" + i / 2 + ":00");
+            } else {
+                row.setText(i / 2 + ":00");
             }
 
             ll.addView(row);
         }
+    }
+
+    private int dpToPx(int dp) {
+        float density = this.getContext().getResources()
+                .getDisplayMetrics()
+                .density;
+        return Math.round((float) dp * density);
     }
 }
