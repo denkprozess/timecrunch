@@ -68,7 +68,7 @@ public class TaskOverviewFragment extends Fragment {
     }
 
     private void setUpActionBar() {
-
+        actionBar.setTitle("Morning routine");
     }
 
     private void setUpFloatingActionButton(View view) {
