@@ -4,13 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.TaskCategoriesFragment">
+    tools:context=".view.TaskOverviewActivity">
 
-    <ExpandableListView
-        android:id="@+id/category_list"
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:groupIndicator="@null">
-
-    </ExpandableListView>
+        android:layout_height="match_parent">
+    </FrameLayout>
 </android.support.constraint.ConstraintLayout>

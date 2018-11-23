@@ -3,6 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/category_layout"
+        android:clickable="true"
         android:layout_width="fill_parent"
         android:layout_height="55dp"
         android:orientation="vertical"
@@ -16,7 +18,7 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:layout_toStartOf="@id/color_navigator"
-            android:src="@drawable/ic_fiber_manual_record_black_24dp" />
+            android:src="@drawable/ic_fiber_manual_record_white_24dp" />
 
         <TextView
             android:id="@+id/category_text"
@@ -28,6 +30,15 @@
             android:paddingStart="5dp"
             android:textSize="17dp"
             android:textColor="@color/colorPrimary" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:id="@+id/category_indicator"
+            android:layout_alignParentEnd="true"
+            android:background="@null"
+            android:src="@drawable/ic_keyboard_arrow_down_white_24dp"
+            android:tint="@color/materialcolorpicker__black"/>
 
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

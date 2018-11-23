@@ -1,36 +1,42 @@
 package de.timecrunch.timecrunch.view;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.Category;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private Context context;
-    private List<Category> listDataHeader; // header titles
+    private List<Category> listHeaderData; // header titles
     // child data in format of header title, child title
-    private Map<Category, List<String>> listDataChild;
+    private Map<Category, List<Category>> mapChildData;
 
-    public ExpandableListAdapter(Context context, List<Category> listDataHeader,
-                                 Map<Category, List<String>> listChildData) {
+    public ExpandableListAdapter(Context context, Map<Category, List<Category>> mapChildData) {
         this.context = context;
-        this.listDataHeader = listDataHeader;
-        this.listDataChild = listChildData;
+        this.mapChildData = mapChildData;
+        this.listHeaderData = new ArrayList<>(mapChildData.keySet());
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosititon) {
-        return this.listDataChild.get(this.listDataHeader.get(groupPosition))
+        return this.mapChildData.get(this.listHeaderData.get(groupPosition))
                 .get(childPosititon);
     }
 
@@ -43,7 +49,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
-        final String childText = (String) getChild(groupPosition, childPosition);
+        final String childText = ((Category) getChild(groupPosition, childPosition)).getName();
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -59,18 +65,18 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return this.listDataChild.get(this.listDataHeader.get(groupPosition))
+        return this.mapChildData.get(this.listHeaderData.get(groupPosition))
                 .size();
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return this.listDataHeader.get(groupPosition);
+        return this.listHeaderData.get(groupPosition);
     }
 
     @Override
     public int getGroupCount() {
-        return this.listDataHeader.size();
+        return this.listHeaderData.size();
     }
 
     @Override
@@ -79,23 +85,23 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getGroupView(int groupPosition, boolean isExpanded,
+    public View getGroupView(int groupPosition, final boolean isExpanded,
                              View convertView, ViewGroup parent) {
         Category headerCategory = (Category) getGroup(groupPosition);
-        String headerTitle = headerCategory.getName();
         int headerColor = headerCategory.getColor();
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.todo_list_group, null);
         }
-
+        RelativeLayout categoryLayout = (RelativeLayout) convertView.findViewById(R.id.category_layout);
+        setUpCategoryLayout(categoryLayout);
         TextView categoryText = (TextView) convertView.findViewById(R.id.category_text);
-        categoryText.setTypeface(null, Typeface.BOLD);
-        categoryText.setText(headerTitle);
+        setUpCategoryText(categoryText, headerCategory);
         ImageView categoryColor = (ImageView) convertView.findViewById(R.id.category_color);
-        categoryColor.setColorFilter(headerColor);
-
+        setUpCategoryColor(categoryColor, headerCategory);
+        ImageButton indicator = (ImageButton) convertView.findViewById(R.id.category_indicator);
+        setUpGroupIndicator(indicator,groupPosition,isExpanded);
         return convertView;
     }
 
@@ -107,5 +113,41 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return true;
+    }
+
+    private void setUpCategoryLayout(RelativeLayout layout){
+        layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onCategoryClick();
+            }
+        });
+    }
+    private void setUpCategoryText(TextView categoryText, Category category){
+        String headerTitle = category.getName();
+        categoryText.setTypeface(null, Typeface.BOLD);
+        categoryText.setText(headerTitle);
+    }
+
+    private void setUpCategoryColor(ImageView categoryColor, Category category){
+        int headerColor = category.getColor();
+        categoryColor.setColorFilter(headerColor);
+    }
+
+    private void setUpGroupIndicator(final ImageButton indicator, final int groupPosition, final boolean isExpanded){
+        indicator.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onIndicatorClick(indicator, isExpanded, groupPosition);
+            }
+        });
+    }
+
+    public void onCategoryClick(){
+        Toast.makeText(context, "Category Clicked!", Toast.LENGTH_LONG).show();
+    }
+
+    public void onIndicatorClick(ImageButton indicator, boolean isExpanded, int position){
+        Toast.makeText(context, "Indicator Clicked!", Toast.LENGTH_LONG).show();
     }
 }
