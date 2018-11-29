@@ -103,7 +103,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 "SELECT * FROM " + CategoryEntry.TABLE_NAME + " WHERE "
                         + CategoryEntry.COLUMN_NAME_CATEGORY_ID + " NOT IN "
                         + "(" + "SELECT " + SubcategoryEntry.COLUMN_NAME_CHILD_ID
-                        + " FROM " + SubcategoryEntry.TABLE_NAME;
+                        + " FROM " + SubcategoryEntry.TABLE_NAME + ");";
 
         Cursor c = db.rawQuery(selectQuery, null);
 
