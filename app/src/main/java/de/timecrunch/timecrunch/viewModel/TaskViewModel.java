@@ -48,7 +48,7 @@ public class TaskViewModel extends AndroidViewModel {
             List<Task> parentTaskList = dbHandler.getTasks(parentCategory.getId());
             taskMap.put(parentCategory,parentTaskList);
             for(Category childCategory:entry.getValue()){
-                List<Task> childTaskList = dbHandler.getTasks(parentCategory.getId());
+                List<Task> childTaskList = dbHandler.getTasks(childCategory.getId());
                 taskMap.put(childCategory,childTaskList);
             }
         }

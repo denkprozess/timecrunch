@@ -107,7 +107,7 @@ public class TaskOverviewFragment extends Fragment {
     }
 
     private void setUpListAdapter(Map<Category, List<Task>> taskMapLiveData) {
-        Category idCategory = new Category(categoryId, null,0,false);
+        Category idCategory = new Category(categoryId, null, 0, false);
         List<Task> taskList = taskMapLiveData.get(idCategory);
         taskListView.setLayoutManager(new LinearLayoutManager(getContext()));
         taskListView.setAdapter(new TaskListAdapter(taskList));
@@ -120,7 +120,7 @@ public class TaskOverviewFragment extends Fragment {
         // Set up the input
         final EditText input = new EditText(this.getContext());
         // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         builder.setView(input);
 
 
@@ -145,8 +145,8 @@ public class TaskOverviewFragment extends Fragment {
     }
 
     private void addNewTask(String text) {
-        Category idCategory = new Category(categoryId, null,0,false);
-        taskViewModel.addTask(idCategory, new Task(1,text));
+        Category idCategory = new Category(categoryId, null, 0, false);
+        taskViewModel.addTask(idCategory, new Task(1, text));
     }
 
 }
