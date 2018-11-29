@@ -12,4 +12,7 @@
     <string name="templates">Vorlagen</string>
     <string name="menu_add_category">Kategorie hinzufügen</string>
     <string name="menu_finish">Fertig</string>
+    <string name="new_task">Neue Aufgabe</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="ok">Ok</string>
 </resources>
