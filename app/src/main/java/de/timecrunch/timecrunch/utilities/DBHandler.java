@@ -8,6 +8,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import de.timecrunch.timecrunch.model.Category;
+import de.timecrunch.timecrunch.model.Task;
+
 public class DBHandler extends SQLiteOpenHelper {
 
     public static final int DATABASE_VERSION = 1;
@@ -15,9 +21,9 @@ public class DBHandler extends SQLiteOpenHelper {
 
     private static final String SQL_CREATE_CATEGORIES = "" +
             "CREATE TABLE " + CategoryEntry.TABLE_NAME + " (" +
-                CategoryEntry.COLUMN_NAME_CATEGORY_ID + " INTEGER PRIMARY KEY, " +
-                CategoryEntry.COLUMN_NAME_TITLE + " text NOT NULL, " +
-                CategoryEntry.COLUMN_NAME_COLOR + " text NOT NULL" +
+            CategoryEntry.COLUMN_NAME_CATEGORY_ID + " INTEGER PRIMARY KEY, " +
+            CategoryEntry.COLUMN_NAME_TITLE + " text NOT NULL, " +
+            CategoryEntry.COLUMN_NAME_COLOR + " INTEGER NOT NULL" +
             ");";
 
     private static final String SQL_CREATE_SUBCATEGORIES = "" +
@@ -62,10 +68,10 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
     /*****************************
-    * Categories
-    *****************************/
+     * Categories
+     *****************************/
 
-    public long createCategory(String title, String color, boolean hasTemplate) {
+    public long createCategory(String title, int color, boolean hasTemplate) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -75,7 +81,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
         long rowIndex = db.insert(CategoryEntry.TABLE_NAME, null, values);
 
-        if(hasTemplate) {
+        if (hasTemplate) {
             // TODO
         }
 
@@ -93,19 +99,19 @@ public class DBHandler extends SQLiteOpenHelper {
         // categories where category_id not in (select child_id from subcategories)
 
         // Kategorien holen
-            // Für jede Kategorie
-                // Subkategorien holen
+        // Für jede Kategorie
+        // Subkategorien holen
     }
 
     /*****************************
      * Subcategories
      *****************************/
 
-    public long createSubcategory(String title, String color, boolean hasTemplate, int parentId) {
+    public long createSubcategory(String title, int color, boolean hasTemplate, int parentId) {
 
         long childId = createCategory(title, color, hasTemplate);
 
-        if(childId > -1) {
+        if (childId > -1) {
             SQLiteDatabase db = this.getWritableDatabase();
 
             ContentValues values = new ContentValues();
@@ -118,12 +124,32 @@ public class DBHandler extends SQLiteOpenHelper {
         }
     }
 
-    private void getSubcategories() {
+    private List<Category> getSubcategories(int categoryId) {
 
         // select * from
         // categories where category_id in (select child_id from subcategories where parent_id = 1)
 
-        // TODO: Implement
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery =
+                "SELECT * FROM " + CategoryEntry.TABLE_NAME + " WHERE "
+                        + CategoryEntry.COLUMN_NAME_CATEGORY_ID +
+                        " IN (SELECT " + SubcategoryEntry.COLUMN_NAME_CHILD_ID +
+                        " FROM " + SubcategoryEntry.TABLE_NAME +
+                        " WHERE " + SubcategoryEntry.COLUMN_NAME_PARENT_ID + "=" + categoryId + ")";
+
+        Cursor c = db.rawQuery(selectQuery, null);
+        List<Category> categoryList = new ArrayList<>();
+        if (c.moveToFirst()) {
+            do {
+                int subcategoryId = c.getInt((c.getColumnIndex(CategoryEntry.COLUMN_NAME_CATEGORY_ID)));
+                String subcategoryTitle = c.getString((c.getColumnIndex(CategoryEntry.COLUMN_NAME_TITLE)));
+                int subcategoryColor = c.getInt(c.getColumnIndex(CategoryEntry.COLUMN_NAME_COLOR));
+                //TODO get hasTimeBlock
+                categoryList.add(new Category(subcategoryId, subcategoryTitle, subcategoryColor,false));
+            } while (c.moveToNext());
+        }
+        return categoryList;
     }
 
     /*****************************
@@ -146,7 +172,7 @@ public class DBHandler extends SQLiteOpenHelper {
         return false;
     }
 
-    public void getTasks(int categoryId) {
+    public List<Task> getTasks(int categoryId) {
 
         // select title from tasks
         // where category = categoryId;
@@ -158,14 +184,15 @@ public class DBHandler extends SQLiteOpenHelper {
                         + TaskEntry.COLUMN_NAME_CATEGORY + " = " + categoryId;
 
         Cursor c = db.rawQuery(selectQuery, null);
-
-        if(c.moveToFirst()) {
+        List<Task> taskList = new ArrayList<>();
+        if (c.moveToFirst()) {
             do {
-                Log.d("SELECT", String.valueOf(c.getInt((c.getColumnIndex(TaskEntry.COLUMN_NAME_TASK_ID)))));
-                Log.d("SELECT", String.valueOf(c.getString((c.getColumnIndex(TaskEntry.COLUMN_NAME_TITLE)))));
-                Log.d("SELECT", String.valueOf(c.getInt((c.getColumnIndex(TaskEntry.COLUMN_NAME_CATEGORY)))));
+                int taskId = c.getInt((c.getColumnIndex(TaskEntry.COLUMN_NAME_TASK_ID)));
+                String taskText = c.getString((c.getColumnIndex(TaskEntry.COLUMN_NAME_TITLE)));
+                taskList.add(new Task(taskId, taskText));
             } while (c.moveToNext());
         }
+        return taskList;
 
     }
 

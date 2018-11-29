@@ -85,10 +85,6 @@ public class TaskOverviewFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 showTaskInputDialog();
-//                Map<Category, List<Task>> taskMap = taskViewModel.getTaskMap().getValue();
-//                Category morningRoutine = taskMap.keySet().iterator().next();
-//                taskViewModel.addTask(morningRoutine, new Task("Build more dummy-tasks (" + counter + ")"));
-//                counter++;
             }
         });
 
