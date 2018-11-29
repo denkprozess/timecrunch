@@ -38,19 +38,23 @@ public class CategoryViewModel extends ViewModel {
     private void initializeCategories(){
         //Important that this is LinkedHashMap to keep the sorting
         LinkedHashMap<Category,List<Category>> dummyChildrenMap = new LinkedHashMap<>();
+
         List<Category> dummyCategories = new ArrayList<>();
         dummyCategories.add(new Category("Testcategory1", Color.GREEN, false));
         dummyCategories.add(new Category("Testcategory2", Color.YELLOW, false));
         dummyCategories.add(new Category("Testcategory3", Color.BLUE, false));
+
         List<Category> testChildren1 = new ArrayList<>();
         testChildren1.add(new Category("TestChild1", Color.GREEN, false));
         testChildren1.add(new Category("TestChild2", Color.GREEN, false));
         testChildren1.add(new Category("TestChild3", Color.GREEN, false));
         testChildren1.add(new Category("TestChild4", Color.GREEN, false));
+
         List<Category> testChildren2 = new ArrayList<>();
         testChildren2.add(new Category("TestChild5", Color.YELLOW, false));
         testChildren2.add(new Category("TestChild6", Color.YELLOW, false));
         testChildren2.add(new Category("TestChild7", Color.YELLOW, false));
+
         List<Category> testChildren3 = new ArrayList<>();
         dummyChildrenMap.put(dummyCategories.get(0), testChildren1);
         dummyChildrenMap.put(dummyCategories.get(1), testChildren2);

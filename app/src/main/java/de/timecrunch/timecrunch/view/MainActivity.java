@@ -3,7 +3,6 @@ package de.timecrunch.timecrunch.view;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,6 +13,7 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import java.util.ArrayList;
 
 import de.timecrunch.timecrunch.R;
+import de.timecrunch.timecrunch.utilities.DBHandler;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,7 +35,23 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new PlannerFragment()).commit();
         }
-    }
+
+        DBHandler dbh = new DBHandler(this);
+
+        dbh.createCategory("Android Praktikum", "0xFF000000", false);
+        dbh.createCategory("Morgen Routine", "0xFF000000", false);
+        dbh.createCategory("Abend Routine", "0xFF000000", false);
+        dbh.createSubcategory("Übungszettel", "0xFF000000", false, 1);
+        dbh.createSubcategory("Sonstiges", "0xFF000000", false, 1);
+        dbh.createTask("Dibo eine Mail schreiben", 1);
+        dbh.createTask("Lehrevaluation durchführen", 1);
+        dbh.createTask("Zähne putzen", 2);
+        dbh.createTask("Duschen", 2);
+        dbh.closeDB();
+
+        dbh.getTasks(1);
+        dbh.closeDB();
+}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

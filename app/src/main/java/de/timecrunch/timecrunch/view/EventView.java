@@ -77,6 +77,21 @@ public class EventView extends View {
         canvas.drawText("TEST", (mRectSquare.width() / 2) + 80, mRectSquare.top + mRectSquare.height() / 2, mPaintText);
     }
 
+    private void createBlock(String title, Color color, int x, int y) {
+        Rect block = new Rect();
+
+        Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        fillPaint.setStyle(Paint.Style.FILL);
+        fillPaint.setColor(Color.parseColor("#FF44A703"));
+
+        Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        strokePaint.setStyle(Paint.Style.STROKE);
+        strokePaint.setColor(Color.parseColor("#FF44A703"));
+        strokePaint.setStrokeWidth(2);
+
+
+    }
+
     private void setRectBounds(Rect r, int left, int top) {
         r.left = left;
         r.top = top;
