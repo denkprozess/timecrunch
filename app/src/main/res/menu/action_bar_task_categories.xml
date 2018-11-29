@@ -6,6 +6,6 @@
         android:icon="@drawable/ic_add_black_24dp"
         app:iconTint="@color/colorNavigationButton"
         android:id="@+id/action_bar_add"
-        android:title="@string/title_activity_todo_categories"
+        android:title="@string/menu_add_category"
         app:showAsAction="always" />
 </menu>

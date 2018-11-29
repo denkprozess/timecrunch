@@ -10,4 +10,6 @@
     <string name="tasks">Aufgaben</string>
     <string name="dayView">Planer</string>
     <string name="templates">Vorlagen</string>
+    <string name="menu_add_category">Kategorie hinzufügen</string>
+    <string name="menu_finish">Fertig</string>
 </resources>

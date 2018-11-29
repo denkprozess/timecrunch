@@ -70,7 +70,6 @@ public class TaskOverviewFragment extends Fragment {
     }
 
     private void setUpActionBar() {
-        actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Morning routine");
     }
 
