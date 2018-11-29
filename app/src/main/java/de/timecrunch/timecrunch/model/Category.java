@@ -3,7 +3,7 @@ package de.timecrunch.timecrunch.model;
 public class Category {
 
     private String name;
-    private int id;
+    private final int id;
     private int color;
     private boolean hasTimeBlock;
 
@@ -40,12 +40,15 @@ public class Category {
         if (!(other instanceof Category)) {
             return false;
         }
-        if (((Category) other).getName().equals(this.getName())) {
+        if (((Category) other).getId() == (this.getId())) {
             return true;
         } else {
             return false;
         }
     }
 
-
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }
