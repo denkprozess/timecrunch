@@ -8,6 +8,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import de.timecrunch.timecrunch.model.Category;
+
 public class DBHandler extends SQLiteOpenHelper {
 
     public static final int DATABASE_VERSION = 1;
@@ -17,7 +23,7 @@ public class DBHandler extends SQLiteOpenHelper {
             "CREATE TABLE " + CategoryEntry.TABLE_NAME + " (" +
                 CategoryEntry.COLUMN_NAME_CATEGORY_ID + " INTEGER PRIMARY KEY, " +
                 CategoryEntry.COLUMN_NAME_TITLE + " text NOT NULL, " +
-                CategoryEntry.COLUMN_NAME_COLOR + " text NOT NULL" +
+                CategoryEntry.COLUMN_NAME_COLOR + " INTEGER NOT NULL" +
             ");";
 
     private static final String SQL_CREATE_SUBCATEGORIES = "" +
@@ -65,7 +71,7 @@ public class DBHandler extends SQLiteOpenHelper {
     * Categories
     *****************************/
 
-    public long createCategory(String title, String color, boolean hasTemplate) {
+    public long createCategory(String title, int color, boolean hasTemplate) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -87,21 +93,40 @@ public class DBHandler extends SQLiteOpenHelper {
         return false;
     }
 
-    public void getCategories() {
+    public LinkedHashMap<Category, List<Category>> getCategories() {
 
         // select * from
         // categories where category_id not in (select child_id from subcategories)
 
-        // Kategorien holen
-            // Für jede Kategorie
-                // Subkategorien holen
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery =
+                "SELECT * FROM " + CategoryEntry.TABLE_NAME + " WHERE "
+                        + CategoryEntry.COLUMN_NAME_CATEGORY_ID + " NOT IN "
+                        + "(" + "SELECT " + SubcategoryEntry.COLUMN_NAME_CHILD_ID
+                        + " FROM " + SubcategoryEntry.TABLE_NAME;
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        LinkedHashMap<Category,List<Category>> categories = new LinkedHashMap<>();
+
+        if(c.moveToFirst()) {
+            do {
+                Category category = new Category(
+                        c.getInt(c.getColumnIndex(CategoryEntry.COLUMN_NAME_CATEGORY_ID)),
+                        c.getString(c.getColumnIndex(CategoryEntry.COLUMN_NAME_TITLE)),
+                        c.getInt(c.getColumnIndex(CategoryEntry.COLUMN_NAME_COLOR)),
+                        false);
+                categories.put(category, getSubcategories(category.getId()));
+            } while (c.moveToNext());
+        } return categories;
     }
 
     /*****************************
      * Subcategories
      *****************************/
 
-    public long createSubcategory(String title, String color, boolean hasTemplate, int parentId) {
+    public long createSubcategory(String title, int color, boolean hasTemplate, int parentId) {
 
         long childId = createCategory(title, color, hasTemplate);
 
@@ -118,12 +143,14 @@ public class DBHandler extends SQLiteOpenHelper {
         }
     }
 
-    private void getSubcategories() {
+    private List<Category> getSubcategories(int parentId) {
 
         // select * from
         // categories where category_id in (select child_id from subcategories where parent_id = 1)
 
         // TODO: Implement
+
+        return null;
     }
 
     /*****************************
