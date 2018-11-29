@@ -38,21 +38,21 @@ public class MainActivity extends AppCompatActivity {
                     new PlannerFragment()).commit();
         }
 
-        DBHandler dbh = new DBHandler(this);
-
-        dbh.createCategory("Android Praktikum", Color.BLACK, false);
-        dbh.createCategory("Morgen Routine", Color.BLACK, false);
-        dbh.createCategory("Abend Routine", Color.BLACK, false);
-        dbh.createSubcategory("Übungszettel", Color.BLACK, false, 1);
-        dbh.createSubcategory("Sonstiges", Color.BLACK, false, 1);
-        dbh.createTask("Dibo eine Mail schreiben", 1);
-        dbh.createTask("Lehrevaluation durchführen", 1);
-        dbh.createTask("Zähne putzen", 2);
-        dbh.createTask("Duschen", 2);
-        dbh.closeDB();
-
-        dbh.getTasks(1);
-        dbh.closeDB();
+//        DBHandler dbh = new DBHandler(this);
+//
+//        dbh.createCategory("Android Praktikum", Color.BLACK, false);
+//        dbh.createCategory("Morgen Routine", Color.BLACK, false);
+//        dbh.createCategory("Abend Routine", Color.BLACK, false);
+//        dbh.createSubcategory("Übungszettel", Color.BLACK, false, 1);
+//        dbh.createSubcategory("Sonstiges", Color.BLACK, false, 1);
+//        dbh.createTask("Dibo eine Mail schreiben", 1);
+//        dbh.createTask("Lehrevaluation durchführen", 1);
+//        dbh.createTask("Zähne putzen", 2);
+//        dbh.createTask("Duschen", 2);
+//        dbh.closeDB();
+//
+//        dbh.getTasks(1);
+//        dbh.closeDB();
 }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =

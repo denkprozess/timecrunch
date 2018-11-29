@@ -1,13 +1,10 @@
 package de.timecrunch.timecrunch.view;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,17 +46,21 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public View getChildView(int groupPosition, final int childPosition,
                              boolean isLastChild, View convertView, ViewGroup parent) {
 
-        final String childText = ((Category) getChild(groupPosition, childPosition)).getName();
+        Category childCategory = (Category) getChild(groupPosition, childPosition);
+        final String childText = childCategory.getName();
+        int childColor = childCategory.getColor();
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.list_item, null);
         }
+        RelativeLayout subcategoryLayout = (RelativeLayout) convertView.findViewById(R.id.subcategory_layout);
+        setUpCategoryLayout(subcategoryLayout, childCategory);
+        TextView categoryText = (TextView) convertView.findViewById(R.id.subcategory_text);
+        setUpCategoryText(categoryText, childCategory);
+        ImageView categoryColor = (ImageView) convertView.findViewById(R.id.subcategory_color);
+        setUpCategoryColor(categoryColor, childCategory);
 
-        TextView txtListChild = (TextView) convertView
-                .findViewById(R.id.todo_list_item);
-
-        txtListChild.setText(childText);
         return convertView;
     }
 
@@ -88,14 +89,13 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     public View getGroupView(int groupPosition, final boolean isExpanded,
                              View convertView, ViewGroup parent) {
         Category headerCategory = (Category) getGroup(groupPosition);
-        int headerColor = headerCategory.getColor();
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) this.context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.todo_list_group, null);
         }
         RelativeLayout categoryLayout = (RelativeLayout) convertView.findViewById(R.id.category_layout);
-        setUpCategoryLayout(categoryLayout);
+        setUpCategoryLayout(categoryLayout, headerCategory);
         TextView categoryText = (TextView) convertView.findViewById(R.id.category_text);
         setUpCategoryText(categoryText, headerCategory);
         ImageView categoryColor = (ImageView) convertView.findViewById(R.id.category_color);
@@ -115,11 +115,11 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
-    private void setUpCategoryLayout(RelativeLayout layout){
+    private void setUpCategoryLayout(RelativeLayout layout, final Category category){
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onCategoryClick();
+                onCategoryClick(category);
             }
         });
     }
@@ -143,7 +143,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         });
     }
 
-    public void onCategoryClick(){
+    public void onCategoryClick(Category category){
         Toast.makeText(context, "Category Clicked!", Toast.LENGTH_LONG).show();
     }
 

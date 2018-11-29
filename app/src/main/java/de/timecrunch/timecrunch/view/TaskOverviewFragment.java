@@ -33,13 +33,22 @@ import de.timecrunch.timecrunch.model.Task;
 import de.timecrunch.timecrunch.viewModel.TaskViewModel;
 
 public class TaskOverviewFragment extends Fragment {
-    // temporary counter
-    private static int counter = 1;
+
+    private int categoryId;
+    private String categeoryName;
 
     ActionBar actionBar;
     RecyclerView taskListView;
     TaskViewModel taskViewModel;
     FloatingActionButton floatingActionButton;
+
+    @Override
+    public void setArguments(@Nullable Bundle args) {
+        super.setArguments(args);
+        categoryId = args.getInt("CATEGORY_ID");
+        categeoryName = args.getString("CATEGORY_NAME");
+
+    }
 
     @Nullable
     @Override
@@ -50,6 +59,7 @@ public class TaskOverviewFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        setRetainInstance(true);
         actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
@@ -76,7 +86,7 @@ public class TaskOverviewFragment extends Fragment {
     }
 
     private void setUpActionBar() {
-        actionBar.setTitle("Morning routine");
+        actionBar.setTitle(categeoryName);
     }
 
     private void setUpFloatingActionButton(View view) {
@@ -97,8 +107,8 @@ public class TaskOverviewFragment extends Fragment {
     }
 
     private void setUpListAdapter(Map<Category, List<Task>> taskMapLiveData) {
-        Category morningRoutine = taskMapLiveData.keySet().iterator().next();
-        List<Task> taskList = taskMapLiveData.get(morningRoutine);
+        Category idCategory = new Category(categoryId, null,0,false);
+        List<Task> taskList = taskMapLiveData.get(idCategory);
         taskListView.setLayoutManager(new LinearLayoutManager(getContext()));
         taskListView.setAdapter(new TaskListAdapter(taskList));
     }
@@ -135,9 +145,8 @@ public class TaskOverviewFragment extends Fragment {
     }
 
     private void addNewTask(String text) {
-        Map<Category, List<Task>> taskMap = taskViewModel.getTaskMap().getValue();
-        Category morningRoutine = taskMap.keySet().iterator().next();
-        taskViewModel.addTask(morningRoutine, new Task(1,text));
+        Category idCategory = new Category(categoryId, null,0,false);
+        taskViewModel.addTask(idCategory, new Task(1,text));
     }
 
 }

@@ -70,7 +70,7 @@ public class DBHandler extends SQLiteOpenHelper {
      * Categories
      *****************************/
 
-    public long createCategory(String title, int color, boolean hasTemplate) {
+    public int createCategory(String title, int color, boolean hasTemplate) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -84,7 +84,7 @@ public class DBHandler extends SQLiteOpenHelper {
             // TODO
         }
 
-        return rowIndex;
+        return (int)rowIndex;
     }
 
     public boolean removeCategory(int categoryId) {
@@ -125,7 +125,7 @@ public class DBHandler extends SQLiteOpenHelper {
      * Subcategories
      *****************************/
 
-    public long createSubcategory(String title, int color, boolean hasTemplate, int parentId) {
+    public int createSubcategory(String title, int color, boolean hasTemplate, int parentId) {
 
         long childId = createCategory(title, color, hasTemplate);
 
@@ -136,7 +136,7 @@ public class DBHandler extends SQLiteOpenHelper {
             values.put(SubcategoryEntry.COLUMN_NAME_PARENT_ID, parentId);
             values.put(SubcategoryEntry.COLUMN_NAME_CHILD_ID, childId);
             long rowIndex = db.insert(SubcategoryEntry.TABLE_NAME, null, values);
-            return rowIndex;
+            return (int)rowIndex;
         } else {
             return -1;
         }
@@ -174,7 +174,7 @@ public class DBHandler extends SQLiteOpenHelper {
      * Tasks
      *****************************/
 
-    public boolean createTask(String title, int categoryId) {
+    public int createTask(String title, int categoryId) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -182,7 +182,7 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put(TaskEntry.COLUMN_NAME_CATEGORY, categoryId);
 
         long rowIndex = db.insert(TaskEntry.TABLE_NAME, null, values);
-        return (rowIndex == -1) ? false : true;
+        return (int) rowIndex;
     }
 
     public boolean removeTask(String entryId) {
