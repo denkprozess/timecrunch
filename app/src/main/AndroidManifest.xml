@@ -15,15 +15,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.MainActivity">
+        <activity android:name=".view.MainActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.NewTaskCategoryActivity" />
-        <activity android:name=".view.TaskOverviewActivity">
+        <activity android:name=".view.NewTaskCategoryActivity"
+            android:parentActivityName=".view.MainActivity"
+            android:label="@string/title_activity_new_category"/>
+        <activity android:name=".view.TaskOverviewActivity"
+            android:parentActivityName=".view.MainActivity">
 
         </activity>
     </application>

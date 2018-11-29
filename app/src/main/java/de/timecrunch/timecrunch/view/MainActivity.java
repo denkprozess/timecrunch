@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     private MaterialCalendarView mcv;
     private ArrayList<String> mHours = new ArrayList<String>();
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
+        return super.onCreateOptionsMenu(menu);
+
+    }
+
     private BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
@@ -47,11 +56,9 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case R.id.action_dayview:
                             selectedFragment = new PlannerFragment();
-                            getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE);
                             break;
                         case R.id.action_templates:
                             selectedFragment = new TemplatesFragment();
-                            getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE);
                             break;
                     }
 

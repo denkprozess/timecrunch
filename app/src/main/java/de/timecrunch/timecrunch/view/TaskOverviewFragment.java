@@ -13,6 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -68,6 +70,7 @@ public class TaskOverviewFragment extends Fragment {
     }
 
     private void setUpActionBar() {
+        actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle("Morning routine");
     }
 
