@@ -1,10 +1,12 @@
 package de.timecrunch.timecrunch.view;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new PlannerFragment()).commit();
         }
+    }
 
         DBHandler dbh = new DBHandler(this);
 
@@ -52,13 +55,6 @@ public class MainActivity extends AppCompatActivity {
         dbh.getTasks(1);
         dbh.closeDB();
 }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        this.menu = menu;
-        return super.onCreateOptionsMenu(menu);
-
-    }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
