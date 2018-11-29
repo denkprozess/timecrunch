@@ -98,7 +98,7 @@ public class TaskCategoriesFragment extends Fragment {
                     String categoryName = data.getStringExtra("name");
                     int categoryColor = data.getIntExtra("color", -1);
                     boolean hasTimeBlock = data.getBooleanExtra("hasTimeBlock", false);
-                    Category newCategory = new Category(categoryName, categoryColor, hasTimeBlock);
+                    Category newCategory = new Category(1,categoryName, categoryColor, hasTimeBlock);
                     categoryViewModel.addCategory(newCategory);
                     categoryList.invalidate();
                 }

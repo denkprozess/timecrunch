@@ -141,7 +141,7 @@ public class TaskOverviewFragment extends Fragment {
     private void addNewTask(String text) {
         Map<Category, List<Task>> taskMap = taskViewModel.getTaskMap().getValue();
         Category morningRoutine = taskMap.keySet().iterator().next();
-        taskViewModel.addTask(morningRoutine, new Task(text));
+        taskViewModel.addTask(morningRoutine, new Task(1,text));
     }
 
 }

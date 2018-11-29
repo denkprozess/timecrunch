@@ -32,11 +32,11 @@ public class TaskViewModel extends ViewModel {
 
     private void initializeTasks(){
         Map<Category, List<Task>> taskMap = new HashMap<>();
-        Category morningRoutine = new Category("Morning Routine", Color.GREEN, false);
+        Category morningRoutine = new Category(1,"Morning Routine", Color.GREEN, false);
         List<Task> taskList = new ArrayList<>();
-        taskList.add(new Task("Shower"));
-        taskList.add(new Task("Floss the teeth"));
-        taskList.add(new Task("Eat breakfast"));
+        taskList.add(new Task(1,"Shower"));
+        taskList.add(new Task(1,"Floss the teeth"));
+        taskList.add(new Task(1,"Eat breakfast"));
         taskMap.put(morningRoutine, taskList);
         tasksLiveData = new MutableLiveData<>();
         tasksLiveData.setValue(taskMap);
