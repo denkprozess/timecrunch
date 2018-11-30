@@ -2,21 +2,32 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="55dip"
         android:gravity="center_vertical"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:clickable="true"
+        android:id="@+id/subcategory_layout">
+
+        <ImageView
+            android:id="@+id/subcategory_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="?android:attr/expandableListPreferredChildPaddingLeft"
+            android:layout_alignParentStart="true"
+            android:layout_gravity="center_vertical"
+            android:layout_toStartOf="@id/color_navigator"
+            android:src="@drawable/ic_fiber_manual_record_white_24dp" />
 
         <TextView
-            android:id="@+id/todo_list_item"
+            android:id="@+id/subcategory_text"
             android:layout_gravity="center_vertical"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textSize="17dip"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:paddingStart="?android:attr/expandableListPreferredChildPaddingLeft" />
+            android:layout_toEndOf="@id/subcategory_color"
+            android:paddingStart="5dp" />
 
-    </LinearLayout>
+    </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

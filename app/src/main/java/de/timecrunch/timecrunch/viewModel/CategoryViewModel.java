@@ -1,9 +1,10 @@
 package de.timecrunch.timecrunch.viewModel;
 
+import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
-import android.graphics.Color;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -11,15 +12,22 @@ import java.util.List;
 import java.util.Map;
 
 import de.timecrunch.timecrunch.model.Category;
+import de.timecrunch.timecrunch.utilities.DBHandler;
 
-public class CategoryViewModel extends ViewModel {
+public class CategoryViewModel extends AndroidViewModel {
     private MutableLiveData<Map<Category, List<Category>>> categoriesLiveData;
+    private DBHandler dbHandler;
 
-    public List<Category> getCategoryList(){
-        if(categoriesLiveData ==null){
+    public CategoryViewModel(@NonNull Application application) {
+        super(application);
+        dbHandler = new DBHandler(application.getApplicationContext());
+    }
+
+    public List<Category> getCategoryList() {
+        if (categoriesLiveData == null) {
             initializeCategories();
         }
-       return new ArrayList<Category>(categoriesLiveData.getValue().keySet());
+        return new ArrayList<Category>(categoriesLiveData.getValue().keySet());
     }
 
     /*public Map<Category, List<Category>>getTaskMap(){
@@ -29,49 +37,36 @@ public class CategoryViewModel extends ViewModel {
         return categoriesLiveData.getValue();
     }*/
 
-    public LiveData<Map<Category, List<Category>>> getSubCategoryMap(){
-        if(categoriesLiveData==null){
+    public LiveData<Map<Category, List<Category>>> getSubCategoryMap() {
+        if (categoriesLiveData == null) {
             initializeCategories();
         }
         return categoriesLiveData;
     }
-    private void initializeCategories(){
-        //Important that this is LinkedHashMap to keep the sorting
-        LinkedHashMap<Category,List<Category>> dummyChildrenMap = new LinkedHashMap<>();
 
-        List<Category> dummyCategories = new ArrayList<>();
-        dummyCategories.add(new Category(1,"Testcategory1", Color.GREEN, false));
-        dummyCategories.add(new Category(1,"Testcategory2", Color.YELLOW, false));
-        dummyCategories.add(new Category(1,"Testcategory3", Color.BLUE, false));
-
-        List<Category> testChildren1 = new ArrayList<>();
-        testChildren1.add(new Category(1,"TestChild1", Color.GREEN, false));
-        testChildren1.add(new Category(1,"TestChild2", Color.GREEN, false));
-        testChildren1.add(new Category(1,"TestChild3", Color.GREEN, false));
-        testChildren1.add(new Category(1,"TestChild4", Color.GREEN, false));
-
-        List<Category> testChildren2 = new ArrayList<>();
-        testChildren2.add(new Category(1,"TestChild5", Color.YELLOW, false));
-        testChildren2.add(new Category(1,"TestChild6", Color.YELLOW, false));
-        testChildren2.add(new Category(1,"TestChild7", Color.YELLOW, false));
-
-        List<Category> testChildren3 = new ArrayList<>();
-        dummyChildrenMap.put(dummyCategories.get(0), testChildren1);
-        dummyChildrenMap.put(dummyCategories.get(1), testChildren2);
-        dummyChildrenMap.put(dummyCategories.get(2), testChildren3);
+    private void initializeCategories() {
+        Map<Category, List<Category>> categoryMap = dbHandler.getCategories();
         categoriesLiveData = new MutableLiveData<>();
-        categoriesLiveData.setValue(dummyChildrenMap);
+        categoriesLiveData.setValue(categoryMap);
     }
 
-    public void addCategory(Category category){
+    public void addCategory(Category userCategory) {
         List<Category> categoryList = new ArrayList<>();
         Map<Category, List<Category>> categoryMap = categoriesLiveData.getValue();
-        categoryMap.put(category, categoryList);
-        categoriesLiveData.setValue(categoryMap);
+        String name = userCategory.getName();
+        int color = userCategory.getColor();
+        boolean hasTimeBlock = userCategory.hasTimeBlock();
+        int id = dbHandler.createCategory(name, color, hasTimeBlock);
+        if(id!=-1){
+            Category newCategory = new Category(id,name,color,hasTimeBlock);
+            categoryMap.put(newCategory, categoryList);
+            categoriesLiveData.setValue(categoryMap);
+        }
+
 
     }
 
-    public void addSubCategory(){
+    public void addSubCategory() {
 
     }
 }

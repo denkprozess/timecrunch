@@ -108,8 +108,10 @@ public class TaskCategoriesFragment extends Fragment {
     private void setUpListAdapter(Map<Category, List<Category>> subcategoryMap) {
         categoryList.setAdapter(new ExpandableListAdapter(this.getContext(), subcategoryMap) {
             @Override
-            public void onCategoryClick() {
+            public void onCategoryClick(Category category) {
                 Intent intent = new Intent(getContext(), TaskOverviewActivity.class);
+                intent.putExtra("CATEGORY_ID",category.getId());
+                intent.putExtra("CATEGORY_NAME", category.getName());
                 startActivity(intent);
             }
 
