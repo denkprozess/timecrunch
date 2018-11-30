@@ -13,8 +13,11 @@ import android.view.MenuItem;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import de.timecrunch.timecrunch.R;
+import de.timecrunch.timecrunch.model.Category;
 import de.timecrunch.timecrunch.utilities.DBHandler;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         DBHandler dbh = new DBHandler(this);
 
-        dbh.createCategory("Android Praktikum", Color.BLACK, false);
+/*        dbh.createCategory("Android Praktikum", Color.BLACK, false);
         dbh.createCategory("Morgen Routine", Color.BLACK, false);
         dbh.createCategory("Abend Routine", Color.BLACK, false);
         dbh.createSubcategory("Übungszettel", Color.BLACK, false, 1);
@@ -53,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
 
         dbh.getTasks(1);
         dbh.closeDB();
+
+        LinkedHashMap<Category, List<Category>> categories = dbh.getCategories();
+        dbh.closeDB();
+        Log.d("DB", String.valueOf(categories.size()));*/
+
 }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =

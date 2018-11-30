@@ -9,6 +9,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
@@ -22,6 +23,7 @@ public class PlannerFragment extends Fragment {
 
     private MaterialCalendarView mcv;
     private LinearLayout plannerContainer;
+    private FrameLayout plannerFrame;
     private ArrayList<String> mHours = new ArrayList<String>();
     private View view;
 
@@ -35,11 +37,13 @@ public class PlannerFragment extends Fragment {
          mcv.setTopbarVisible(false);
 
          plannerContainer = view.findViewById(R.id.planner_container);
+         plannerFrame = view.findViewById(R.id.planner_framelayout);
 
          ScrollView sv = view.findViewById(R.id.planner_scrollview);
          sv.requestDisallowInterceptTouchEvent(true);
 
          initRows(plannerContainer);
+         initEditBlocks(plannerFrame);
 
         return this.view;
     }
@@ -80,6 +84,22 @@ public class PlannerFragment extends Fragment {
 
             ll.addView(row);
         }
+    }
+
+    private void initEditBlocks(FrameLayout fl) {
+
+        EditBlock editBlock = new EditBlock(this.getContext(), "#FF58D903", 1, 2);
+        editBlock.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        editBlock.setElevation(dpToPx(2));
+
+        EditBlock editBlock2 = new EditBlock(this.getContext(), "#FFf44277", 3, 0);
+        editBlock2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        editBlock2.setElevation(dpToPx(2));
+
+        fl.addView(editBlock);
+        fl.addView(editBlock2);
     }
 
     private int dpToPx(int dp) {
