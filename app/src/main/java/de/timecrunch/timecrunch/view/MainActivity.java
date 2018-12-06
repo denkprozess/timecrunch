@@ -1,23 +1,15 @@
 package de.timecrunch.timecrunch.view;
 
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-
 import de.timecrunch.timecrunch.R;
-import de.timecrunch.timecrunch.model.Category;
 import de.timecrunch.timecrunch.utilities.DBHandler;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,8 +17,6 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
 
     private MaterialCalendarView mcv;
-    private ArrayList<String> mHours = new ArrayList<String>();
-    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
