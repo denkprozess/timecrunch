@@ -21,33 +21,32 @@ public class CategoryViewModel extends AndroidViewModel {
     public CategoryViewModel(@NonNull Application application) {
         super(application);
         dbHandler = new DBHandler(application.getApplicationContext());
+        categoriesLiveData = new MutableLiveData<>();
+        Map<Category, List<Category>> categoryMap = new LinkedHashMap<>();
+        categoriesLiveData.setValue(categoryMap);
     }
 
     public List<Category> getCategoryList() {
-        if (categoriesLiveData == null) {
+        if (categoriesLiveData.getValue().isEmpty()) {
             initializeCategories();
         }
         return new ArrayList<Category>(categoriesLiveData.getValue().keySet());
     }
 
-    /*public Map<Category, List<Category>>getTaskMap(){
-        if(categoriesLiveData ==null){
+    public LiveData<Map<Category, List<Category>>> getSubCategoryMapLiveData() {
+        return categoriesLiveData;
+    }
+
+    public Map<Category, List<Category>> getSubCategoryMap() {
+        if (categoriesLiveData.getValue().isEmpty()) {
             initializeCategories();
         }
         return categoriesLiveData.getValue();
-    }*/
-
-    public LiveData<Map<Category, List<Category>>> getSubCategoryMap() {
-        if (categoriesLiveData == null) {
-            initializeCategories();
-        }
-        return categoriesLiveData;
     }
 
     private void initializeCategories() {
         Map<Category, List<Category>> categoryMap = dbHandler.getCategories();
-        categoriesLiveData = new MutableLiveData<>();
-        categoriesLiveData.setValue(categoryMap);
+        categoriesLiveData.postValue(categoryMap);
     }
 
     public void addCategory(Category userCategory) {
@@ -60,7 +59,7 @@ public class CategoryViewModel extends AndroidViewModel {
         if(id!=-1){
             Category newCategory = new Category(id,name,color,hasTimeBlock);
             categoryMap.put(newCategory, categoryList);
-            categoriesLiveData.setValue(categoryMap);
+            categoriesLiveData.postValue(categoryMap);
         }
 
 

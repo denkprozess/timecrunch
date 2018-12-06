@@ -5,16 +5,13 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Point;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.TypedValue;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +34,7 @@ public class TaskCategoriesFragment extends Fragment {
     ImageButton addButton;
     ExpandableListView categoryList;
     CategoryViewModel categoryViewModel;
+    ProgressBar progressBar;
 
     static final int NEW_CATEGORY_REQUEST = 1;
 
@@ -53,10 +52,10 @@ public class TaskCategoriesFragment extends Fragment {
         setHasOptionsMenu(true);
         //get ViewModel from parent activity to sync with other fragments
         categoryViewModel = ViewModelProviders.of(getActivity()).get(CategoryViewModel.class);
-        categoryViewModel.getSubCategoryMap().observe(this, new Observer<Map<Category, List<Category>>>() {
+        categoryViewModel.getSubCategoryMapLiveData().observe(this, new Observer<Map<Category, List<Category>>>() {
             @Override
-            public void onChanged(@Nullable final Map<Category, List<Category>> subcategoryMapLiveData) {
-                setUpListAdapter(subcategoryMapLiveData);
+            public void onChanged(@Nullable final Map<Category, List<Category>> subcategoryMap) {
+                setUpListAdapter(subcategoryMap);
             }
         });
     }
@@ -77,14 +76,18 @@ public class TaskCategoriesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        progressBar = getActivity().findViewById(R.id.category_progress_bar);
         setUpDataView(view);
+
     }
 
 
     private void setUpDataView(View view) {
-        Map<Category, List<Category>> subcategoryMap = categoryViewModel.getSubCategoryMap().getValue();
         categoryList = (ExpandableListView) view.findViewById(R.id.category_list);
-        setUpListAdapter(subcategoryMap);
+        new LoadCategoriesAsync().execute();
+        //Map<Category, List<Category>> subcategoryMap = categoryViewModel.getSubCategoryMap();
+        //setUpListAdapter(subcategoryMap);
+
 
     }
 
@@ -99,8 +102,9 @@ public class TaskCategoriesFragment extends Fragment {
                     int categoryColor = data.getIntExtra("color", -1);
                     boolean hasTimeBlock = data.getBooleanExtra("hasTimeBlock", false);
                     Category newCategory = new Category(1,categoryName, categoryColor, hasTimeBlock);
-                    categoryViewModel.addCategory(newCategory);
-                    categoryList.invalidate();
+                    new AddCategoryAsync().execute(newCategory);
+                    //categoryViewModel.addCategory(newCategory);
+                    //categoryList.invalidate();
                 }
         }
     }
@@ -140,5 +144,69 @@ public class TaskCategoriesFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    private void showProgressBar() {
+        progressBar.setVisibility(ProgressBar.VISIBLE);
+        progressBar.setClickable(true);
+    }
+
+    private void hideProgressBar() {
+        progressBar.setVisibility(ProgressBar.INVISIBLE);
+        progressBar.setClickable(false);
+    }
+
+    private class LoadCategoriesAsync extends AsyncTask<Void, Void, Map<Category, List<Category>>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showProgressBar();
+        }
+
+        @Override
+        protected Map<Category, List<Category>> doInBackground(Void... voids) {
+//            try {
+//                Thread.sleep(3000);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+            return categoryViewModel.getSubCategoryMap();
+        }
+
+        @Override
+        protected void onPostExecute(Map<Category, List<Category>> subCategoryMap) {
+            super.onPostExecute(subCategoryMap);
+            hideProgressBar();
+        }
+    }
+
+    private class AddCategoryAsync extends AsyncTask<Category, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showProgressBar();
+        }
+
+
+        @Override
+        protected Void doInBackground(Category... categories) {
+//            try {
+//                Thread.sleep(3000);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+            for(Category category:categories) {
+                categoryViewModel.addCategory(category);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            hideProgressBar();
+        }
+
+    }
 
 }

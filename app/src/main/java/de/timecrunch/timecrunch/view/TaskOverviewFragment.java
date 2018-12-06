@@ -1,9 +1,11 @@
 package de.timecrunch.timecrunch.view;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
@@ -23,6 +26,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import java.util.List;
 import java.util.Map;
@@ -41,6 +45,7 @@ public class TaskOverviewFragment extends Fragment {
     RecyclerView taskListView;
     TaskViewModel taskViewModel;
     FloatingActionButton floatingActionButton;
+    ProgressBar progressBar;
 
     @Override
     public void setArguments(@Nullable Bundle args) {
@@ -68,7 +73,7 @@ public class TaskOverviewFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
-        taskViewModel.getTaskMap().observe(this, new Observer<Map<Category, List<Task>>>() {
+        taskViewModel.getTaskMapLiveData().observe(this, new Observer<Map<Category, List<Task>>>() {
             @Override
             public void onChanged(@Nullable final Map<Category, List<Task>> taskMapLiveData) {
                 setUpListAdapter(taskMapLiveData);
@@ -79,6 +84,7 @@ public class TaskOverviewFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        progressBar = getActivity().findViewById(R.id.tasks_progress_bar);
         setUpActionBar();
         setUpFloatingActionButton(view);
         setUpDataView(view);
@@ -101,20 +107,21 @@ public class TaskOverviewFragment extends Fragment {
     }
 
     private void setUpDataView(View view) {
-        Map<Category, List<Task>> taskMap = taskViewModel.getTaskMap().getValue();
+        new LoadTasksAsync().execute();
         taskListView = (RecyclerView) view.findViewById(R.id.task_list);
-        setUpListAdapter(taskMap);
     }
 
-    private void setUpListAdapter(Map<Category, List<Task>> taskMapLiveData) {
+    private void setUpListAdapter(Map<Category, List<Task>> taskMap) {
         Category idCategory = new Category(categoryId, null, 0, false);
-        List<Task> taskList = taskMapLiveData.get(idCategory);
-        taskListView.setLayoutManager(new LinearLayoutManager(getContext()));
-        taskListView.setAdapter(new TaskListAdapter(taskList));
+        List<Task> taskList = taskMap.get(idCategory);
+        if (taskList != null) {
+            taskListView.setLayoutManager(new LinearLayoutManager(getContext()));
+            taskListView.setAdapter(new TaskListAdapter(taskList));
+        }
     }
 
     private void showTaskInputDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this.getContext(), R.style.AlertDialogCustom));
         builder.setTitle(R.string.new_task);
 
         // Set up the input
@@ -145,8 +152,74 @@ public class TaskOverviewFragment extends Fragment {
     }
 
     private void addNewTask(String text) {
-        Category idCategory = new Category(categoryId, null, 0, false);
-        taskViewModel.addTask(idCategory, new Task(1, text));
+        new AddTaskAsync().execute(text);
     }
+
+    private void showProgressBar() {
+        progressBar.setVisibility(ProgressBar.VISIBLE);
+        progressBar.setClickable(true);
+    }
+
+    private void hideProgressBar() {
+        progressBar.setVisibility(ProgressBar.INVISIBLE);
+        progressBar.setClickable(false);
+    }
+
+    private class LoadTasksAsync extends AsyncTask<Void, Void, Map<Category, List<Task>>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showProgressBar();
+        }
+
+        @Override
+        protected Map<Category, List<Task>> doInBackground(Void... voids) {
+//            try {
+//                Thread.sleep(3000);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+            return taskViewModel.getTaskMap();
+        }
+
+        @Override
+        protected void onPostExecute(Map<Category, List<Task>> categoryListMap) {
+            super.onPostExecute(categoryListMap);
+            hideProgressBar();
+        }
+    }
+
+    private class AddTaskAsync extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showProgressBar();
+        }
+
+
+        @Override
+        protected Void doInBackground(String... strings) {
+//            try {
+//                Thread.sleep(3000);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+            Category idCategory = new Category(categoryId, null, 0, false);
+            for(String text: strings) {
+                taskViewModel.addTask(idCategory, new Task(1, text));
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            hideProgressBar();
+        }
+
+    }
+
 
 }

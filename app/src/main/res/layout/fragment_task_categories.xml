@@ -13,4 +13,12 @@
         android:groupIndicator="@null">
 
     </ExpandableListView>
+
+    <ProgressBar
+        android:id="@+id/category_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        android:clickable="false"
+        />
 </android.support.constraint.ConstraintLayout>
