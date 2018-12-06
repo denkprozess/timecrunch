@@ -24,20 +24,27 @@ public class TaskViewModel extends AndroidViewModel {
     public TaskViewModel(@NonNull Application application) {
         super(application);
         dbHandler = new DBHandler(application.getApplicationContext());
+        tasksLiveData = new MutableLiveData<>();
+        Map<Category, List<Task>> taskMap = new HashMap<>();
+        tasksLiveData.setValue(taskMap);
     }
 
     public List<Category> getCategoryList(){
-        if(tasksLiveData ==null){
+        if(tasksLiveData.getValue().isEmpty()){
             initializeTasks();
         }
         return new ArrayList<Category>(tasksLiveData.getValue().keySet());
     }
 
-    public LiveData<Map<Category, List<Task>>> getTaskMap(){
-        if(tasksLiveData==null){
+    public LiveData<Map<Category, List<Task>>> getTaskMapLiveData(){
+        return tasksLiveData;
+    }
+
+    public Map<Category, List<Task>> getTaskMap(){
+        if(tasksLiveData.getValue().isEmpty()){
             initializeTasks();
         }
-        return tasksLiveData;
+        return tasksLiveData.getValue();
     }
 
     private void initializeTasks(){
@@ -59,13 +66,15 @@ public class TaskViewModel extends AndroidViewModel {
 //        taskList.add(new Task(1,"Floss the teeth"));
 //        taskList.add(new Task(1,"Eat breakfast"));
 //        taskMap.put(morningRoutine, taskList);
-        tasksLiveData = new MutableLiveData<>();
-        tasksLiveData.setValue(taskMap);
+        tasksLiveData.postValue(taskMap);
     }
 
     public List<Task> getTaskList(Category category){
-        Category morningRoutine = tasksLiveData.getValue().keySet().iterator().next();
-        return tasksLiveData.getValue().get(morningRoutine);
+        List<Task> taskList = tasksLiveData.getValue().get(category);
+        if(taskList==null){
+            taskList = new ArrayList<>();
+        }
+        return taskList;
     }
 
     public void addTask(Category category, Task userTask){
@@ -77,7 +86,7 @@ public class TaskViewModel extends AndroidViewModel {
             List<Task> taskList = taskMap.get(category);
             Task task = new Task(id,text);
             taskList.add(task);
-            tasksLiveData.setValue(taskMap);
+            tasksLiveData.postValue(taskMap);
         }
     }
 }
