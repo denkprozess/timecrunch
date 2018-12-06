@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,20 +31,19 @@ public class PlannerFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         this.view = inflater.inflate(R.layout.fragment_planner, container, false);
 
-         mcv = view.findViewById(R.id.calendarView);
-         mcv.setTopbarVisible(false);
+        mcv = view.findViewById(R.id.calendarView);
+        mcv.setTopbarVisible(false);
 
-         plannerContainer = view.findViewById(R.id.planner_container);
-         plannerFrame = view.findViewById(R.id.planner_framelayout);
+        plannerContainer = view.findViewById(R.id.planner_container);
+        plannerFrame = view.findViewById(R.id.planner_framelayout);
 
-         ScrollView sv = view.findViewById(R.id.planner_scrollview);
-         sv.requestDisallowInterceptTouchEvent(true);
+        ScrollView sv = view.findViewById(R.id.planner_scrollview);
+        sv.requestDisallowInterceptTouchEvent(true);
 
-         initRows(plannerContainer);
-         initEditBlocks(plannerFrame);
+        initRows(plannerContainer);
+        plannerFrame.setOnDragListener(new TemplateDropEventListener());
 
         return this.view;
     }
@@ -66,17 +66,9 @@ public class PlannerFragment extends Fragment {
             }
 
             int padd = 9;
-
-            if (i == 0) {
-                row.setPadding(24, this.dpToPx(padd), 0, this.dpToPx(padd));
-            } else if (i > 0 && i < 25) {
-                row.setPadding(24, this.dpToPx(padd), 0, this.dpToPx(padd));
-            } else {
-                row.setPadding(24, this.dpToPx(padd), 0, this.dpToPx(padd));
-            }
+            row.setPadding(24, this.dpToPx(padd), 0, this.dpToPx(padd));
 
             if(i < 20) {
-                // row.setTextColor(Color.TRANSPARENT);
                 row.setText("0" + i / 2 + ":00");
             } else {
                 row.setText(i / 2 + ":00");
@@ -84,22 +76,6 @@ public class PlannerFragment extends Fragment {
 
             ll.addView(row);
         }
-    }
-
-    private void initEditBlocks(FrameLayout fl) {
-
-        EditBlock editBlock = new EditBlock(this.getContext(), "#FF58D903", 1, 2);
-        editBlock.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-        editBlock.setElevation(dpToPx(2));
-
-        EditBlock editBlock2 = new EditBlock(this.getContext(), "#FFf44277", 3, 0);
-        editBlock2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-        editBlock2.setElevation(dpToPx(2));
-
-        fl.addView(editBlock);
-        fl.addView(editBlock2);
     }
 
     private int dpToPx(int dp) {
