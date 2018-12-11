@@ -69,6 +69,34 @@ public class TemplateDropEventListener implements View.OnDragListener {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
         editBlock.setElevation(2);
+
+        editBlock.setLayoutParams(new ViewGroup.LayoutParams(
+                (v.getWidth() - dpToPx(v, 60)),
+                dpToPx(v, 77))); //72
+
+        editBlock.setX(dpToPx(v, 49));
+        //PADDING_TOP + (hour * HOUR) + (quarter * QUARTER))
+        editBlock.setY(dpToPx(v, 19) + (hours * dpToPx(v, 72)) + (quarters * dpToPx(v, 18)));
+        editBlock.setOnLongClickListener(new BlockOnLongClickListener());
+
         ((FrameLayout) v).addView(editBlock);
+    }
+
+//    private final int SQUARE_SIZE = dpToPx(72);
+//
+//    private final int PADDING_TOP = dpToPx(19);
+//    private final int PADDING_LEFT = dpToPx(49);
+//
+//    private final int QUARTER = dpToPx(18);
+//    private final int HALFHOUR = dpToPx(36);
+//    private final int HOUR = dpToPx(72);
+//
+//    private static final int PADDING = 60;
+
+    private int dpToPx(View v, int dp) {
+        float density = v.getContext().getResources()
+                .getDisplayMetrics()
+                .density;
+        return Math.round((float) dp * density);
     }
 }
