@@ -14,7 +14,7 @@ import java.util.List;
 import de.timecrunch.timecrunch.model.Category;
 import de.timecrunch.timecrunch.model.Task;
 public class DBHandler extends SQLiteOpenHelper {
-
+    public static DBHandler dbHandler;
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "timecrunch.db";
 
@@ -185,9 +185,10 @@ public class DBHandler extends SQLiteOpenHelper {
         return (int) rowIndex;
     }
 
-    public boolean removeTask(String entryId) {
-        // TODO: Implement
-        return false;
+    public boolean removeTask(int entryId) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        int result = db.delete(TaskEntry.TABLE_NAME,TaskEntry.COLUMN_NAME_TASK_ID + "=?", new String[]{String.valueOf(entryId)});
+        return result==1;
     }
 
     public List<Task> getTasks(int categoryId) {

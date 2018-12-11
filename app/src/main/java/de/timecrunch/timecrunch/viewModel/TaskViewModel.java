@@ -20,6 +20,8 @@ import de.timecrunch.timecrunch.utilities.DBHandler;
 public class TaskViewModel extends AndroidViewModel {
     private MutableLiveData<Map<Category, List<Task>>> tasksLiveData;
     private DBHandler dbHandler;
+    private Task lastRemovedTask;
+    private int lastRemovedCategoryId;
 
     public TaskViewModel(@NonNull Application application) {
         super(application);
@@ -77,16 +79,33 @@ public class TaskViewModel extends AndroidViewModel {
         return taskList;
     }
 
-    public void addTask(Category category, Task userTask){
-        int categoryId = category.getId();
+    public void removeTask(int categoryId, Task task){
+        boolean success = dbHandler.removeTask(task.getId());
+        if(success){
+            lastRemovedCategoryId = categoryId;
+            lastRemovedTask = task;
+            Map<Category, List<Task>> taskMap = tasksLiveData.getValue();
+            List<Task> taskList = getTaskListOfCategoryId(taskMap,categoryId);
+            taskList.remove(task);
+            tasksLiveData.postValue(taskMap);
+        }
+    }
+
+    public void addTask(int categoryId, Task userTask){
         String text = userTask.getText();
         int id = dbHandler.createTask(text, categoryId);
         if(id!=-1) {
             Map<Category, List<Task>> taskMap = tasksLiveData.getValue();
-            List<Task> taskList = taskMap.get(category);
+            List<Task> taskList = getTaskListOfCategoryId(taskMap,categoryId);
             Task task = new Task(id,text);
             taskList.add(task);
             tasksLiveData.postValue(taskMap);
         }
+    }
+
+    private List<Task> getTaskListOfCategoryId(Map<Category, List<Task>> taskMap, int categoryId){
+        Category categoryDummy = new Category(categoryId, null,0,false);
+        List<Task> taskList = taskMap.get(categoryDummy);
+        return taskList;
     }
 }
