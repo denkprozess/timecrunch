@@ -184,11 +184,6 @@ public class TaskOverviewFragment extends Fragment {
 
         @Override
         protected Map<Category, List<Task>> doInBackground(Void... voids) {
-//            try {
-//                Thread.sleep(3000);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
             return taskViewModel.getTaskMap();
         }
 
@@ -210,11 +205,6 @@ public class TaskOverviewFragment extends Fragment {
 
         @Override
         protected Void doInBackground(String... strings) {
-//            try {
-//                Thread.sleep(3000);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
             for (String text : strings) {
                 taskViewModel.addTask(categoryId, new Task(1, text));
             }
@@ -240,11 +230,6 @@ public class TaskOverviewFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Task... tasks) {
-//            try {
-//                Thread.sleep(3000);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
             for (Task task : tasks) {
                 taskViewModel.removeTask(categoryId, task);
             }

@@ -1,5 +1,6 @@
 package de.timecrunch.timecrunch.view;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -7,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 
 import de.timecrunch.timecrunch.R;
@@ -18,10 +21,12 @@ public class MainActivity extends AppCompatActivity {
 
     private MaterialCalendarView mcv;
 
+    private FirebaseAuth authentication;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        authentication = FirebaseAuth.getInstance();
         setContentView(R.layout.activity_main);
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -51,7 +56,17 @@ public class MainActivity extends AppCompatActivity {
 //        dbh.closeDB();
 //        Log.d("DB", String.valueOf(categories.size()));
 
-}
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+//        FirebaseUser currentUser = authentication.getCurrentUser();
+//        if (currentUser == null) {
+//            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+//            startActivity(intent);
+//        }
+    }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {

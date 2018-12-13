@@ -164,11 +164,6 @@ public class TaskCategoriesFragment extends Fragment {
 
         @Override
         protected Map<Category, List<Category>> doInBackground(Void... voids) {
-//            try {
-//                Thread.sleep(3000);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
             return categoryViewModel.getSubCategoryMap();
         }
 
@@ -190,11 +185,6 @@ public class TaskCategoriesFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Category... categories) {
-//            try {
-//                Thread.sleep(3000);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
             for(Category category:categories) {
                 categoryViewModel.addCategory(category);
             }

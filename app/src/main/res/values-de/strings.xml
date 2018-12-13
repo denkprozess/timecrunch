@@ -15,4 +15,21 @@
     <string name="new_task">Neue Aufgabe</string>
     <string name="cancel">Abbrechen</string>
     <string name="ok">Ok</string>
+    <string name="title_activity_login">Einloggen</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Passwort</string>
+    <string name="sign_in">Einloggen</string>
+    <string name="action_sign_in_short">Einloggen</string>
+    <string name="error_invalid_email">Die Email-Adresse ist keine gültige Email-Adresse</string>
+    <string name="error_invalid_password">Das Passwort ist zu kurz</string>
+    <string name="error_incorrect_password">Das Passwort ist nicht korrekt</string>
+    <string name="register">Registrieren</string>
+    <string name="error_field_required">Dieses Feld muss ausgefüllt werden</string>
+    <string name="permission_rationale">Zugriff auf Kontakte wird benötigt, um Emails vorzuschlagen</string>
+    <string name="repeat_password">Passwort wiederholen</string>
+    <string name="email_password_wrong">Die eingegebene Email oder das Passwort sind falsch</string>
+    <string name="error_passwords_mismatch">Die eingebenen Passwörter sind nicht identisch</string>
+    <string name="error_email_in_use">Die eingegebene Email-Adressse ist bereits registriert</string>
+    <string name="register_success_please_verify">Die Registrierung war erfolgreich, bitte klicke auf den Link in der Email, die wir dir geschickt haben bevor du dich einloggst</string>
+    <string name="error_email_not_verified">Die Email-Adresse wurde noch nicht verifiziert. Bitte klicke auf den Link in der Email, die wir dir geschickt haben.</string>
 </resources>

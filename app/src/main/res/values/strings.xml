@@ -18,4 +18,27 @@
     <string name="new_task">New Task</string>
     <string name="ok">Ok</string>
     <string name="cancel">Cancel</string>
+    <string name="title_activity_login">Sign in</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="register">Register</string>
+    <string name="title_activity_login2">LoginActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="email_password_wrong">The entered email or password was wrong</string>
+    <string name="error_passwords_mismatch">The entered passwords are not the same</string>
+    <string name="error_email_in_use">The entered email is already in use</string>
+    <string name="register_success_please_verify">Register successful, please click on the link in the email we sent you before you login</string>
+    <string name="error_email_not_verified">You didn\'t verify your email yet. Please verify your email by clicking on the link in the email we sent you</string>
 </resources>
