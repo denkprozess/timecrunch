@@ -43,6 +43,7 @@ public class PlannerFragment extends Fragment {
         sv.requestDisallowInterceptTouchEvent(true);
 
         initRows(plannerContainer);
+        plannerFrame.setOnTouchListener(new PlannerOnTouchListener());
         plannerFrame.setOnDragListener(new TemplateDropEventListener());
 
         return this.view;
