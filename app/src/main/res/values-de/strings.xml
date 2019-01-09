@@ -32,4 +32,6 @@
     <string name="error_email_in_use">Die eingegebene Email-Adressse ist bereits registriert</string>
     <string name="register_success_please_verify">Die Registrierung war erfolgreich, bitte klicke auf den Link in der Email, die wir dir geschickt haben bevor du dich einloggst</string>
     <string name="error_email_not_verified">Die Email-Adresse wurde noch nicht verifiziert. Bitte klicke auf den Link in der Email, die wir dir geschickt haben.</string>
+    <!-- Strings related to tasks -->
+    <string name="placeholder_editTasks">Bearbeite Task</string>
 </resources>

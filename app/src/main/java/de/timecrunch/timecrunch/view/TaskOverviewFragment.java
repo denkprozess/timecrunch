@@ -1,10 +1,10 @@
 package de.timecrunch.timecrunch.view;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -20,16 +20,16 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -115,6 +115,11 @@ public class TaskOverviewFragment extends Fragment {
     private void setUpDataView(View view) {
         new LoadTasksAsync().execute();
         taskListView = (RecyclerView) view.findViewById(R.id.task_list);
+
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(taskListView.getContext(),
+                1);
+        taskListView.addItemDecoration(dividerItemDecoration);
+        taskListView.addOnItemTouchListener(new RecyclerTouchListener(this.getContext(), taskListView));
     }
 
     private void setUpListAdapter(Map<Category, List<Task>> taskMap) {
@@ -244,8 +249,6 @@ public class TaskOverviewFragment extends Fragment {
 
     }
 
-
-
     private class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
         private TaskListAdapter adapter;
         private Drawable icon;
@@ -295,5 +298,38 @@ public class TaskOverviewFragment extends Fragment {
             background.draw(c);
             icon.draw(c);
         }
+    }
+
+    private class RecyclerTouchListener implements RecyclerView.OnItemTouchListener{
+
+        private GestureDetector gestureDetector;
+
+        public RecyclerTouchListener(Context context, final RecyclerView recycleView) {
+            this.gestureDetector = new GestureDetector(context,new GestureDetector.SimpleOnGestureListener(){
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {}
+            });
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent motionEvent) {
+            View child = recyclerView.findChildViewUnder(motionEvent.getX(),motionEvent.getY());
+            if(child != null && gestureDetector.onTouchEvent(motionEvent)) {
+                Intent intent = new Intent(getContext(), TaskEditActivity.class);
+                startActivity(intent);
+            }
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent motionEvent) {}
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean b) {}
     }
 }

@@ -2,7 +2,6 @@ package de.timecrunch.timecrunch.model;
 
 public class Task {
 
-
     private final int id;
     private String text;
 

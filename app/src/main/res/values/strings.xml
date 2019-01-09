@@ -41,4 +41,7 @@
     <string name="error_email_in_use">The entered email is already in use</string>
     <string name="register_success_please_verify">Register successful, please click on the link in the email we sent you before you login</string>
     <string name="error_email_not_verified">You didn\'t verify your email yet. Please verify your email by clicking on the link in the email we sent you</string>
+    <!-- Strings related to tasks -->
+    <string name="placeholder_editTasks">Edit Task</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
