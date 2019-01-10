@@ -6,13 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import de.timecrunch.timecrunch.model.Category;
-import de.timecrunch.timecrunch.model.Task;
+import de.timecrunch.timecrunch.model.TaskModel;
+
 public class DBHandler extends SQLiteOpenHelper {
     public static DBHandler dbHandler;
     public static final int DATABASE_VERSION = 1;
@@ -191,7 +191,7 @@ public class DBHandler extends SQLiteOpenHelper {
         return result==1;
     }
 
-    public List<Task> getTasks(int categoryId) {
+    public List<TaskModel> getTasks(int categoryId) {
 
         // select title from tasks
         // where category = categoryId;
@@ -203,12 +203,12 @@ public class DBHandler extends SQLiteOpenHelper {
                         + TaskEntry.COLUMN_NAME_CATEGORY + " = " + categoryId;
 
         Cursor c = db.rawQuery(selectQuery, null);
-        List<Task> taskList = new ArrayList<>();
+        List<TaskModel> taskList = new ArrayList<>();
         if (c.moveToFirst()) {
             do {
                 int taskId = c.getInt((c.getColumnIndex(TaskEntry.COLUMN_NAME_TASK_ID)));
                 String taskText = c.getString((c.getColumnIndex(TaskEntry.COLUMN_NAME_TITLE)));
-                taskList.add(new Task(taskId, taskText));
+                taskList.add(new TaskModel(taskId, taskText));
             } while (c.moveToNext());
         }
         return taskList;

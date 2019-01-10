@@ -39,10 +39,12 @@ import java.util.Map;
 
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.Category;
-import de.timecrunch.timecrunch.model.Task;
+import de.timecrunch.timecrunch.model.TaskModel;
 import de.timecrunch.timecrunch.viewModel.TaskViewModel;
 
 public class TaskOverviewFragment extends Fragment {
+
+    private final int REQUEST_EDIT_TASK=1;
 
     private int categoryId;
     private String categeoryName;
@@ -78,10 +80,11 @@ public class TaskOverviewFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        //taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
         taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
-        taskViewModel.getTaskMapLiveData().observe(this, new Observer<Map<Category, List<Task>>>() {
+        taskViewModel.getTaskMapLiveData().observe(this, new Observer<Map<Category, List<TaskModel>>>() {
             @Override
-            public void onChanged(@Nullable final Map<Category, List<Task>> taskMapLiveData) {
+            public void onChanged(@Nullable final Map<Category, List<TaskModel>> taskMapLiveData) {
                 setUpListAdapter(taskMapLiveData);
             }
         });
@@ -122,9 +125,19 @@ public class TaskOverviewFragment extends Fragment {
         taskListView.addOnItemTouchListener(new RecyclerTouchListener(this.getContext(), taskListView));
     }
 
-    private void setUpListAdapter(Map<Category, List<Task>> taskMap) {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case REQUEST_EDIT_TASK:
+                taskViewModel.invalidate();
+                new LoadTasksAsync().execute();
+        }
+    }
+
+    private void setUpListAdapter(Map<Category, List<TaskModel>> taskMap) {
         Category idCategory = new Category(categoryId, null, 0, false);
-        List<Task> taskList = taskMap.get(idCategory);
+        List<TaskModel> taskList = taskMap.get(idCategory);
         if (taskList != null) {
             TaskListAdapter adapter = new TaskListAdapter(taskList);
             taskListView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -179,7 +192,7 @@ public class TaskOverviewFragment extends Fragment {
         progressBar.setClickable(false);
     }
 
-    private class LoadTasksAsync extends AsyncTask<Void, Void, Map<Category, List<Task>>> {
+    private class LoadTasksAsync extends AsyncTask<Void, Void, Map<Category, List<TaskModel>>> {
 
         @Override
         protected void onPreExecute() {
@@ -188,12 +201,12 @@ public class TaskOverviewFragment extends Fragment {
         }
 
         @Override
-        protected Map<Category, List<Task>> doInBackground(Void... voids) {
+        protected Map<Category, List<TaskModel>> doInBackground(Void... voids) {
             return taskViewModel.getTaskMap();
         }
 
         @Override
-        protected void onPostExecute(Map<Category, List<Task>> categoryListMap) {
+        protected void onPostExecute(Map<Category, List<TaskModel>> categoryListMap) {
             super.onPostExecute(categoryListMap);
             hideProgressBar();
         }
@@ -211,7 +224,7 @@ public class TaskOverviewFragment extends Fragment {
         @Override
         protected Void doInBackground(String... strings) {
             for (String text : strings) {
-                taskViewModel.addTask(categoryId, new Task(1, text));
+                taskViewModel.addTask(categoryId, new TaskModel(1, text));
             }
             return null;
         }
@@ -224,7 +237,7 @@ public class TaskOverviewFragment extends Fragment {
 
     }
 
-    private class RemoveTaskAsync extends AsyncTask<Task, Void, Void> {
+    private class RemoveTaskAsync extends AsyncTask<TaskModel, Void, Void> {
 
         @Override
         protected void onPreExecute() {
@@ -234,8 +247,8 @@ public class TaskOverviewFragment extends Fragment {
 
 
         @Override
-        protected Void doInBackground(Task... tasks) {
-            for (Task task : tasks) {
+        protected Void doInBackground(TaskModel... tasks) {
+            for (TaskModel task : tasks) {
                 taskViewModel.removeTask(categoryId, task);
             }
             return null;
@@ -270,7 +283,7 @@ public class TaskOverviewFragment extends Fragment {
         @Override
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
             int position = viewHolder.getAdapterPosition();
-            Task deletedTask = adapter.deleteItem(position);
+            TaskModel deletedTask = adapter.deleteItem(position);
             new RemoveTaskAsync().execute(deletedTask);
         }
 
@@ -320,8 +333,23 @@ public class TaskOverviewFragment extends Fragment {
         public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent motionEvent) {
             View child = recyclerView.findChildViewUnder(motionEvent.getX(),motionEvent.getY());
             if(child != null && gestureDetector.onTouchEvent(motionEvent)) {
+                int position = recyclerView.getChildAdapterPosition(child);
+                List<TaskModel> taskList = taskViewModel.getTaskList(new Category(categoryId, categeoryName, 0, false));
+                TaskModel task = taskList.get(position);
                 Intent intent = new Intent(getContext(), TaskEditActivity.class);
-                startActivity(intent);
+                intent.putExtra("CATEGORY_ID", categoryId);
+                intent.putExtra("CATEGORY_NAME", categeoryName);
+                intent.putExtra("TASK_ID", task.getId());
+                intent.putExtra("TASK_TEXT", task.getText());
+                if(task.getLocation()!=null){
+                    intent.putExtra("TASK_LAT", task.getLocation().latitude);
+                    intent.putExtra("TASK_LNG", task.getLocation().longitude);
+                }
+                TaskEditFragment fragment = new TaskEditFragment();
+                fragment.setArguments(intent.getExtras());
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        fragment).commit();
+                //startActivityForResult(intent,1);
             }
             return false;
         }

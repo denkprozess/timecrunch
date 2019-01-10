@@ -1,6 +1,5 @@
 package de.timecrunch.timecrunch.view;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,13 +10,13 @@ import android.widget.TextView;
 import java.util.List;
 
 import de.timecrunch.timecrunch.R;
-import de.timecrunch.timecrunch.model.Task;
+import de.timecrunch.timecrunch.model.TaskModel;
 
 public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHolder> {
 
-    private List<Task> taskList;
+    private List<TaskModel> taskList;
 
-    public TaskListAdapter(List<Task> taskList){
+    public TaskListAdapter(List<TaskModel> taskList){
         this. taskList = taskList;
     }
 
@@ -41,8 +40,8 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
         return taskList.size();
     }
 
-    public Task deleteItem(int position){
-        Task taskToRemove = taskList.get(position);
+    public TaskModel deleteItem(int position){
+        TaskModel taskToRemove = taskList.get(position);
         taskList.remove(position);
         notifyItemRemoved(position);
         return taskToRemove;

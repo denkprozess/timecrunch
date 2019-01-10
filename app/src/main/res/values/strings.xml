@@ -44,4 +44,5 @@
     <!-- Strings related to tasks -->
     <string name="placeholder_editTasks">Edit Task</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps2">Map</string>
 </resources>
