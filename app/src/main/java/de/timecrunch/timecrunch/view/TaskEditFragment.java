@@ -82,7 +82,6 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
             double lng = args.getDouble("TASK_LNG");
             taskLocation = new LatLng(lat,lng);
         }
-
     }
 
     @Override
@@ -261,11 +260,13 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
                             if (task.isSuccessful()) {
                                 // Set the map's camera position to the current location of the device.
                                 Location lastKnownLocation = (Location) task.getResult();
-                                LatLng lastKnownLatLng = new LatLng(lastKnownLocation.getLatitude(),
-                                        lastKnownLocation.getLongitude());
-                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(lastKnownLatLng
-                                        , DEFAULT_ZOOM));
-                                putMarkerOnMap(lastKnownLatLng);
+                                if(lastKnownLocation != null) {
+                                    LatLng lastKnownLatLng = new LatLng(lastKnownLocation.getLatitude(),
+                                            lastKnownLocation.getLongitude());
+                                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(lastKnownLatLng
+                                            , DEFAULT_ZOOM));
+                                    putMarkerOnMap(lastKnownLatLng);
+                                }
                             } else {
                                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
                                 map.getUiSettings().setMyLocationButtonEnabled(false);

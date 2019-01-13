@@ -2,20 +2,33 @@ package de.timecrunch.timecrunch.view;
 
 import java.util.Calendar;
 
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import de.timecrunch.timecrunch.R;
+import de.timecrunch.timecrunch.model.TaskModel;
+import de.timecrunch.timecrunch.utilities.AlarmReceiver;
+import de.timecrunch.timecrunch.utilities.AlarmScheduler;
 
 public class TaskAddReminderActivity extends AppCompatActivity {
 
@@ -42,6 +55,7 @@ public class TaskAddReminderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_add_reminder);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
 
@@ -72,6 +86,23 @@ public class TaskAddReminderActivity extends AppCompatActivity {
         repeatNoText.setText(mRepeatNo);
         repeatText.setText("Every " + mRepeatNo + " " + mRepeatType + "(s)");
         repeatTypeText.setText(mRepeatType);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action_bar_edit_task, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_bar_finished:
+                saveReminder();
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void setTime(View v){
@@ -148,4 +179,71 @@ public class TaskAddReminderActivity extends AppCompatActivity {
         alert.show();
     }
 
+    public void setRepeatNo(View v){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        alert.setTitle("Enter Number");
+
+        // Create EditText box to input repeat number
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        alert.setView(input);
+        alert.setPositiveButton("Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                        if (input.getText().toString().length() == 0) {
+                            mRepeatNo = Integer.toString(1);
+                            repeatNoText.setText(mRepeatNo);
+                            repeatText.setText("Every " + mRepeatNo + " " + mRepeatType + "(s)");
+                        }
+                        else {
+                            mRepeatNo = input.getText().toString().trim();
+                            repeatNoText.setText(mRepeatNo);
+                            repeatText.setText("Every " + mRepeatNo + " " + mRepeatType + "(s)");
+                        }
+                    }
+                });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                // do nothing
+            }
+        });
+        alert.show();
+    }
+
+    public void saveReminder(){
+        calendar.set(Calendar.MONTH, --month);
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, mMinute);
+        calendar.set(Calendar.SECOND, 0);
+
+        long selectedTimestamp =  calendar.getTimeInMillis();
+
+        // Check repeat type
+        if (mRepeatType.equals("Minute")) {
+            mRepeatTime = Integer.parseInt(mRepeatNo) * milMinute;
+        } else if (mRepeatType.equals("Hour")) {
+            mRepeatTime = Integer.parseInt(mRepeatNo) * milHour;
+        } else if (mRepeatType.equals("Day")) {
+            mRepeatTime = Integer.parseInt(mRepeatNo) * milDay;
+        } else if (mRepeatType.equals("Week")) {
+            mRepeatTime = Integer.parseInt(mRepeatNo) * milWeek;
+        } else if (mRepeatType.equals("Month")) {
+            mRepeatTime = Integer.parseInt(mRepeatNo) * milMonth;
+        }
+
+        AlarmManager alarmMgr;
+        PendingIntent alarmIntent;
+
+        alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        alarmIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+        alarmMgr.set(AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() +
+                        60 * 1000, alarmIntent);
+
+    }
 }
