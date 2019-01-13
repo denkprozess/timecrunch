@@ -3,6 +3,7 @@ package de.timecrunch.timecrunch.view;
 import android.Manifest;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -46,7 +47,6 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
     private final int DEFAULT_ZOOM = 16;
     private boolean coarseLocationGranted;
     private boolean fineLocationGranted;
-    private Location lastKnownLocation;
     private LatLng defaultLocation = new LatLng(-34, 151);
     private int categoryId;
     private String categoryName;
