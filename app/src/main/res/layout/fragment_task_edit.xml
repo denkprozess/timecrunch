@@ -42,11 +42,10 @@
                 tools:context=".view.TaskEditFragment" />
 
             <RelativeLayout
-                android:id="@+id/task_edit_reminder"
+                android:id="@+id/task_edit_reminder_layout"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
-                android:clickable="true"
-                android:onClick="createReminder">
+                android:clickable="true">
 
                 <ImageView
                     android:id="@+id/time_icon"

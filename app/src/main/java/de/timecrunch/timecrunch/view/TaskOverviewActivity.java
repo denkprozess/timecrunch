@@ -22,10 +22,4 @@ public class TaskOverviewActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                 fragment).commit();
     }
-
-    public void createReminder(View view) {
-        Intent intent = new Intent(this, TaskAddReminderActivity.class);
-        startActivity(intent);
-    }
-
 }

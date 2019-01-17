@@ -12,7 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
 import de.timecrunch.timecrunch.R;
-import de.timecrunch.timecrunch.view.TaskAddReminderActivity;
+import de.timecrunch.timecrunch.view.TaskAddReminderFragment;
 
 public class ReminderAlarmService extends IntentService {
     private static final String TAG = ReminderAlarmService.class.getSimpleName();
@@ -38,7 +38,7 @@ public class ReminderAlarmService extends IntentService {
         Uri uri = intent.getData();
 
         //Display a notification to view the task details
-        Intent action = new Intent(this, TaskAddReminderActivity.class);
+        Intent action = new Intent(this, TaskAddReminderFragment.class);
         action.setData(uri);
         PendingIntent operation = TaskStackBuilder.create(this)
                 .addNextIntentWithParentStack(action)

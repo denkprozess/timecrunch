@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.TaskAddReminderActivity"
+    tools:context=".view.TaskAddReminderFragment"
     android:orientation="vertical">
 
     <LinearLayout
@@ -23,11 +23,10 @@
             android:layout_marginLeft="72dp"/>
 
         <RelativeLayout
-            android:id="@+id/date"
+            android:id="@+id/date_layout"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:clickable="true"
-            android:onClick="setDate">
+            android:clickable="true">
 
             <ImageView
                 android:id="@+id/date_icon"
@@ -65,11 +64,10 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/time"
+            android:id="@+id/time_layout"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:clickable="true"
-            android:onClick="setTime">
+            android:clickable="true">
 
             <ImageView
                 android:id="@+id/time_icon"
@@ -107,7 +105,7 @@
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/repeat"
+            android:id="@+id/repeat_layout"
             android:layout_width="match_parent"
             android:layout_height="64dp">
 
@@ -154,17 +152,15 @@
                 android:layout_marginLeft="8dp"
                 android:checked="false"
                 android:textOn="On"
-                android:textOff="Off"
-                android:onClick="onSwitchRepeat" />
+                android:textOff="Off" />
 
         </RelativeLayout>
 
         <RelativeLayout
-            android:id="@+id/repeat_no"
+            android:id="@+id/repeat_no_layout"
             android:layout_width="match_parent"
             android:layout_height="64dp"
-            android:clickable="true"
-            android:onClick="setRepeatNo">
+            android:clickable="true">
 
             <ImageView
                 android:id="@+id/repeat_no_icon"
@@ -202,8 +198,8 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/RepeatType_layout"
             android:layout_width="match_parent"
-            android:id="@+id/RepeatType"
             android:clickable="true"
             android:onClick="selectRepeatType"
             android:layout_height="64dp">
