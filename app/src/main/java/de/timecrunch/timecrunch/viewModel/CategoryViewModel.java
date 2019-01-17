@@ -13,14 +13,17 @@ import java.util.Map;
 
 import de.timecrunch.timecrunch.model.Category;
 import de.timecrunch.timecrunch.utilities.DBHandler;
+import de.timecrunch.timecrunch.utilities.CategoryDBHandler;
 
-public class CategoryViewModel extends AndroidViewModel {
+public class CategoryViewModel extends AndroidViewModel implements CategoryViewModelDatabaseCallback{
     private MutableLiveData<Map<Category, List<Category>>> categoriesLiveData;
     private DBHandler dbHandler;
+    private CategoryDBHandler firebaseDBHandler;
 
     public CategoryViewModel(@NonNull Application application) {
         super(application);
         dbHandler = new DBHandler(application.getApplicationContext());
+        firebaseDBHandler = new CategoryDBHandler();
         categoriesLiveData = new MutableLiveData<>();
         Map<Category, List<Category>> categoryMap = new LinkedHashMap<>();
         categoriesLiveData.setValue(categoryMap);
@@ -55,6 +58,7 @@ public class CategoryViewModel extends AndroidViewModel {
         String name = userCategory.getName();
         int color = userCategory.getColor();
         boolean hasTimeBlock = userCategory.hasTimeBlock();
+        firebaseDBHandler.testWriteCategory(userCategory);
         int id = dbHandler.createCategory(name, color, hasTimeBlock);
         if(id!=-1){
             Category newCategory = new Category(id,name,color,hasTimeBlock);
