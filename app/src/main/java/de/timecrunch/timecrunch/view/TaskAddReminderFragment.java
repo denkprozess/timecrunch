@@ -1,5 +1,6 @@
 package de.timecrunch.timecrunch.view;
 
+import java.io.Console;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -60,7 +62,9 @@ public class TaskAddReminderFragment extends Fragment {
     private String mRepeatNo;
     private String mRepeatType;
     private TaskAlarm alarmData;
+    private Button deleteButton;
 
+    private String categoryName;
     private int categoryId;
     private int taskId;
     private String taskText;
@@ -87,6 +91,7 @@ public class TaskAddReminderFragment extends Fragment {
     public void setArguments(@Nullable Bundle args) {
         super.setArguments(args);
         categoryId = args.getInt("CATEGORY_ID");
+        categoryName = args.getString("CATEGORY_NAME");
         taskId = args.getInt("TASK_ID");
         taskText = args.getString("TASK_TEXT");
         if (args.containsKey("TASK_LAT") && args.containsKey("TASK_LNG")) {
@@ -161,6 +166,14 @@ public class TaskAddReminderFragment extends Fragment {
             }
         });
 
+        deleteButton = getActivity().findViewById(R.id.delete_reminder_button);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeReminder();
+            }
+        });
+
         dateText = (TextView) getActivity().findViewById(R.id.set_date);
         timeText = (TextView) getActivity().findViewById(R.id.set_time);
         repeatText = (TextView) getActivity().findViewById(R.id.set_repeat);
@@ -187,54 +200,60 @@ public class TaskAddReminderFragment extends Fragment {
             month = alarmData.getMonth();
             day = alarmData.getDay();
         } else {
-            // mActive = "true";
-
-            mRepeat = "false";
-            mRepeatNo = Integer.toString(1);
-            mRepeatType = "Day";
-
-            calendar = Calendar.getInstance();
-            hour = calendar.get(Calendar.HOUR_OF_DAY);
-            mMinute = calendar.get(Calendar.MINUTE);
-            year = calendar.get(Calendar.YEAR);
-            month = calendar.get(Calendar.MONTH);
-            day = calendar.get(Calendar.DATE);
+            initTexts();
         }
+        if(mRepeat.equals("true")) {
+            repeatSwitch.setChecked(true);
+        } onSwitchRepeat(repeatSwitch);
 
         date = day + "." + (month + 1) + "." + year;
-        time = hour + ":" + mMinute;
+        if (mMinute < 10) {
+            time = hour + ":" + "0" + mMinute;
+        } else {
+            time = hour + ":" + mMinute;
+        }
 
         dateText.setText(date);
         timeText.setText(time);
         repeatNoText.setText(mRepeatNo);
-        repeatText.setText("Off");
         repeatTypeText.setText(mRepeatType);
 
+    }
+
+    private void initTexts() {
+        mRepeat = "false";
+        mRepeatNo = Integer.toString(1);
+        mRepeatType = "Day";
+
+        calendar = Calendar.getInstance();
+        hour = calendar.get(Calendar.HOUR_OF_DAY);
+        mMinute = calendar.get(Calendar.MINUTE);
+        year = calendar.get(Calendar.YEAR);
+        month = calendar.get(Calendar.MONTH);
+        day = calendar.get(Calendar.DATE);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_bar_finished:
-                //taskText = taskEditText.getText().toString();
-                //TaskModel modifiedTask = new TaskModel(taskId, taskText, taskLocation);
-                //taskViewModel.changeTask(categoryId, modifiedTask);
-
-                // Daten holen, Alarm setzen
                 saveReminder();
                 TaskModel modifiedTask = new TaskModel(taskId, taskText, taskLocation, alarmData);
-                Log.d("BLABLABLABLABLABLABLA", "AlarmData gesetzt.");
                 taskViewModel.changeTask(categoryId, modifiedTask);
 
-                // Wenn Alarm gesetzt, Model anpassen -> Fragment beenden
-                //finish();
+                TaskOverviewFragment fragment = new TaskOverviewFragment();
+                Bundle bundle = new Bundle();
+                bundle.putInt("CATEGORY_ID", categoryId);
+                bundle.putString("CATEGORY_NAME", categoryName);
+                fragment.setArguments(bundle);
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        fragment).commit();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     public void setTime(View v){
-        Calendar now = Calendar.getInstance();
         TimePickerDialog mTimePicker;
         mTimePicker = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
             @Override
@@ -386,6 +405,33 @@ public class TaskAddReminderFragment extends Fragment {
 
         alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP,
                 selectedTimestamp, mRepeatTime, alarmIntent);
+
+    }
+
+    private void removeReminder() {
+
+        AlarmManager alarmMgr;
+        PendingIntent alarmIntent;
+
+        alarmMgr = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(getContext(), AlarmReceiver.class);
+        alarmIntent = PendingIntent.getBroadcast(getContext(), taskId, intent, 0);
+
+        alarmMgr.cancel(alarmIntent);
+
+        Toast.makeText(getActivity(), "Alarm was removed!",
+                Toast.LENGTH_SHORT).show();
+
+        TaskModel modifiedTask = new TaskModel(taskId, taskText, taskLocation, null);
+        taskViewModel.changeTask(categoryId, modifiedTask);
+
+        TaskOverviewFragment fragment = new TaskOverviewFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("CATEGORY_ID", categoryId);
+        bundle.putString("CATEGORY_NAME", categoryName);
+        fragment.setArguments(bundle);
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                fragment).commit();
 
     }
 

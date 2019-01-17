@@ -88,7 +88,6 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
             double lng = args.getDouble("TASK_LNG");
             taskLocation = new LatLng(lat,lng);
         }
-        Log.d("BLABLABLABLABLABLABLA", "AlarmData angekommen?");
         if (args.containsKey("ALARM_YEAR") && args.containsKey("ALARM_MONTH") &&
                 args.containsKey("ALARM_HOUR") && args.containsKey("ALARM_MINUTE") &&
                 args.containsKey("ALARM_DAY") && args.containsKey("ALARM_REPEAT") &&
@@ -96,7 +95,6 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
             this.alarmData = new TaskAlarm(args.getInt("ALARM_YEAR"), args.getInt("ALARM_MONTH"),
                     args.getInt("ALARM_HOUR"), args.getInt("ALARM_MINUTE"), args.getInt("ALARM_DAY"),
                     args.getBoolean("ALARM_REPEAT"), args.getInt("ALARM_REPEATNO"), args.getString("ALARM_REPEATTYPE"));
-            Log.d("BLABLABLABLABLABLABLA", "AlarmData angekommen!!");
         }
     }
 
@@ -120,7 +118,7 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
         switch (item.getItemId()) {
             case R.id.action_bar_finished:
                 taskText = taskEditText.getText().toString();
-                TaskModel modifiedTask = new TaskModel(taskId, taskText, taskLocation);
+                TaskModel modifiedTask = new TaskModel(taskId, taskText, taskLocation, alarmData);
                 taskViewModel.changeTask(categoryId, modifiedTask);
                 //getActivity().setResult(Activity.RESULT_OK);
                 //getActivity().finish();
@@ -153,9 +151,15 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
         initMap(savedInstanceState);
         reminderText = getView().findViewById(R.id.set_task_edit_reminder_text);
         String dateText = "No reminders set";
+        String time = "";
         if(alarmData != null) {
+            if (alarmData.getMinute() < 10) {
+                time = alarmData.getHour() + ":" + "0" + alarmData.getMinute();
+            } else {
+                time = alarmData.getHour() + ":" + alarmData.getMinute();
+            }
             dateText = alarmData.getDay() + "." + (alarmData.getMonth() + 1) + "." + alarmData.getYear() +
-                    " - " + alarmData.getHour() + ":" + alarmData.getMinute();
+                    " - " + time;
         }
         reminderText.setText(dateText);
 
@@ -165,6 +169,7 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), TaskEditActivity.class);
                 intent.putExtra("CATEGORY_ID", categoryId);
+                intent.putExtra("CATEGORY_NAME", categoryName);
                 intent.putExtra("TASK_ID", taskId);
                 intent.putExtra("TASK_TEXT", taskText);
                 if(taskLocation != null){

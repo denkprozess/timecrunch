@@ -15,12 +15,12 @@ public class AlarmService extends IntentService {
     private NotificationManager alarmNotificationManager;
 
     public AlarmService() {
-        super("AlarmService");
+        super("TimeCrunch");
     }
 
     @Override
     public void onHandleIntent(Intent intent) {
-        sendNotification("Wake Up! Wake Up!");
+        sendNotification("Hey, look into your TimeCrunch App!");
     }
 
     private void sendNotification(String msg) {

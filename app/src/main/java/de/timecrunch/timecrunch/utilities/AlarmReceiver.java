@@ -14,7 +14,6 @@ import de.timecrunch.timecrunch.view.MainActivity;
 public class AlarmReceiver extends WakefulBroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
-        // MainActivity.getTextView2().setText("Enough Rest. Do Work Now!");
         ComponentName comp = new ComponentName(context.getPackageName(),
                 AlarmService.class.getName());
         startWakefulService(context, (intent.setComponent(comp)));

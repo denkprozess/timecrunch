@@ -239,6 +239,22 @@
 
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/delete_reminder_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Delete Reminder"
+                android:backgroundTint="@color/materialcolorpicker__red"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:textColor="@color/materialcolorpicker__white" />
+
+        </RelativeLayout>
+
     </LinearLayout>
 
 </LinearLayout>

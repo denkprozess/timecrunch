@@ -346,9 +346,7 @@ public class TaskOverviewFragment extends Fragment {
                     intent.putExtra("TASK_LAT", task.getLocation().latitude);
                     intent.putExtra("TASK_LNG", task.getLocation().longitude);
                 }
-                Log.d("BLABLABLABLABLABLABLA", "AlarmData eintragen?");
                 if(task.getAlarm() != null) {
-                    Log.d("BLABLABLABLABLABLABLA", "AlarmData wird eingetragen!");
                     intent.putExtra("ALARM_YEAR", task.getAlarm().getYear());
                     intent.putExtra("ALARM_MONTH", task.getAlarm().getMonth());
                     intent.putExtra("ALARM_HOUR", task.getAlarm().getHour());
