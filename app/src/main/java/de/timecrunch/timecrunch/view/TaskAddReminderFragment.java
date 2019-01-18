@@ -1,6 +1,5 @@
 package de.timecrunch.timecrunch.view;
 
-import java.io.Console;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -15,14 +14,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -45,31 +41,24 @@ import de.timecrunch.timecrunch.model.Category;
 import de.timecrunch.timecrunch.model.TaskAlarm;
 import de.timecrunch.timecrunch.model.TaskModel;
 import de.timecrunch.timecrunch.utilities.AlarmReceiver;
-import de.timecrunch.timecrunch.utilities.AlarmScheduler;
 import de.timecrunch.timecrunch.viewModel.TaskViewModel;
 
 public class TaskAddReminderFragment extends Fragment {
 
+    private Switch repeatSwitch;
+    private Button deleteButton;
     private TextView dateText, timeText, repeatText, repeatNoText, repeatTypeText;
     private Calendar calendar;
-    private int year, month, hour, mMinute, day;
-    private long mRepeatTime;
-    private Switch repeatSwitch;
-    private String mTitle;
-    private String time;
-    private String date;
-    private String mRepeat;
-    private String mRepeatNo;
-    private String mRepeatType;
-    private TaskAlarm alarmData;
-    private Button deleteButton;
 
-    private String categoryName;
-    private int categoryId;
-    private int taskId;
-    private String taskText;
+    private int year, month, hour, mMinute, day;
+    private String time, date, mRepeat, mRepeatNo, mRepeatType;
+    private long repeatTime;
+
+    private int categoryId, taskId;
+    private String categoryName, taskText;
     private LatLng taskLocation;
     private TaskViewModel taskViewModel;
+    private TaskAlarm alarmData;
 
     private static final long milMinute = 60000L;
     private static final long milHour = 3600000L;
@@ -385,15 +374,15 @@ public class TaskAddReminderFragment extends Fragment {
 
         // Check repeat type
         if (mRepeatType.equals("Minute")) {
-            mRepeatTime = Integer.parseInt(mRepeatNo) * milMinute;
+            repeatTime = Integer.parseInt(mRepeatNo) * milMinute;
         } else if (mRepeatType.equals("Hour")) {
-            mRepeatTime = Integer.parseInt(mRepeatNo) * milHour;
+            repeatTime = Integer.parseInt(mRepeatNo) * milHour;
         } else if (mRepeatType.equals("Day")) {
-            mRepeatTime = Integer.parseInt(mRepeatNo) * milDay;
+            repeatTime = Integer.parseInt(mRepeatNo) * milDay;
         } else if (mRepeatType.equals("Week")) {
-            mRepeatTime = Integer.parseInt(mRepeatNo) * milWeek;
+            repeatTime = Integer.parseInt(mRepeatNo) * milWeek;
         } else if (mRepeatType.equals("Month")) {
-            mRepeatTime = Integer.parseInt(mRepeatNo) * milMonth;
+            repeatTime = Integer.parseInt(mRepeatNo) * milMonth;
         }
 
         AlarmManager alarmMgr;
@@ -404,7 +393,7 @@ public class TaskAddReminderFragment extends Fragment {
         alarmIntent = PendingIntent.getBroadcast(getContext(), taskId, intent, 0);
 
         alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP,
-                selectedTimestamp, mRepeatTime, alarmIntent);
+                selectedTimestamp, repeatTime, alarmIntent);
 
     }
 

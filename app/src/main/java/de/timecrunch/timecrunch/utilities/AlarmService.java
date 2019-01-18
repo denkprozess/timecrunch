@@ -5,21 +5,24 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.v4.app.JobIntentService;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.view.MainActivity;
 
-public class AlarmService extends IntentService {
+public class AlarmService extends JobIntentService {
     private NotificationManager alarmNotificationManager;
+    String NOTIFICATION_CHANNEL_ID = "my_channel_id_01";
 
     public AlarmService() {
-        super("TimeCrunch");
+        super();
     }
 
     @Override
-    public void onHandleIntent(Intent intent) {
+    protected void onHandleWork(@NonNull Intent intent) {
         sendNotification("Hey, look into your TimeCrunch App!");
     }
 
@@ -32,7 +35,7 @@ public class AlarmService extends IntentService {
                 new Intent(this, MainActivity.class), 0);
 
         NotificationCompat.Builder alarmNotificationBuilder = new NotificationCompat.Builder(
-                this).setContentTitle("Alarm").setSmallIcon(R.mipmap.ic_launcher)
+                this, NOTIFICATION_CHANNEL_ID).setContentTitle("Alarm").setSmallIcon(R.mipmap.ic_launcher)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(msg))
                 .setContentText(msg);
 

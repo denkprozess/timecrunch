@@ -120,8 +120,6 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
                 taskText = taskEditText.getText().toString();
                 TaskModel modifiedTask = new TaskModel(taskId, taskText, taskLocation, alarmData);
                 taskViewModel.changeTask(categoryId, modifiedTask);
-                //getActivity().setResult(Activity.RESULT_OK);
-                //getActivity().finish();
                 TaskOverviewFragment fragment = new TaskOverviewFragment();
                 Bundle bundle = new Bundle();
                 bundle.putInt("CATEGORY_ID", categoryId);
