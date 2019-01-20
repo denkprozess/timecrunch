@@ -7,11 +7,19 @@ public class TaskModel {
     private final int id;
     private String text;
     private LatLng location;
+    private TaskAlarm alarm;
 
     public TaskModel(int id, String text, LatLng location) {
         this.id = id;
         this.text = text;
         this.location = location;
+    }
+
+    public TaskModel(int id, String text, LatLng location, TaskAlarm alarm) {
+        this.id = id;
+        this.text = text;
+        this.location = location;
+        this.alarm = alarm;
     }
 
     // Legacy to keep compatibility
@@ -31,6 +39,8 @@ public class TaskModel {
     public LatLng getLocation() {
         return location;
     }
+
+    public TaskAlarm getAlarm() { return alarm; }
 
     @Override
     public boolean equals(Object other) {
