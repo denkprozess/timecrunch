@@ -25,6 +25,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -341,9 +342,19 @@ public class TaskOverviewFragment extends Fragment {
                 intent.putExtra("CATEGORY_NAME", categeoryName);
                 intent.putExtra("TASK_ID", task.getId());
                 intent.putExtra("TASK_TEXT", task.getText());
-                if(task.getLocation()!=null){
+                if(task.getLocation() != null){
                     intent.putExtra("TASK_LAT", task.getLocation().latitude);
                     intent.putExtra("TASK_LNG", task.getLocation().longitude);
+                }
+                if(task.getAlarm() != null) {
+                    intent.putExtra("ALARM_YEAR", task.getAlarm().getYear());
+                    intent.putExtra("ALARM_MONTH", task.getAlarm().getMonth());
+                    intent.putExtra("ALARM_HOUR", task.getAlarm().getHour());
+                    intent.putExtra("ALARM_MINUTE", task.getAlarm().getMinute());
+                    intent.putExtra("ALARM_DAY", task.getAlarm().getDay());
+                    intent.putExtra("ALARM_REPEAT", task.getAlarm().isRepeat());
+                    intent.putExtra("ALARM_REPEATNO", task.getAlarm().getRepeatNo());
+                    intent.putExtra("ALARM_REPEATTYPE", task.getAlarm().getRepeatType());
                 }
                 TaskEditFragment fragment = new TaskEditFragment();
                 fragment.setArguments(intent.getExtras());

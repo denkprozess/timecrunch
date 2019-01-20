@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.timecrunch.timecrunch.model.Category;
+import de.timecrunch.timecrunch.model.TaskAlarm;
 import de.timecrunch.timecrunch.model.TaskModel;
 import de.timecrunch.timecrunch.utilities.DBHandler;
 
@@ -96,11 +98,12 @@ public class TaskViewModel extends AndroidViewModel {
     public void addTask(int categoryId, TaskModel userTask) {
         String text = userTask.getText();
         LatLng location = userTask.getLocation();
+        TaskAlarm alarm = userTask.getAlarm();
         int id = dbHandler.createTask(text, categoryId);
         if (id != -1) {
             Map<Category, List<TaskModel>> taskMap = tasksLiveData.getValue();
             List<TaskModel> taskList = getTaskListOfCategoryId(taskMap, categoryId);
-            TaskModel task = new TaskModel(id, text, location);
+            TaskModel task = new TaskModel(id, text, location, alarm);
             taskList.add(task);
             tasksLiveData.postValue(taskMap);
         }

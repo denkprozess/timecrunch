@@ -3,6 +3,7 @@ package de.timecrunch.timecrunch.view;
 import android.Manifest;
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -19,6 +20,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -37,6 +40,7 @@ import java.util.Map;
 
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.Category;
+import de.timecrunch.timecrunch.model.TaskAlarm;
 import de.timecrunch.timecrunch.model.TaskModel;
 import de.timecrunch.timecrunch.viewModel.TaskViewModel;
 
@@ -46,13 +50,15 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
     private final int DEFAULT_ZOOM = 16;
     private boolean coarseLocationGranted;
     private boolean fineLocationGranted;
-    private Location lastKnownLocation;
     private LatLng defaultLocation = new LatLng(-34, 151);
     private int categoryId;
     private String categoryName;
     private int taskId;
     private String taskText;
     private LatLng taskLocation;
+    private RelativeLayout addReminderLayout;
+    private TextView reminderText;
+    private TaskAlarm alarmData;
 
     private TaskViewModel taskViewModel;
 
@@ -82,7 +88,14 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
             double lng = args.getDouble("TASK_LNG");
             taskLocation = new LatLng(lat,lng);
         }
-
+        if (args.containsKey("ALARM_YEAR") && args.containsKey("ALARM_MONTH") &&
+                args.containsKey("ALARM_HOUR") && args.containsKey("ALARM_MINUTE") &&
+                args.containsKey("ALARM_DAY") && args.containsKey("ALARM_REPEAT") &&
+                args.containsKey("ALARM_REPEATNO") && args.containsKey("ALARM_REPEATTYPE")) {
+            this.alarmData = new TaskAlarm(args.getInt("ALARM_YEAR"), args.getInt("ALARM_MONTH"),
+                    args.getInt("ALARM_HOUR"), args.getInt("ALARM_MINUTE"), args.getInt("ALARM_DAY"),
+                    args.getBoolean("ALARM_REPEAT"), args.getInt("ALARM_REPEATNO"), args.getString("ALARM_REPEATTYPE"));
+        }
     }
 
     @Override
@@ -105,10 +118,8 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
         switch (item.getItemId()) {
             case R.id.action_bar_finished:
                 taskText = taskEditText.getText().toString();
-                TaskModel modifiedTask = new TaskModel(taskId, taskText, taskLocation);
+                TaskModel modifiedTask = new TaskModel(taskId, taskText, taskLocation, alarmData);
                 taskViewModel.changeTask(categoryId, modifiedTask);
-                //getActivity().setResult(Activity.RESULT_OK);
-                //getActivity().finish();
                 TaskOverviewFragment fragment = new TaskOverviewFragment();
                 Bundle bundle = new Bundle();
                 bundle.putInt("CATEGORY_ID", categoryId);
@@ -136,6 +147,49 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
         taskEditText = parentActivity.findViewById(R.id.edittext_task);
         taskEditText.setText(taskText);
         initMap(savedInstanceState);
+        reminderText = getView().findViewById(R.id.set_task_edit_reminder_text);
+        String dateText = "No reminders set";
+        String time = "";
+        if(alarmData != null) {
+            if (alarmData.getMinute() < 10) {
+                time = alarmData.getHour() + ":" + "0" + alarmData.getMinute();
+            } else {
+                time = alarmData.getHour() + ":" + alarmData.getMinute();
+            }
+            dateText = alarmData.getDay() + "." + (alarmData.getMonth() + 1) + "." + alarmData.getYear() +
+                    " - " + time;
+        }
+        reminderText.setText(dateText);
+
+        addReminderLayout = getView().findViewById(R.id.task_edit_reminder_layout);
+        addReminderLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), TaskEditActivity.class);
+                intent.putExtra("CATEGORY_ID", categoryId);
+                intent.putExtra("CATEGORY_NAME", categoryName);
+                intent.putExtra("TASK_ID", taskId);
+                intent.putExtra("TASK_TEXT", taskText);
+                if(taskLocation != null){
+                    intent.putExtra("TASK_LAT", taskLocation.latitude);
+                    intent.putExtra("TASK_LNG", taskLocation.longitude);
+                }
+                if(alarmData != null) {
+                    intent.putExtra("ALARM_YEAR", alarmData.getYear());
+                    intent.putExtra("ALARM_MONTH", alarmData.getMonth());
+                    intent.putExtra("ALARM_HOUR", alarmData.getHour());
+                    intent.putExtra("ALARM_MINUTE", alarmData.getMinute());
+                    intent.putExtra("ALARM_DAY", alarmData.getDay());
+                    intent.putExtra("ALARM_REPEAT", alarmData.isRepeat());
+                    intent.putExtra("ALARM_REPEATNO", alarmData.getRepeatNo());
+                    intent.putExtra("ALARM_REPEATTYPE", alarmData.getRepeatType());
+                }
+                TaskAddReminderFragment fragment = new TaskAddReminderFragment();
+                fragment.setArguments(intent.getExtras());
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        fragment).commit();
+            }
+        });
     }
 
     public void initMap(Bundle savedInstanceState) {
@@ -261,11 +315,13 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
                             if (task.isSuccessful()) {
                                 // Set the map's camera position to the current location of the device.
                                 Location lastKnownLocation = (Location) task.getResult();
-                                LatLng lastKnownLatLng = new LatLng(lastKnownLocation.getLatitude(),
-                                        lastKnownLocation.getLongitude());
-                                map.moveCamera(CameraUpdateFactory.newLatLngZoom(lastKnownLatLng
-                                        , DEFAULT_ZOOM));
-                                putMarkerOnMap(lastKnownLatLng);
+                                if(lastKnownLocation != null) {
+                                    LatLng lastKnownLatLng = new LatLng(lastKnownLocation.getLatitude(),
+                                            lastKnownLocation.getLongitude());
+                                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(lastKnownLatLng
+                                            , DEFAULT_ZOOM));
+                                    putMarkerOnMap(lastKnownLatLng);
+                                }
                             } else {
                                 map.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, DEFAULT_ZOOM));
                                 map.getUiSettings().setMyLocationButtonEnabled(false);
