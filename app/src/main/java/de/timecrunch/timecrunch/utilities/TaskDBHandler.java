@@ -26,15 +26,15 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import de.timecrunch.timecrunch.model.Category;
+import de.timecrunch.timecrunch.model.TaskModel;
 
 import static android.support.constraint.Constraints.TAG;
 
-public class CategoryDBHandler extends FireBaseDBHandler{
+public class TaskDBHandler extends FireBaseDBHandler {
 
-
-    public void getCategories(final MutableLiveData<Map<Category, List<Category>>> categoryLiveData, final ProgressBar progressBar){
+    public void getTasks(final MutableLiveData<Map<String, List<TaskModel>>> taskLiveData, final ProgressBar progressBar){
         showProgressBar(progressBar);
-        Query query = db.collection(userId).document("data").collection("categories");
+        final Query query = db.collection(userId).document("data").collection("tasks");
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -42,27 +42,42 @@ public class CategoryDBHandler extends FireBaseDBHandler{
                     Log.w(TAG, "Listen failed.", e);
                     return;
                 }
-                Map<Category, List<Category>> categoryListMap = new HashMap<>();
+                Map<String, List<TaskModel>> categoryListMap = new HashMap<>();
                 for(QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots){
-                    Category category = documentSnapshot.toObject(Category.class);
-                    categoryListMap.put(category, new ArrayList<Category>());
+
+                    String categoryID = documentSnapshot.getId();
+                    ArrayList<TaskModel> taskList = new ArrayList<>();
+                    Query innerQuery = ((CollectionReference) query).document(categoryID).collection("taskList");
+                    innerQuery.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                            if(e != null){
+                                Log.w(TAG, "Listen failed.", e);
+                                return;
+
+                            }
+                        }
+                    })
+                    for(QueryDocumentSnapshot innerDocument: documentSnapshot.)
+                    categoryListMap.put(categoryID,taskList);
                 }
 
-                categoryLiveData.postValue(categoryListMap);
+                taskLiveData.postValue(categoryListMap);
                 hideProgressBar(progressBar);
 
             }
         });
     }
 
-    public void addCategory(final Category category, final MutableLiveData<Map<Category, List<Category>>> categoryLiveData, final ProgressBar progressBar) {
+    public void addTask(String categoryId, TaskModel userTask, final ProgressBar progressBar) {
         showProgressBar(progressBar);
-        final CollectionReference categoriesCollection = db.collection(userId).document("data").collection("categories");
-        categoriesCollection.add(category).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+        final CollectionReference tasksCollection = db.collection(userId).document("data")
+                .collection("tasks").document(categoryId).collection("taskList");
+        tasksCollection.add(userTask).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 String id = documentReference.getId();
-                categoriesCollection.document(id).update("id", id);
+                db.document(id).update("id", id);
                 hideProgressBar(progressBar);
             }
         })

@@ -47,7 +47,7 @@ public class TaskOverviewFragment extends Fragment {
 
     private final int REQUEST_EDIT_TASK=1;
 
-    private int categoryId;
+    private String categoryId;
     private String categeoryName;
 
     ActionBar actionBar;
@@ -59,7 +59,7 @@ public class TaskOverviewFragment extends Fragment {
     @Override
     public void setArguments(@Nullable Bundle args) {
         super.setArguments(args);
-        categoryId = args.getInt("CATEGORY_ID");
+        categoryId = args.getString("CATEGORY_ID");
         categeoryName = args.getString("CATEGORY_NAME");
 
     }
@@ -225,7 +225,7 @@ public class TaskOverviewFragment extends Fragment {
         @Override
         protected Void doInBackground(String... strings) {
             for (String text : strings) {
-                taskViewModel.addTask(categoryId, new TaskModel(1, text));
+                taskViewModel.addTask(categoryId, new TaskModel("1", text));
             }
             return null;
         }

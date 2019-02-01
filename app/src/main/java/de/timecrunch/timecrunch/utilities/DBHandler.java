@@ -112,7 +112,7 @@ public class DBHandler extends SQLiteOpenHelper {
         if(c.moveToFirst()) {
             do {
                 Category category = new Category(
-                        c.getInt(c.getColumnIndex(CategoryEntry.COLUMN_NAME_CATEGORY_ID)),
+                        c.getString(c.getColumnIndex(CategoryEntry.COLUMN_NAME_CATEGORY_ID)),
                         c.getString(c.getColumnIndex(CategoryEntry.COLUMN_NAME_TITLE)),
                         c.getInt(c.getColumnIndex(CategoryEntry.COLUMN_NAME_COLOR)),
                         false);
@@ -142,7 +142,7 @@ public class DBHandler extends SQLiteOpenHelper {
         }
     }
 
-    private List<Category> getSubcategories(int categoryId) {
+    private List<Category> getSubcategories(String categoryId) {
 
         // select * from
         // categories where category_id in (select child_id from subcategories where parent_id = 1)
@@ -164,7 +164,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 String subcategoryTitle = c.getString((c.getColumnIndex(CategoryEntry.COLUMN_NAME_TITLE)));
                 int subcategoryColor = c.getInt(c.getColumnIndex(CategoryEntry.COLUMN_NAME_COLOR));
                 //TODO get hasTimeBlock
-                categoryList.add(new Category(subcategoryId, subcategoryTitle, subcategoryColor,false));
+                //categoryList.add(new Category(subcategoryId, subcategoryTitle, subcategoryColor,false));
             } while (c.moveToNext());
         }
         return categoryList;
@@ -174,7 +174,7 @@ public class DBHandler extends SQLiteOpenHelper {
      * Tasks
      *****************************/
 
-    public int createTask(String title, int categoryId) {
+    public int createTask(String title, String categoryId) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -185,13 +185,13 @@ public class DBHandler extends SQLiteOpenHelper {
         return (int) rowIndex;
     }
 
-    public boolean removeTask(int entryId) {
+    public boolean removeTask(String entryId) {
         SQLiteDatabase db = this.getWritableDatabase();
         int result = db.delete(TaskEntry.TABLE_NAME,TaskEntry.COLUMN_NAME_TASK_ID + "=?", new String[]{String.valueOf(entryId)});
         return result==1;
     }
 
-    public List<TaskModel> getTasks(int categoryId) {
+    public List<TaskModel> getTasks(String categoryId) {
 
         // select title from tasks
         // where category = categoryId;
@@ -208,7 +208,7 @@ public class DBHandler extends SQLiteOpenHelper {
             do {
                 int taskId = c.getInt((c.getColumnIndex(TaskEntry.COLUMN_NAME_TASK_ID)));
                 String taskText = c.getString((c.getColumnIndex(TaskEntry.COLUMN_NAME_TITLE)));
-                taskList.add(new TaskModel(taskId, taskText));
+                //taskList.add(new TaskModel(taskId, taskText));
             } while (c.moveToNext());
         }
         return taskList;

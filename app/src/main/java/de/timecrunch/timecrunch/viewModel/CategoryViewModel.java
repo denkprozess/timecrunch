@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -12,26 +13,23 @@ import java.util.List;
 import java.util.Map;
 
 import de.timecrunch.timecrunch.model.Category;
-import de.timecrunch.timecrunch.utilities.DBHandler;
 import de.timecrunch.timecrunch.utilities.CategoryDBHandler;
 
-public class CategoryViewModel extends AndroidViewModel implements CategoryViewModelDatabaseCallback{
+public class CategoryViewModel extends AndroidViewModel implements CategoryViewModelDatabaseCallback {
     private MutableLiveData<Map<Category, List<Category>>> categoriesLiveData;
-    private DBHandler dbHandler;
-    private CategoryDBHandler firebaseDBHandler;
+    private CategoryDBHandler categoryDBHandler;
 
     public CategoryViewModel(@NonNull Application application) {
         super(application);
-        dbHandler = new DBHandler(application.getApplicationContext());
-        firebaseDBHandler = new CategoryDBHandler();
+        categoryDBHandler = new CategoryDBHandler();
         categoriesLiveData = new MutableLiveData<>();
         Map<Category, List<Category>> categoryMap = new LinkedHashMap<>();
         categoriesLiveData.setValue(categoryMap);
     }
 
-    public List<Category> getCategoryList() {
+    public List<Category> getCategoryList(ProgressBar progressBar) {
         if (categoriesLiveData.getValue().isEmpty()) {
-            initializeCategories();
+            initializeCategories(progressBar);
         }
         return new ArrayList<Category>(categoriesLiveData.getValue().keySet());
     }
@@ -40,33 +38,26 @@ public class CategoryViewModel extends AndroidViewModel implements CategoryViewM
         return categoriesLiveData;
     }
 
-    public Map<Category, List<Category>> getSubCategoryMap() {
+    public Map<Category, List<Category>> getSubCategoryMap(ProgressBar progressBar) {
         if (categoriesLiveData.getValue().isEmpty()) {
-            initializeCategories();
+            initializeCategories(progressBar);
         }
         return categoriesLiveData.getValue();
     }
 
-    private void initializeCategories() {
-        Map<Category, List<Category>> categoryMap = dbHandler.getCategories();
-        categoriesLiveData.postValue(categoryMap);
+    private void initializeCategories(ProgressBar progressBar) {
+        // DB-Calls are asynchronous by default, so no need for AsyncTask
+        categoryDBHandler.getCategories(categoriesLiveData, progressBar);
     }
 
-    public void addCategory(Category userCategory) {
+    public void addCategory(Category userCategory, ProgressBar progressBar) {
         List<Category> categoryList = new ArrayList<>();
         Map<Category, List<Category>> categoryMap = categoriesLiveData.getValue();
         String name = userCategory.getName();
         int color = userCategory.getColor();
         boolean hasTimeBlock = userCategory.hasTimeBlock();
-        firebaseDBHandler.testWriteCategory(userCategory);
-        int id = dbHandler.createCategory(name, color, hasTimeBlock);
-        if(id!=-1){
-            Category newCategory = new Category(id,name,color,hasTimeBlock);
-            categoryMap.put(newCategory, categoryList);
-            categoriesLiveData.postValue(categoryMap);
-        }
-
-
+        // DB-Calls are asynchronous by default, so no need for AsyncTask
+        categoryDBHandler.addCategory(userCategory, categoriesLiveData, progressBar);
     }
 
     public void addSubCategory() {

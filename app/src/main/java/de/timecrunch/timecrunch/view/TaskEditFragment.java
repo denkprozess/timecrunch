@@ -51,9 +51,9 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
     private boolean coarseLocationGranted;
     private boolean fineLocationGranted;
     private LatLng defaultLocation = new LatLng(-34, 151);
-    private int categoryId;
+    private String categoryId;
     private String categoryName;
-    private int taskId;
+    private String taskId;
     private String taskText;
     private LatLng taskLocation;
     private RelativeLayout addReminderLayout;
@@ -79,9 +79,9 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void setArguments(@Nullable Bundle args) {
         super.setArguments(args);
-        categoryId = args.getInt("CATEGORY_ID");
+        categoryId = args.getString("CATEGORY_ID");
         categoryName = args.getString("CATEGORY_NAME");
-        taskId = args.getInt("TASK_ID");
+        taskId = args.getString("TASK_ID");
         taskText = args.getString("TASK_TEXT");
         if (args.containsKey("TASK_LAT") && args.containsKey("TASK_LNG")) {
             double lat = args.getDouble("TASK_LAT");
@@ -122,7 +122,7 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
                 taskViewModel.changeTask(categoryId, modifiedTask);
                 TaskOverviewFragment fragment = new TaskOverviewFragment();
                 Bundle bundle = new Bundle();
-                bundle.putInt("CATEGORY_ID", categoryId);
+                bundle.putString("CATEGORY_ID", categoryId);
                 bundle.putString("CATEGORY_NAME", categoryName);
                 fragment.setArguments(bundle);
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,

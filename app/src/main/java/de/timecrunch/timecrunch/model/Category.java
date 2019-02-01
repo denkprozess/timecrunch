@@ -3,10 +3,13 @@ package de.timecrunch.timecrunch.model;
 public class Category {
 
     private String name;
-    private final String id;
+    private String id;
     private int color;
     private boolean hasTimeBlock;
 
+
+    public Category(){
+    }
 
     public Category(String id, String name, int color, boolean hasTimeBlock) {
         this.id = id;
@@ -40,7 +43,7 @@ public class Category {
         if (!(other instanceof Category)) {
             return false;
         }
-        if (((Category) other).getId() == (this.getId())) {
+        if (((Category) other).getId().equals(this.getId())) {
             return true;
         } else {
             return false;

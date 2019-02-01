@@ -4,18 +4,18 @@ import com.google.android.gms.maps.model.LatLng;
 
 public class TaskModel {
 
-    private final int id;
+    private final String id;
     private String text;
     private LatLng location;
     private TaskAlarm alarm;
 
-    public TaskModel(int id, String text, LatLng location) {
+    public TaskModel(String id, String text, LatLng location) {
         this.id = id;
         this.text = text;
         this.location = location;
     }
 
-    public TaskModel(int id, String text, LatLng location, TaskAlarm alarm) {
+    public TaskModel(String id, String text, LatLng location, TaskAlarm alarm) {
         this.id = id;
         this.text = text;
         this.location = location;
@@ -23,12 +23,12 @@ public class TaskModel {
     }
 
     // Legacy to keep compatibility
-    public TaskModel(int id, String text) {
+    public TaskModel(String id, String text) {
         this.id = id;
         this.text = text;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -50,7 +50,7 @@ public class TaskModel {
         if (!(other instanceof TaskModel)) {
             return false;
         }
-        if (((TaskModel) other).getId() == (this.getId())) {
+        if (((TaskModel) other).getId().equals(this.getId())) {
             return true;
         } else {
             return false;
@@ -59,6 +59,6 @@ public class TaskModel {
 
     @Override
     public int hashCode() {
-        return id;
+        return id.hashCode();
     }
 }

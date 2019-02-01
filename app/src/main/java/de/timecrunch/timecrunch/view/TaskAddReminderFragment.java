@@ -54,7 +54,7 @@ public class TaskAddReminderFragment extends Fragment {
     private String time, date, mRepeat, mRepeatNo, mRepeatType;
     private long repeatTime;
 
-    private int categoryId, taskId;
+    private String categoryId, taskId;
     private String categoryName, taskText;
     private LatLng taskLocation;
     private TaskViewModel taskViewModel;
@@ -79,9 +79,9 @@ public class TaskAddReminderFragment extends Fragment {
     @Override
     public void setArguments(@Nullable Bundle args) {
         super.setArguments(args);
-        categoryId = args.getInt("CATEGORY_ID");
+        categoryId = args.getString("CATEGORY_ID");
         categoryName = args.getString("CATEGORY_NAME");
-        taskId = args.getInt("TASK_ID");
+        taskId = args.getString("TASK_ID");
         taskText = args.getString("TASK_TEXT");
         if (args.containsKey("TASK_LAT") && args.containsKey("TASK_LNG")) {
             double lat = args.getDouble("TASK_LAT");
@@ -232,7 +232,7 @@ public class TaskAddReminderFragment extends Fragment {
 
                 TaskOverviewFragment fragment = new TaskOverviewFragment();
                 Bundle bundle = new Bundle();
-                bundle.putInt("CATEGORY_ID", categoryId);
+                bundle.putString("CATEGORY_ID", categoryId);
                 bundle.putString("CATEGORY_NAME", categoryName);
                 fragment.setArguments(bundle);
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
@@ -390,7 +390,7 @@ public class TaskAddReminderFragment extends Fragment {
 
         alarmMgr = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getContext(), AlarmReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(getContext(), taskId, intent, 0);
+        alarmIntent = PendingIntent.getBroadcast(getContext(), taskId.hashCode(), intent, 0);
 
         alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP,
                 selectedTimestamp, repeatTime, alarmIntent);
@@ -404,7 +404,7 @@ public class TaskAddReminderFragment extends Fragment {
 
         alarmMgr = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getContext(), AlarmReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(getContext(), taskId, intent, 0);
+        alarmIntent = PendingIntent.getBroadcast(getContext(), taskId.hashCode(), intent, 0);
 
         alarmMgr.cancel(alarmIntent);
 
@@ -416,7 +416,7 @@ public class TaskAddReminderFragment extends Fragment {
 
         TaskOverviewFragment fragment = new TaskOverviewFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt("CATEGORY_ID", categoryId);
+        bundle.putString("CATEGORY_ID", categoryId);
         bundle.putString("CATEGORY_NAME", categoryName);
         fragment.setArguments(bundle);
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
