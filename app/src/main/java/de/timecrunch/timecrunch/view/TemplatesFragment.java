@@ -33,7 +33,7 @@ public class TemplatesFragment extends Fragment {
 
     private void initBlocks(LinearLayout fl) {
 
-        final TemplateBlock templateBlock = new TemplateBlock(this.getContext(), "#FF58D903");
+        final TemplateBlock templateBlock = new TemplateBlock(this.getContext(), "#01a5af");
         templateBlock.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
 
@@ -57,7 +57,7 @@ public class TemplatesFragment extends Fragment {
 
         fl.addView(templateBlock);
 
-        final TemplateBlock templateBlock2 = new TemplateBlock(this.getContext(), "#FFf44277");
+        final TemplateBlock templateBlock2 = new TemplateBlock(this.getContext(), "#c4023f");
         templateBlock2.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
         templateBlock2.setOnLongClickListener(new View.OnLongClickListener() {
@@ -81,7 +81,7 @@ public class TemplatesFragment extends Fragment {
 
         fl.addView(templateBlock2);
 
-        final TemplateBlock templateBlock3 = new TemplateBlock(this.getContext(), "#FFf48442");
+        final TemplateBlock templateBlock3 = new TemplateBlock(this.getContext(), "#ec8c00");
         templateBlock3.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
         templateBlock3.setOnLongClickListener(new View.OnLongClickListener() {

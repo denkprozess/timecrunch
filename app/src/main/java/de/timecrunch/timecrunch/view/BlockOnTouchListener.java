@@ -1,5 +1,6 @@
 package de.timecrunch.timecrunch.view;
 
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,7 @@ public class BlockOnTouchListener implements View.OnTouchListener {
                 double dy = Math.pow(y - b.getCircleY(), 2);
 
                 // Scale
-                if(dx + dy < Math.pow(b.getCircleRadius(), 2)) {
+                if(dx + dy < Math.pow(b.getCircleRadius() * 4, 2)) {
                     scale = true;
                 }
 
@@ -53,9 +54,10 @@ public class BlockOnTouchListener implements View.OnTouchListener {
                 }
 
                 int DISTANCE = dpToPx(b, 18);
+                int LOWER_BOUND = (DISTANCE * 24 * 4) + DISTANCE;
 
                 if (scale) {
-                    if(y > oldCircleY + DISTANCE) {
+                    if((y > oldCircleY + DISTANCE) && (b.getY() + b.getHeight()) < LOWER_BOUND) {
                         ViewGroup.LayoutParams params = b.getLayoutParams();
                         params.height = params.height + DISTANCE;
                         b.setLayoutParams(params);
@@ -63,7 +65,7 @@ public class BlockOnTouchListener implements View.OnTouchListener {
                         b.setCircleY(b.getCircleY() + DISTANCE);
                         oldCircleY = y;
                         b.invalidate();
-                    } else if (y < oldCircleY - DISTANCE) {
+                    } else if ((y < oldCircleY - DISTANCE) && (oldCircleY - DISTANCE > DISTANCE)) {
                         ViewGroup.LayoutParams params = b.getLayoutParams();
                         params.height = params.height - DISTANCE;
                         b.setLayoutParams(params);
@@ -73,14 +75,12 @@ public class BlockOnTouchListener implements View.OnTouchListener {
                         b.invalidate();
                     }
                 } else if (move) {
-                    if (y > (oldY + DISTANCE)) {
+                    if ((y > (oldY + DISTANCE)) && ((b.getY() + b.getHeight()) < LOWER_BOUND)) {
                         b.setY(b.getY() + DISTANCE);
-                    } else if (y < (oldY - DISTANCE)) {
+                    } else if ((y < (oldY - DISTANCE)) && ((b.getY() - DISTANCE) > DISTANCE)) {
                         b.setY(b.getY() - DISTANCE);
                     }
                 }
-
-
 
                 return true;
             }

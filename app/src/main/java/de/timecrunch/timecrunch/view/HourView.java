@@ -3,7 +3,9 @@ package de.timecrunch.timecrunch.view;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.util.AttributeSet;
 
 public class HourView extends android.support.v7.widget.AppCompatTextView {
@@ -31,7 +33,8 @@ public class HourView extends android.support.v7.widget.AppCompatTextView {
 
     private void drawFullHourLine(Canvas canvas) {
         Paint paint = getPaint();
-        paint.setColor(Color.DKGRAY);
+        paint.setColor(Color.parseColor("#F0F0F0"));
+        paint.setStyle(Paint.Style.STROKE);
 
         int left = getPaddingLeft();
         int top = (getHeight() + getPaddingTop() - getPaddingBottom()) / 2;

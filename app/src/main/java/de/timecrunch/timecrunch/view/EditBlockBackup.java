@@ -5,28 +5,29 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
 
-public class EditBlock extends View {
+public class EditBlockBackup extends View {
 
     // 18 - 1 = 0.25h
     // 36 - 1 = 0.50h
     // 54 - 1 = 0.75h
     // 72 - 1 = 1.00h
-    private final int ENTRY_PADDING = dpToPx(15);
+    private final int ENTRY_PADDING = dpToPx(16);
     private final int TITLE_HEIGHT = dpToPx(20);
-    private final int ENTRY_FIRSTLINE_SPACING = TITLE_HEIGHT;
+    private final int ENTRY_FIRSTLINE_SPACING = 2 * TITLE_HEIGHT;
 
     private Rect block;
-    private RectF roundedBlock;
+    private Rect titleRect;
     private Paint blockFillColor;
-    private Paint scaleHandleColor;
-    private Paint blockHighlightColor;
+    private Paint blockStrokeColor;
+    private Paint titleFillColor;
+    private Paint titleHighlightColor;
+    private Paint titleTextColor;
     private Paint tasksTextColor;
-    private Paint ruledTasksTextColor;
 
     private String colorString;
     private int textHeight;
@@ -38,30 +39,25 @@ public class EditBlock extends View {
 
     private float circleRadius = dpToPx(6);
 
-    private String[] tasks = {"Duschen", "Zähne putzen", "Bett machen", "Frühstücken", "Aufräumen",
-            "Uni vorbereiten", "Stoßlüften", "Noch mehr", "Duschen", "Zähne putzen", "Bett machen",
-            "Frühstücken", "Aufräumen", "Uni vorbereiten", "Stoßlüften", "Noch mehr", "Duschen",
-            "Zähne putzen", "Bett machen", "Frühstücken", "Aufräumen", "Uni vorbereiten",
-            "Stoßlüften", "Noch mehr", "Duschen", "Zähne putzen", "Bett machen", "Frühstücken",
-            "Aufräumen", "Uni vorbereiten", "Stoßlüften", "Noch mehr"};
+    private String[] tasks = {"Duschen", "Zähne putzen", "Bett machen", "Frühstücken", "Aufräumen", "Uni vorbereiten", "Stoßlüften", "Noch mehr"};
 
-    public EditBlock(Context context, String colorString, int hour, int quarter) {
+    public EditBlockBackup(Context context, String colorString, int hour, int quarter) {
         super(context);
         this.colorString = colorString;
         init(null);
     }
 
-    public EditBlock(Context context, AttributeSet attrs) {
+    public EditBlockBackup(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(attrs);
     }
 
-    public EditBlock(Context context, AttributeSet attrs, int defStyleAttr) {
+    public EditBlockBackup(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(attrs);
     }
 
-    public EditBlock(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public EditBlockBackup(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(attrs);
     }
@@ -73,53 +69,57 @@ public class EditBlock extends View {
     private void createBlock(String title) {
 
         block = new Rect();
-        roundedBlock = new RectF();
+        titleRect = new Rect();
 
         blockFillColor = new Paint(Paint.ANTI_ALIAS_FLAG);
         blockFillColor.setStyle(Paint.Style.FILL);
-        blockFillColor.setColor(manipulateColor(Color.parseColor(colorString), 1.2f));
+        blockFillColor.setColor(manipulateColor(Color.parseColor(colorString), 1.4f));
 
-        blockHighlightColor = new Paint(Paint.ANTI_ALIAS_FLAG);
-        blockHighlightColor.setStyle(Paint.Style.STROKE);
-        blockHighlightColor.setColor(manipulateColor(Color.parseColor(colorString), 0.8f));
-        blockHighlightColor.setStrokeWidth(10);
+        blockStrokeColor = new Paint(Paint.ANTI_ALIAS_FLAG);
+        blockStrokeColor.setStyle(Paint.Style.STROKE);
+        blockStrokeColor.setColor(manipulateColor(Color.parseColor(colorString), 0.8f));
+        blockStrokeColor.setStrokeWidth(2);
 
-        scaleHandleColor = new Paint(Paint.ANTI_ALIAS_FLAG);
-        scaleHandleColor.setStyle(Paint.Style.FILL);
-        scaleHandleColor.setColor(manipulateColor(Color.parseColor(colorString), 0.8f));
+        titleFillColor = new Paint(Paint.ANTI_ALIAS_FLAG);
+        titleFillColor.setStyle(Paint.Style.FILL);
+        titleFillColor.setColor(manipulateColor(Color.parseColor(colorString), 0.8f));
+
+        titleHighlightColor = new Paint(Paint.ANTI_ALIAS_FLAG);
+        titleHighlightColor.setStyle(Paint.Style.FILL);
+        titleHighlightColor.setColor(manipulateColor(Color.parseColor(colorString), 0.6f));
+
+        titleTextColor = new Paint(Paint.ANTI_ALIAS_FLAG);
+        titleTextColor.setColor(Color.WHITE);
+        titleTextColor.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
+        titleTextColor.setTextSize(35);
 
         tasksTextColor = new Paint(Paint.ANTI_ALIAS_FLAG);
-        tasksTextColor.setColor(Color.WHITE);
+        tasksTextColor.setColor(Color.BLACK);
         tasksTextColor.setTextSize(35);
-        tasksTextColor.setFakeBoldText(true);
-
-        ruledTasksTextColor = new Paint(Paint.ANTI_ALIAS_FLAG);
-        ruledTasksTextColor.setColor(Color.parseColor("#F0F0F0"));
-        ruledTasksTextColor.setTextSize(35);
-        ruledTasksTextColor.setStrikeThruText(true);
     }
 
-    private void setRoundedBlockBounds(RectF r, int left, int top) {
+    private void setTitleRectBounds(Rect r) {
+        r.left = 0;
+        r.top = 0;
+        r.right = getWidth();
+        r.bottom = TITLE_HEIGHT;
+    }
+
+    private void setBlockBounds(Rect r, int left, int top) {
         r.left = left;
         r.top = top;
         r.right = r.left + getWidth();
         r.bottom = r.top + getHeight() - dpToPx(6);
     }
 
-    private void setRoundedBlockHighlightBounds(RectF r, int left, int top) {
-        r.left = left + 4f;
-        r.top = top + 4f;
-        r.right = (r.left + getWidth()) - 8f;
-        r.bottom = (r.top + getHeight() - dpToPx(6)) - 8f;
-    }
-
     private void initPosition() {
-        setRoundedBlockBounds(roundedBlock, 0, 0);
+        setBlockBounds(block, 0, 0);
+        setTitleRectBounds(titleRect);
     }
 
     private int calculateTaskEntryCount() {
 
-        int height = getHeight() - dpToPx(6);
+        int height = getHeight() - TITLE_HEIGHT - dpToPx(6);
 
         String text = "TEXT";
 
@@ -139,21 +139,18 @@ public class EditBlock extends View {
 
         initPosition();
 
-        int cornerRadius = 25;
+        // canvas.drawColor(Color.MAGENTA);
+        canvas.drawRect(block, blockFillColor);
+        canvas.drawRect(block, blockStrokeColor);
 
-        canvas.drawRoundRect(
-                roundedBlock,
-                cornerRadius,
-                cornerRadius,
-                blockFillColor
-        );
-
-        if(editMode) {
+        if(!editMode) {
+            canvas.drawRect(titleRect, titleFillColor);
+        } else {
+            canvas.drawRect(titleRect, titleHighlightColor);
             drawScaleHandle(canvas);
-            RectF highlight = new RectF();
-            setRoundedBlockHighlightBounds(highlight, 0, 0);
-            canvas.drawRoundRect(highlight, cornerRadius, cornerRadius, blockHighlightColor);
         }
+
+        canvas.drawText("Title", dpToPx(5), dpToPx(15), titleTextColor);
 
         int counter = 0;
         if(tasks.length <= calculateTaskEntryCount()) {
@@ -163,13 +160,7 @@ public class EditBlock extends View {
         }
 
         for(int i = 0; i < counter; i++) {
-            int textWidth = (int) tasksTextColor.measureText(tasks[i]);
-            int posX = (getWidth() / 2) - (textWidth / 2);
-            if(i < 1) {
-                canvas.drawText(tasks[i], posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), tasksTextColor);
-            } else {
-                canvas.drawText(tasks[i], posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), ruledTasksTextColor);
-            }
+            canvas.drawText("□  " + tasks[i], dpToPx(25), (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), tasksTextColor);
         }
     }
 
@@ -183,7 +174,7 @@ public class EditBlock extends View {
                 circleX,
                 circleY,
                 circleRadius,
-                new Paint(scaleHandleColor));
+                new Paint(titleFillColor));
 
     }
 
@@ -217,8 +208,8 @@ public class EditBlock extends View {
         this.editMode = b;
     }
 
-    public RectF getBlock() {
-        return roundedBlock;
+    public Rect getBlock() {
+        return block;
     }
 
     public float getCircleX() {
