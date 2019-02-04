@@ -49,10 +49,10 @@ public class MainActivity extends AppCompatActivity {
 //        dbh.createTask("Duschen", 2);
 //        dbh.closeDB();
 //
-//        dbh.getTasks(1);
+//        dbh.getTasksAndRegisterListener(1);
 //        dbh.closeDB();
 //
-//        LinkedHashMap<Category, List<Category>> categories = dbh.getCategories();
+//        LinkedHashMap<Category, List<Category>> categories = dbh.getCategoriesAndRegisterListener();
 //        dbh.closeDB();
 //        Log.d("DB", String.valueOf(categories.size()));
 

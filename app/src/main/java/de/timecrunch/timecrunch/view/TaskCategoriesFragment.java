@@ -5,7 +5,6 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -84,11 +83,7 @@ public class TaskCategoriesFragment extends Fragment {
 
     private void setUpDataView(View view) {
         categoryList = (ExpandableListView) view.findViewById(R.id.category_list);
-        new LoadCategoriesAsync().execute();
-        //Map<Category, List<Category>> subcategoryMap = categoryViewModel.getSubCategoryMap();
-        //setUpListAdapter(subcategoryMap);
-
-
+        categoryViewModel.setUpLiveData(progressBar);
     }
 
 
@@ -101,10 +96,8 @@ public class TaskCategoriesFragment extends Fragment {
                     String categoryName = data.getStringExtra("name");
                     int categoryColor = data.getIntExtra("color", -1);
                     boolean hasTimeBlock = data.getBooleanExtra("hasTimeBlock", false);
-                    Category newCategory = new Category(1,categoryName, categoryColor, hasTimeBlock);
-                    new AddCategoryAsync().execute(newCategory);
-                    //categoryViewModel.addCategory(newCategory);
-                    //categoryList.invalidate();
+                    Category newCategory = new Category("1",categoryName, categoryColor, hasTimeBlock);
+                    categoryViewModel.addCategory(newCategory, progressBar);
                 }
         }
     }
@@ -143,60 +136,4 @@ public class TaskCategoriesFragment extends Fragment {
         }
         return super.onOptionsItemSelected(item);
     }
-
-    private void showProgressBar() {
-        progressBar.setVisibility(ProgressBar.VISIBLE);
-        progressBar.setClickable(true);
-    }
-
-    private void hideProgressBar() {
-        progressBar.setVisibility(ProgressBar.INVISIBLE);
-        progressBar.setClickable(false);
-    }
-
-    private class LoadCategoriesAsync extends AsyncTask<Void, Void, Map<Category, List<Category>>> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            showProgressBar();
-        }
-
-        @Override
-        protected Map<Category, List<Category>> doInBackground(Void... voids) {
-            return categoryViewModel.getSubCategoryMap();
-        }
-
-        @Override
-        protected void onPostExecute(Map<Category, List<Category>> subCategoryMap) {
-            super.onPostExecute(subCategoryMap);
-            hideProgressBar();
-        }
-    }
-
-    private class AddCategoryAsync extends AsyncTask<Category, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            showProgressBar();
-        }
-
-
-        @Override
-        protected Void doInBackground(Category... categories) {
-            for(Category category:categories) {
-                categoryViewModel.addCategory(category);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            hideProgressBar();
-        }
-
-    }
-
 }

@@ -25,7 +25,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -35,6 +34,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +47,7 @@ public class TaskOverviewFragment extends Fragment {
 
     private final int REQUEST_EDIT_TASK=1;
 
-    private int categoryId;
+    private String categoryId;
     private String categeoryName;
 
     ActionBar actionBar;
@@ -55,11 +55,12 @@ public class TaskOverviewFragment extends Fragment {
     TaskViewModel taskViewModel;
     FloatingActionButton floatingActionButton;
     ProgressBar progressBar;
+    ItemTouchHelper itemTouchHelper;
 
     @Override
     public void setArguments(@Nullable Bundle args) {
         super.setArguments(args);
-        categoryId = args.getInt("CATEGORY_ID");
+        categoryId = args.getString("CATEGORY_ID");
         categeoryName = args.getString("CATEGORY_NAME");
 
     }
@@ -83,9 +84,10 @@ public class TaskOverviewFragment extends Fragment {
         setRetainInstance(true);
         //taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
         taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
-        taskViewModel.getTaskMapLiveData().observe(this, new Observer<Map<Category, List<TaskModel>>>() {
+        taskViewModel.setUpLiveData(categoryId, progressBar);
+        taskViewModel.getTaskMapLiveData().observe(this, new Observer<Map<String, TaskModel>>() {
             @Override
-            public void onChanged(@Nullable final Map<Category, List<TaskModel>> taskMapLiveData) {
+            public void onChanged(@Nullable final Map<String, TaskModel> taskMapLiveData) {
                 setUpListAdapter(taskMapLiveData);
             }
         });
@@ -117,7 +119,7 @@ public class TaskOverviewFragment extends Fragment {
     }
 
     private void setUpDataView(View view) {
-        new LoadTasksAsync().execute();
+
         taskListView = (RecyclerView) view.findViewById(R.id.task_list);
 
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(taskListView.getContext(),
@@ -132,18 +134,19 @@ public class TaskOverviewFragment extends Fragment {
         switch (requestCode){
             case REQUEST_EDIT_TASK:
                 taskViewModel.invalidate();
-                new LoadTasksAsync().execute();
+                taskViewModel.setUpLiveData(categoryId, progressBar);;
         }
     }
 
-    private void setUpListAdapter(Map<Category, List<TaskModel>> taskMap) {
-        Category idCategory = new Category(categoryId, null, 0, false);
-        List<TaskModel> taskList = taskMap.get(idCategory);
-        if (taskList != null) {
-            TaskListAdapter adapter = new TaskListAdapter(taskList);
+    private void setUpListAdapter(Map<String, TaskModel> taskMap) {
+        if (taskMap != null) {
+            TaskListAdapter adapter = new TaskListAdapter(new ArrayList<>(taskMap.values()));
             taskListView.setLayoutManager(new LinearLayoutManager(getContext()));
             taskListView.setAdapter(adapter);
-            ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(adapter, this.getContext()));
+            if(itemTouchHelper!=null){
+                itemTouchHelper.attachToRecyclerView(null);
+            }
+            itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(adapter, this.getContext()));
             itemTouchHelper.attachToRecyclerView(taskListView);
         }
     }
@@ -180,87 +183,7 @@ public class TaskOverviewFragment extends Fragment {
     }
 
     private void addNewTask(String text) {
-        new AddTaskAsync().execute(text);
-    }
-
-    private void showProgressBar() {
-        progressBar.setVisibility(ProgressBar.VISIBLE);
-        progressBar.setClickable(true);
-    }
-
-    private void hideProgressBar() {
-        progressBar.setVisibility(ProgressBar.INVISIBLE);
-        progressBar.setClickable(false);
-    }
-
-    private class LoadTasksAsync extends AsyncTask<Void, Void, Map<Category, List<TaskModel>>> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            showProgressBar();
-        }
-
-        @Override
-        protected Map<Category, List<TaskModel>> doInBackground(Void... voids) {
-            return taskViewModel.getTaskMap();
-        }
-
-        @Override
-        protected void onPostExecute(Map<Category, List<TaskModel>> categoryListMap) {
-            super.onPostExecute(categoryListMap);
-            hideProgressBar();
-        }
-    }
-
-    private class AddTaskAsync extends AsyncTask<String, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            showProgressBar();
-        }
-
-
-        @Override
-        protected Void doInBackground(String... strings) {
-            for (String text : strings) {
-                taskViewModel.addTask(categoryId, new TaskModel(1, text));
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            hideProgressBar();
-        }
-
-    }
-
-    private class RemoveTaskAsync extends AsyncTask<TaskModel, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            showProgressBar();
-        }
-
-
-        @Override
-        protected Void doInBackground(TaskModel... tasks) {
-            for (TaskModel task : tasks) {
-                taskViewModel.removeTask(categoryId, task);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            hideProgressBar();
-        }
-
+        taskViewModel.addTask(categoryId, new TaskModel(categoryId,text), progressBar);
     }
 
     private class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
@@ -285,7 +208,7 @@ public class TaskOverviewFragment extends Fragment {
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
             int position = viewHolder.getAdapterPosition();
             TaskModel deletedTask = adapter.deleteItem(position);
-            new RemoveTaskAsync().execute(deletedTask);
+           taskViewModel.removeTask(deletedTask, progressBar);
         }
 
         @Override
@@ -335,27 +258,11 @@ public class TaskOverviewFragment extends Fragment {
             View child = recyclerView.findChildViewUnder(motionEvent.getX(),motionEvent.getY());
             if(child != null && gestureDetector.onTouchEvent(motionEvent)) {
                 int position = recyclerView.getChildAdapterPosition(child);
-                List<TaskModel> taskList = taskViewModel.getTaskList(new Category(categoryId, categeoryName, 0, false));
-                TaskModel task = taskList.get(position);
+                TaskModel task = taskViewModel.getTaskAtPosition(position);
                 Intent intent = new Intent(getContext(), TaskEditActivity.class);
                 intent.putExtra("CATEGORY_ID", categoryId);
                 intent.putExtra("CATEGORY_NAME", categeoryName);
                 intent.putExtra("TASK_ID", task.getId());
-                intent.putExtra("TASK_TEXT", task.getText());
-                if(task.getLocation() != null){
-                    intent.putExtra("TASK_LAT", task.getLocation().latitude);
-                    intent.putExtra("TASK_LNG", task.getLocation().longitude);
-                }
-                if(task.getAlarm() != null) {
-                    intent.putExtra("ALARM_YEAR", task.getAlarm().getYear());
-                    intent.putExtra("ALARM_MONTH", task.getAlarm().getMonth());
-                    intent.putExtra("ALARM_HOUR", task.getAlarm().getHour());
-                    intent.putExtra("ALARM_MINUTE", task.getAlarm().getMinute());
-                    intent.putExtra("ALARM_DAY", task.getAlarm().getDay());
-                    intent.putExtra("ALARM_REPEAT", task.getAlarm().isRepeat());
-                    intent.putExtra("ALARM_REPEATNO", task.getAlarm().getRepeatNo());
-                    intent.putExtra("ALARM_REPEATTYPE", task.getAlarm().getRepeatType());
-                }
                 TaskEditFragment fragment = new TaskEditFragment();
                 fragment.setArguments(intent.getExtras());
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,

@@ -22,75 +22,97 @@
                 android:hint="@string/placeholder_editTasks"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
-                android:singleLine="true"
                 android:padding="16dp"
-                android:layout_marginBottom="16dp"/>
+                android:singleLine="true" />
         </android.support.design.widget.TextInputLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <com.google.android.gms.maps.MapView xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:map="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:id="@+id/map"
-                android:name="com.google.android.gms.maps.MapView"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                tools:context=".view.TaskEditFragment" />
+            <ImageView
+                android:id="@+id/repeat_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="16dp"
+                android:src="@drawable/ic_repeat_black_24dp" />
 
-            <RelativeLayout
-                android:id="@+id/task_edit_reminder_layout"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                android:clickable="true">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/repeat_icon"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="32dp"
+                android:textSize="18dp"
+                android:text="@string/is_task_repeating" />
 
-                <ImageView
-                    android:id="@+id/time_icon"
+            <CheckBox
+                android:id="@+id/repeating_task_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/task_edit_reminder_layout"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:clickable="true">
+
+            <ImageView
+                android:id="@+id/time_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="32dp"
+                android:src="@drawable/ic_access_time_black_24dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/time_icon"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/task_edit_reminder_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="32dp"
-                    android:src="@drawable/ic_access_time_black_24dp"
-                    android:layout_centerVertical="true"/>
+                    android:text="Reminder"
+                    android:textSize="15dp" />
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/set_task_edit_reminder_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@id/time_icon">
+                    android:text="XX/XX/XXXX XX:XX Uhr"
+                    android:textSize="15dp" />
 
-                    <TextView
-                        android:id="@+id/task_edit_reminder_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Reminder"
-                        android:textSize="15dp"/>
+            </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/set_task_edit_reminder_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="15dp"
-                        android:text="XX/XX/XXXX XX:XX Uhr"/>
+            <ImageView
+                android:id="@+id/reminder_navigator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_chevron_right_black_24dp" />
 
-                </LinearLayout>
+        </RelativeLayout>
 
-                <ImageView
-                    android:id="@+id/reminder_navigator"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/ic_chevron_right_black_24dp" />
-
-            </RelativeLayout>
-
-        </LinearLayout>
+        <com.google.android.gms.maps.MapView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:map="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.MapView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="16dp"
+            tools:context=".view.TaskEditFragment" />
 
     </LinearLayout>
 
