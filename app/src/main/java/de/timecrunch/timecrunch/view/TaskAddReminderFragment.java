@@ -54,11 +54,12 @@ public class TaskAddReminderFragment extends Fragment {
     private String time, date, mRepeat, mRepeatNo, mRepeatType;
     private long repeatTime;
 
-    private int categoryId, taskId;
+    private String categoryId, taskId;
     private String categoryName, taskText;
     private LatLng taskLocation;
     private TaskViewModel taskViewModel;
     private TaskAlarm alarmData;
+    private TaskModel task;
 
     private static final long milMinute = 60000L;
     private static final long milHour = 3600000L;
@@ -79,23 +80,9 @@ public class TaskAddReminderFragment extends Fragment {
     @Override
     public void setArguments(@Nullable Bundle args) {
         super.setArguments(args);
-        categoryId = args.getInt("CATEGORY_ID");
+        categoryId = args.getString("CATEGORY_ID");
         categoryName = args.getString("CATEGORY_NAME");
-        taskId = args.getInt("TASK_ID");
-        taskText = args.getString("TASK_TEXT");
-        if (args.containsKey("TASK_LAT") && args.containsKey("TASK_LNG")) {
-            double lat = args.getDouble("TASK_LAT");
-            double lng = args.getDouble("TASK_LNG");
-            taskLocation = new LatLng(lat,lng);
-        }
-        if (args.containsKey("ALARM_YEAR") && args.containsKey("ALARM_MONTH") &&
-                args.containsKey("ALARM_HOUR") && args.containsKey("ALARM_MINUTE") &&
-                args.containsKey("ALARM_DAY") && args.containsKey("ALARM_REPEAT") &&
-                args.containsKey("ALARM_REPEATNO") && args.containsKey("ALARM_REPEATTYPE")) {
-            this.alarmData = new TaskAlarm(args.getInt("ALARM_YEAR"), args.getInt("ALARM_MONTH"),
-                    args.getInt("ALARM_HOUR"), args.getInt("ALARM_MINUTE"), args.getInt("ALARM_DAY"),
-                    args.getBoolean("ALARM_REPEAT"), args.getInt("ALARM_REPEATNO"), args.getString("ALARM_REPEATTYPE"));
-        }
+        taskId = args.getString("TASK_ID");
     }
 
     @Override
@@ -103,8 +90,11 @@ public class TaskAddReminderFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
-        new LoadTasksAsync2().execute();
         taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
+        task = taskViewModel.getTask(taskId);
+        taskText = task.getText();
+        taskLocation = task.getLocation();
+        alarmData = task.getAlarm();
     }
 
     @Override
@@ -195,7 +185,7 @@ public class TaskAddReminderFragment extends Fragment {
             repeatSwitch.setChecked(true);
         } onSwitchRepeat(repeatSwitch);
 
-        date = day + "." + (month + 1) + "." + year;
+        date = day + "." + (month) + "." + year;
         if (mMinute < 10) {
             time = hour + ":" + "0" + mMinute;
         } else {
@@ -227,13 +217,13 @@ public class TaskAddReminderFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.action_bar_finished:
                 saveReminder();
-                TaskModel modifiedTask = new TaskModel(taskId, taskText, taskLocation, alarmData);
-                taskViewModel.changeTask(categoryId, modifiedTask);
-
-                TaskOverviewFragment fragment = new TaskOverviewFragment();
+                task.setAlarm(alarmData);
+                taskViewModel.changeTask(task, null);
+                TaskEditFragment fragment = new TaskEditFragment();
                 Bundle bundle = new Bundle();
-                bundle.putInt("CATEGORY_ID", categoryId);
+                bundle.putString("CATEGORY_ID", categoryId);
                 bundle.putString("CATEGORY_NAME", categoryName);
+                bundle.putString("TASK_ID", taskId);
                 fragment.setArguments(bundle);
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         fragment).commit();
@@ -266,14 +256,13 @@ public class TaskAddReminderFragment extends Fragment {
         DatePickerDialog mDatePicker;
         mDatePicker = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker datepicker, int year, int monthOfYear, int dayOfMonth) {
-                monthOfYear ++;
                 day = dayOfMonth;
-                month = monthOfYear;
+                month = monthOfYear+1;
                 year = year;
-                date = dayOfMonth + "." + monthOfYear + "." + year;
+                date = day + "." + month + "." + year;
                 dateText.setText(date);
             }
-        }, year, month, day);
+        }, year, month-1, day);
         mDatePicker.setTitle("Select Date");
         mDatePicker.show();
     }
@@ -363,7 +352,7 @@ public class TaskAddReminderFragment extends Fragment {
         }
 
         calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.MONTH, --month);
+        calendar.set(Calendar.MONTH, month);//--month);
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.DAY_OF_MONTH, day);
         calendar.set(Calendar.HOUR_OF_DAY, hour);
@@ -390,7 +379,7 @@ public class TaskAddReminderFragment extends Fragment {
 
         alarmMgr = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getContext(), AlarmReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(getContext(), taskId, intent, 0);
+        alarmIntent = PendingIntent.getBroadcast(getContext(), taskId.hashCode(), intent, 0);
 
         alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP,
                 selectedTimestamp, repeatTime, alarmIntent);
@@ -404,42 +393,23 @@ public class TaskAddReminderFragment extends Fragment {
 
         alarmMgr = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getContext(), AlarmReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(getContext(), taskId, intent, 0);
+        alarmIntent = PendingIntent.getBroadcast(getContext(), taskId.hashCode(), intent, 0);
 
         alarmMgr.cancel(alarmIntent);
 
         Toast.makeText(getActivity(), "Alarm was removed!",
                 Toast.LENGTH_SHORT).show();
 
-        TaskModel modifiedTask = new TaskModel(taskId, taskText, taskLocation, null);
-        taskViewModel.changeTask(categoryId, modifiedTask);
+        task.setAlarm(null);
+        taskViewModel.changeTask(task, null);
 
         TaskOverviewFragment fragment = new TaskOverviewFragment();
         Bundle bundle = new Bundle();
-        bundle.putInt("CATEGORY_ID", categoryId);
+        bundle.putString("CATEGORY_ID", categoryId);
         bundle.putString("CATEGORY_NAME", categoryName);
         fragment.setArguments(bundle);
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                 fragment).commit();
 
-    }
-
-    // TODO: Remove this in the future and capsulate it
-    private class LoadTasksAsync2 extends AsyncTask<Void, Void, Map<Category, List<TaskModel>>> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Map<Category, List<TaskModel>> doInBackground(Void... voids) {
-            return taskViewModel.getTaskMap();
-        }
-
-        @Override
-        protected void onPostExecute(Map<Category, List<TaskModel>> categoryListMap) {
-            super.onPostExecute(categoryListMap);
-        }
     }
 }

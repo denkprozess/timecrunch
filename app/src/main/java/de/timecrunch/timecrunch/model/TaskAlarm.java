@@ -6,6 +6,10 @@ public class TaskAlarm {
     private String repeatType;
     private boolean repeat;
 
+    // needed for serialization
+    public TaskAlarm(){
+
+    }
     public TaskAlarm(int year, int month, int hour, int minute, int day, boolean repeat,
                      int repeatNo, String repeatType) {
         this.year = year;

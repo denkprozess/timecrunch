@@ -5,125 +5,102 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
-import android.util.Log;
-
-import com.google.android.gms.maps.model.LatLng;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import de.timecrunch.timecrunch.model.Category;
 import de.timecrunch.timecrunch.model.TaskAlarm;
 import de.timecrunch.timecrunch.model.TaskModel;
 import de.timecrunch.timecrunch.utilities.DBHandler;
+import de.timecrunch.timecrunch.utilities.TaskDBHandler;
 
 public class TaskViewModel extends AndroidViewModel {
-    private MutableLiveData<Map<Category, List<TaskModel>>> tasksLiveData;
-    private DBHandler dbHandler;
+    private MutableLiveData<Map<String, TaskModel>> tasksLiveData;
+    private TaskDBHandler taskDBHandler;
     private TaskModel lastRemovedTask;
-    private int lastRemovedCategoryId;
+    private String lastRemovedCategoryId;
     private boolean invalidated;
 
     public TaskViewModel(@NonNull Application application) {
         super(application);
-        dbHandler = new DBHandler(application.getApplicationContext());
+        taskDBHandler = new TaskDBHandler();
         tasksLiveData = new MutableLiveData<>();
-        Map<Category, List<TaskModel>> taskMap = new HashMap<>();
-        tasksLiveData.setValue(taskMap);
+        Map<String, TaskModel> taskList = new LinkedHashMap<>();
+        tasksLiveData.setValue(taskList);
     }
 
-    public List<Category> getCategoryList() {
-        if (tasksLiveData.getValue().isEmpty()) {
-            initializeTasks();
-        }
-        return new ArrayList<Category>(tasksLiveData.getValue().keySet());
-    }
 
-    public LiveData<Map<Category, List<TaskModel>>> getTaskMapLiveData() {
+    public LiveData<Map<String, TaskModel>> getTaskMapLiveData() {
         return tasksLiveData;
     }
 
-    public Map<Category, List<TaskModel>> getTaskMap() {
-        if (tasksLiveData.getValue().isEmpty() || invalidated) {
-            initializeTasks();
-            invalidated = false;
-        }
+    private void initializeTasks(String categoryId, ProgressBar progressBar) {
+        // DB-Calls are asynchronous by default, so no need for AsyncTask
+        taskDBHandler.getTasksAndRegisterListener(categoryId,tasksLiveData,progressBar);
+    }
+
+    public Map<String, TaskModel> getTaskList(){
         return tasksLiveData.getValue();
     }
 
-    private void initializeTasks() {
-        Map<Category, List<Category>> categoryMap = dbHandler.getCategories();
-        Map<Category, List<TaskModel>> taskMap = new HashMap<>();
-        for (Map.Entry<Category, List<Category>> entry : categoryMap.entrySet()) {
-            Category parentCategory = entry.getKey();
-            List<TaskModel> parentTaskList = dbHandler.getTasks(parentCategory.getId());
-            taskMap.put(parentCategory, parentTaskList);
-            for (Category childCategory : entry.getValue()) {
-                List<TaskModel> childTaskList = dbHandler.getTasks(childCategory.getId());
-                taskMap.put(childCategory, childTaskList);
-            }
-        }
-
-//        Category morningRoutine = new Category(1,"Morning Routine", Color.GREEN, false);
-//        List<TaskModel> taskList = new ArrayList<>();
-//        taskList.add(new TaskModel(1,"Shower"));
-//        taskList.add(new TaskModel(1,"Floss the teeth"));
-//        taskList.add(new TaskModel(1,"Eat breakfast"));
-//        taskMap.put(morningRoutine, taskList);
-        tasksLiveData.postValue(taskMap);
-    }
-
-    public List<TaskModel> getTaskList(Category category) {
-        List<TaskModel> taskList = tasksLiveData.getValue().get(category);
-        if (taskList == null) {
-            taskList = new ArrayList<>();
-        }
-        return taskList;
-    }
-
-    public void removeTask(int categoryId, TaskModel task) {
-        boolean success = dbHandler.removeTask(task.getId());
-        if (success) {
-            lastRemovedCategoryId = categoryId;
-            lastRemovedTask = task;
-            Map<Category, List<TaskModel>> taskMap = tasksLiveData.getValue();
-            List<TaskModel> taskList = getTaskListOfCategoryId(taskMap, categoryId);
-            taskList.remove(task);
-            tasksLiveData.postValue(taskMap);
+    public TaskModel getTaskAtPosition(int position){
+        Map<String,TaskModel> taskModelMap = tasksLiveData.getValue();
+        ArrayList<TaskModel> taskList = new ArrayList<>(taskModelMap.values());
+        if(taskList.size()>position){
+            return taskList.get(position);
+        }else{
+            return null;
         }
     }
 
-    public void addTask(int categoryId, TaskModel userTask) {
-        String text = userTask.getText();
-        LatLng location = userTask.getLocation();
-        TaskAlarm alarm = userTask.getAlarm();
-        int id = dbHandler.createTask(text, categoryId);
-        if (id != -1) {
-            Map<Category, List<TaskModel>> taskMap = tasksLiveData.getValue();
-            List<TaskModel> taskList = getTaskListOfCategoryId(taskMap, categoryId);
-            TaskModel task = new TaskModel(id, text, location, alarm);
-            taskList.add(task);
-            tasksLiveData.postValue(taskMap);
+    public void setUpLiveData(String categoryId, ProgressBar progressBar) {
+        Map<String, TaskModel> taskMap = tasksLiveData.getValue();
+        boolean categoryIdMatchesTaskList = false;
+        if(!taskMap.isEmpty()){
+            categoryIdMatchesTaskList = categoryId.equals(getTaskAtPosition(0).getCategoryId());
+        }
+        if (!categoryIdMatchesTaskList) {
+            initializeTasks(categoryId, progressBar);
         }
     }
 
-    public void changeTask(int categoryId, TaskModel task) {
-        // task equals works with the id only for removing
-        // because of that the changed task obejct can be passed to remove and add.
-        // Remove only needs the id and add only needs the tasks payload.
-        removeTask(categoryId, task);
-        addTask(categoryId, task);
+    public TaskModel getTask(String taskId){
+        return tasksLiveData.getValue().get(taskId);
+    }
+    public void removeTask(TaskModel task, ProgressBar progressBar) {
+        taskDBHandler.removeTask(task.getId(), progressBar);
     }
 
-    private List<TaskModel> getTaskListOfCategoryId(Map<Category, List<TaskModel>> taskMap, int categoryId) {
-        Category categoryDummy = new Category(categoryId, null, 0, false);
-        List<TaskModel> taskList = taskMap.get(categoryDummy);
-        return taskList;
+    public void addTask(String categoryId, TaskModel userTask, ProgressBar progressBar) {
+        Map<String,TaskModel> taskModelMap = tasksLiveData.getValue();
+        ArrayList<TaskModel> taskList = new ArrayList<>(taskModelMap.values());
+        if(!taskList.isEmpty()) {
+            Collections.sort(taskList, new Comparator<TaskModel>() {
+                @Override
+                public int compare(TaskModel o1, TaskModel o2) {
+                    return o1.getSorting() - o2.getSorting();
+                }
+            });
+            TaskModel lastTask = taskList.get(taskList.size() - 1);
+            int highestSorting = lastTask.getSorting();
+            // append new entry at the end of the list via the sorting field users can move their Tasks in the list in the future
+            userTask.setSorting(highestSorting + 1);
+        }else{
+            userTask.setSorting(1);
+        }
+        taskDBHandler.addTask(categoryId, userTask, progressBar);
+    }
+
+    public void changeTask(TaskModel task, ProgressBar progressBar) {
+        taskDBHandler.changeTask(task, progressBar);
     }
 
     public void invalidate(){
         invalidated = true;
     }
+
 }

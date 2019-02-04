@@ -3,19 +3,23 @@ package de.timecrunch.timecrunch.model;
 public class Category {
 
     private String name;
-    private final int id;
+    private String id;
     private int color;
     private boolean hasTimeBlock;
+    private int sorting;
 
 
-    public Category(int id, String name, int color, boolean hasTimeBlock) {
+    public Category(){
+    }
+
+    public Category(String id, String name, int color, boolean hasTimeBlock) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.hasTimeBlock = hasTimeBlock;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -32,6 +36,15 @@ public class Category {
         return hasTimeBlock;
     }
 
+    public int getSorting() {
+        return sorting;
+    }
+
+    public void setSorting(int sorting) {
+        this.sorting = sorting;
+    }
+
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -40,7 +53,7 @@ public class Category {
         if (!(other instanceof Category)) {
             return false;
         }
-        if (((Category) other).getId() == (this.getId())) {
+        if (((Category) other).getId().equals(this.getId())) {
             return true;
         } else {
             return false;
@@ -49,6 +62,6 @@ public class Category {
 
     @Override
     public int hashCode() {
-        return id;
+        return id.hashCode();
     }
 }

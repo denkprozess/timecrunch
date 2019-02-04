@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,6 +20,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -51,18 +53,20 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
     private boolean coarseLocationGranted;
     private boolean fineLocationGranted;
     private LatLng defaultLocation = new LatLng(-34, 151);
-    private int categoryId;
+    private String categoryId;
     private String categoryName;
-    private int taskId;
+    private String taskId;
     private String taskText;
     private LatLng taskLocation;
     private RelativeLayout addReminderLayout;
     private TextView reminderText;
     private TaskAlarm alarmData;
+    private TaskModel task;
 
     private TaskViewModel taskViewModel;
 
     private EditText taskEditText;
+    private CheckBox repeatCheckBox;
     private MapView mapView;
     private GoogleMap map;
 
@@ -79,23 +83,9 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void setArguments(@Nullable Bundle args) {
         super.setArguments(args);
-        categoryId = args.getInt("CATEGORY_ID");
+        categoryId = args.getString("CATEGORY_ID");
         categoryName = args.getString("CATEGORY_NAME");
-        taskId = args.getInt("TASK_ID");
-        taskText = args.getString("TASK_TEXT");
-        if (args.containsKey("TASK_LAT") && args.containsKey("TASK_LNG")) {
-            double lat = args.getDouble("TASK_LAT");
-            double lng = args.getDouble("TASK_LNG");
-            taskLocation = new LatLng(lat,lng);
-        }
-        if (args.containsKey("ALARM_YEAR") && args.containsKey("ALARM_MONTH") &&
-                args.containsKey("ALARM_HOUR") && args.containsKey("ALARM_MINUTE") &&
-                args.containsKey("ALARM_DAY") && args.containsKey("ALARM_REPEAT") &&
-                args.containsKey("ALARM_REPEATNO") && args.containsKey("ALARM_REPEATTYPE")) {
-            this.alarmData = new TaskAlarm(args.getInt("ALARM_YEAR"), args.getInt("ALARM_MONTH"),
-                    args.getInt("ALARM_HOUR"), args.getInt("ALARM_MINUTE"), args.getInt("ALARM_DAY"),
-                    args.getBoolean("ALARM_REPEAT"), args.getInt("ALARM_REPEATNO"), args.getString("ALARM_REPEATTYPE"));
-        }
+        taskId = args.getString("TASK_ID");
     }
 
     @Override
@@ -103,8 +93,12 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
-        new LoadTasksAsync().execute();
         taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
+        task = taskViewModel.getTask(taskId);
+        taskText = task.getText();
+        taskLocation = task.getLocation();
+        alarmData = task.getAlarm();
+
     }
 
     @Override
@@ -118,11 +112,13 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
         switch (item.getItemId()) {
             case R.id.action_bar_finished:
                 taskText = taskEditText.getText().toString();
-                TaskModel modifiedTask = new TaskModel(taskId, taskText, taskLocation, alarmData);
-                taskViewModel.changeTask(categoryId, modifiedTask);
+                task.setText(taskText);
+                task.setLocation(taskLocation);
+                task.setRepeating(repeatCheckBox.isChecked());
+                taskViewModel.changeTask(task, null);
                 TaskOverviewFragment fragment = new TaskOverviewFragment();
                 Bundle bundle = new Bundle();
-                bundle.putInt("CATEGORY_ID", categoryId);
+                bundle.putString("CATEGORY_ID", categoryId);
                 bundle.putString("CATEGORY_NAME", categoryName);
                 fragment.setArguments(bundle);
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
@@ -146,6 +142,8 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
         Activity parentActivity = getActivity();
         taskEditText = parentActivity.findViewById(R.id.edittext_task);
         taskEditText.setText(taskText);
+        repeatCheckBox = parentActivity.findViewById(R.id.repeating_task_check);
+        repeatCheckBox.setChecked(task.getIsRepeating());
         initMap(savedInstanceState);
         reminderText = getView().findViewById(R.id.set_task_edit_reminder_text);
         String dateText = "No reminders set";
@@ -156,7 +154,7 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
             } else {
                 time = alarmData.getHour() + ":" + alarmData.getMinute();
             }
-            dateText = alarmData.getDay() + "." + (alarmData.getMonth() + 1) + "." + alarmData.getYear() +
+            dateText = alarmData.getDay() + "." + (alarmData.getMonth()) + "." + alarmData.getYear() +
                     " - " + time;
         }
         reminderText.setText(dateText);
@@ -169,21 +167,6 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
                 intent.putExtra("CATEGORY_ID", categoryId);
                 intent.putExtra("CATEGORY_NAME", categoryName);
                 intent.putExtra("TASK_ID", taskId);
-                intent.putExtra("TASK_TEXT", taskText);
-                if(taskLocation != null){
-                    intent.putExtra("TASK_LAT", taskLocation.latitude);
-                    intent.putExtra("TASK_LNG", taskLocation.longitude);
-                }
-                if(alarmData != null) {
-                    intent.putExtra("ALARM_YEAR", alarmData.getYear());
-                    intent.putExtra("ALARM_MONTH", alarmData.getMonth());
-                    intent.putExtra("ALARM_HOUR", alarmData.getHour());
-                    intent.putExtra("ALARM_MINUTE", alarmData.getMinute());
-                    intent.putExtra("ALARM_DAY", alarmData.getDay());
-                    intent.putExtra("ALARM_REPEAT", alarmData.isRepeat());
-                    intent.putExtra("ALARM_REPEATNO", alarmData.getRepeatNo());
-                    intent.putExtra("ALARM_REPEATTYPE", alarmData.getRepeatType());
-                }
                 TaskAddReminderFragment fragment = new TaskAddReminderFragment();
                 fragment.setArguments(intent.getExtras());
                 getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
@@ -338,25 +321,5 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
         }
 
     }
-
-    // TODO: Remove this in the future and capsulate it
-    private class LoadTasksAsync extends AsyncTask<Void, Void, Map<Category, List<TaskModel>>> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected Map<Category, List<TaskModel>> doInBackground(Void... voids) {
-            return taskViewModel.getTaskMap();
-        }
-
-        @Override
-        protected void onPostExecute(Map<Category, List<TaskModel>> categoryListMap) {
-            super.onPostExecute(categoryListMap);
-        }
-    }
-
 
 }
