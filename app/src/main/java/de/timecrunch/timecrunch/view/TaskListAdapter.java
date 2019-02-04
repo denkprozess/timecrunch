@@ -17,7 +17,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
     private List<TaskModel> taskList;
 
     public TaskListAdapter(List<TaskModel> taskList){
-        this. taskList = taskList;
+        this.taskList = taskList;
     }
 
     @NonNull

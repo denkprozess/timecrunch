@@ -34,4 +34,5 @@
     <string name="error_email_not_verified">Die Email-Adresse wurde noch nicht verifiziert. Bitte klicke auf den Link in der Email, die wir dir geschickt haben.</string>
     <!-- Strings related to tasks -->
     <string name="placeholder_editTasks">Bearbeite Task</string>
+    <string name="is_task_repeating">Aufgabe wiederholt sich</string>
 </resources>

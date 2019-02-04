@@ -18,12 +18,16 @@ public class FireBaseDBHandler {
     }
 
     protected void showProgressBar(ProgressBar progressBar) {
-        progressBar.setVisibility(ProgressBar.VISIBLE);
-        progressBar.setClickable(true);
+        if (progressBar != null) {
+            progressBar.setVisibility(ProgressBar.VISIBLE);
+            progressBar.setClickable(true);
+        }
     }
 
     protected void hideProgressBar(ProgressBar progressBar) {
-        progressBar.setVisibility(ProgressBar.INVISIBLE);
-        progressBar.setClickable(false);
+        if (progressBar !=null){
+            progressBar.setVisibility(ProgressBar.INVISIBLE);
+            progressBar.setClickable(false);
+        }
     }
 }

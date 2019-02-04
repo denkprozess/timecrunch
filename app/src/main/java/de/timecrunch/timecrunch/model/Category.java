@@ -6,6 +6,7 @@ public class Category {
     private String id;
     private int color;
     private boolean hasTimeBlock;
+    private int sorting;
 
 
     public Category(){
@@ -34,6 +35,15 @@ public class Category {
     public boolean hasTimeBlock() {
         return hasTimeBlock;
     }
+
+    public int getSorting() {
+        return sorting;
+    }
+
+    public void setSorting(int sorting) {
+        this.sorting = sorting;
+    }
+
 
     @Override
     public boolean equals(Object other) {

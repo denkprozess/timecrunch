@@ -83,7 +83,7 @@ public class TaskCategoriesFragment extends Fragment {
 
     private void setUpDataView(View view) {
         categoryList = (ExpandableListView) view.findViewById(R.id.category_list);
-        categoryViewModel.getSubCategoryMap(progressBar);
+        categoryViewModel.setUpLiveData(progressBar);
     }
 
 

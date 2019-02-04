@@ -20,6 +20,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,9 +33,10 @@ import static android.support.constraint.Constraints.TAG;
 public class CategoryDBHandler extends FireBaseDBHandler{
 
 
-    public void getCategories(final MutableLiveData<Map<Category, List<Category>>> categoryLiveData, final ProgressBar progressBar){
+    public void getCategoriesAndRegisterListener(final MutableLiveData<Map<Category, List<Category>>> categoryLiveData, final ProgressBar progressBar){
         showProgressBar(progressBar);
-        Query query = db.collection(userId).document("data").collection("categories");
+        CollectionReference collectionReference = db.collection(userId).document("data").collection("categories");
+        Query query = collectionReference.orderBy("sorting", Query.Direction.ASCENDING);//db.collection(userId).document("data").collection("categories").orderBy("sorting",Query.Direction.ASCENDING);
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -42,7 +44,7 @@ public class CategoryDBHandler extends FireBaseDBHandler{
                     Log.w(TAG, "Listen failed.", e);
                     return;
                 }
-                Map<Category, List<Category>> categoryListMap = new HashMap<>();
+                Map<Category, List<Category>> categoryListMap = new LinkedHashMap<>();
                 for(QueryDocumentSnapshot documentSnapshot:queryDocumentSnapshots){
                     Category category = documentSnapshot.toObject(Category.class);
                     categoryListMap.put(category, new ArrayList<Category>());
