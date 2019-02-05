@@ -155,6 +155,8 @@ public class LoginFragment extends Fragment {
                             if(user.isEmailVerified()) {
                                 Intent intent = new Intent(getContext(), MainActivity.class);
                                 startActivity(intent);
+                                // dont add login to backstack
+                                getActivity().finish();
                             }else{
                                 Snackbar snackbar = Snackbar.make(mLoginFormView, R.string.error_email_not_verified, Snackbar.LENGTH_INDEFINITE);
                                 snackbar.show();

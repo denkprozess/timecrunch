@@ -231,6 +231,7 @@ public class TaskOverviewFragment extends Fragment {
                         itemView.getTop(), itemView.getRight(), itemView.getBottom());
             } else { // view is unSwiped
                 background.setBounds(0, 0, 0, 0);
+                icon.setBounds(0,0,0,0);
             }
             background.draw(c);
             icon.draw(c);

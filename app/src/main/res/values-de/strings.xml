@@ -35,4 +35,6 @@
     <!-- Strings related to tasks -->
     <string name="placeholder_editTasks">Bearbeite Task</string>
     <string name="is_task_repeating">Aufgabe wiederholt sich</string>
+    <string name="reminder">Erinnerung</string>
+    <string name="no_reminder_set">Keine Erinnerung gesetzt</string>
 </resources>

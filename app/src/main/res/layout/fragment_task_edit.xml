@@ -82,7 +82,7 @@
                     android:id="@+id/task_edit_reminder_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Reminder"
+                    android:text="@string/reminder"
                     android:textSize="15dp" />
 
                 <TextView
