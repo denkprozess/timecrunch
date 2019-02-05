@@ -47,7 +47,7 @@ public class PlannerDay {
         return day;
     }
 
-    public Map<String,TimeBlock> getBlocks() {
+    public Map<String, TimeBlock> getBlocks() {
         return blocks;
     }
 
@@ -55,7 +55,7 @@ public class PlannerDay {
         return blocks.get(id);
     }
 
-    public void setBlocks(Map<String,TimeBlock> blocks) {
+    public void setBlocks(Map<String, TimeBlock> blocks) {
         this.blocks = blocks;
     }
 }

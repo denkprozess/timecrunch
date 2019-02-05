@@ -72,7 +72,7 @@ public class PlannerDBHandler extends FireBaseDBHandler {
                     // there only ever is at most one document for the specified date
                     DocumentReference documentSnapshot = queryDocumentSnapshots.getDocuments().get(0).getReference();
                     String documentId = documentSnapshot.getId();
-                    DocumentReference taskDocument =plannerDaysCollection.document(documentId);
+                    DocumentReference taskDocument = plannerDaysCollection.document(documentId);
                     documentSnapshot.set(plannerDay).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {

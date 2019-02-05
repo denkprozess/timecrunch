@@ -1,5 +1,7 @@
 package de.timecrunch.timecrunch.view;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -25,8 +29,12 @@ import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.Locale;
+import java.util.Map;
 
 import de.timecrunch.timecrunch.R;
+import de.timecrunch.timecrunch.model.PlannerDay;
+import de.timecrunch.timecrunch.model.TimeBlock;
+import de.timecrunch.timecrunch.viewModel.PlannerViewModel;
 
 public class PlannerFragment extends Fragment {
 
@@ -37,14 +45,20 @@ public class PlannerFragment extends Fragment {
     private LinearLayout plannerContainer;
     private FrameLayout plannerFrame;
     private View view;
+    ProgressBar progressBar;
+
+    private PlannerViewModel plannerViewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.view = inflater.inflate(R.layout.fragment_planner, container, false);
+        plannerViewModel = ViewModelProviders.of(getActivity()).get(PlannerViewModel.class);
 
         actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         updateActionBar(CalendarDay.today(), false);
+
+        progressBar = getActivity().findViewById(R.id.tasks_progress_bar);
 
         mcv = view.findViewById(R.id.calendarView);
         mcv.setTopbarVisible(false);
@@ -58,7 +72,7 @@ public class PlannerFragment extends Fragment {
 
         initRows(plannerContainer);
         plannerFrame.setOnTouchListener(new PlannerOnTouchListener());
-        plannerFrame.setOnDragListener(new TemplateDropEventListener());
+        plannerFrame.setOnDragListener(new TemplateDropEventListener(plannerViewModel, progressBar));
 
         mcv.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
@@ -66,7 +80,7 @@ public class PlannerFragment extends Fragment {
                                        @NonNull CalendarDay date,
                                        boolean selected) {
                 updateActionBar(date, selected);
-                // updatePlanner();
+                updatePlanner(date.getYear(), date.getMonth(), date.getDay());
             }
         });
 
@@ -87,6 +101,54 @@ public class PlannerFragment extends Fragment {
         textView.setTextColor(getResources().getColor(R.color.materialcolorpicker__white));
         actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         actionBar.setCustomView(textView);
+    }
+
+    private void updatePlanner(int year, int month, int day) {
+
+        if(plannerViewModel.getPlannerLiveData().hasObservers()) {
+            plannerViewModel.getPlannerLiveData().removeObservers(this);
+        }
+        plannerViewModel.setUpLiveDataForDate(year, month, day, progressBar);
+        plannerViewModel.getPlannerLiveData().observe(this, new Observer<PlannerDay>() {
+            @Override
+            public void onChanged(@Nullable PlannerDay planner) {
+                drawPlanner(planner);
+            }
+        });
+    }
+
+    private PlannerDay getPlannerModel() {
+        // get planner from db
+        return null;
+    }
+
+    private int dpToPx(View v, int dp) {
+        float density = v.getContext().getResources()
+                .getDisplayMetrics()
+                .density;
+        return Math.round((float) dp * density);
+    }
+
+    private void drawPlanner(PlannerDay planner) {
+        if(planner != null) {
+            if(planner.getBlocks() != null) {
+                for(Map.Entry<String, TimeBlock> entry : planner.getBlocks().entrySet()) {
+                    TimeBlock t = entry.getValue();
+                    EditBlock block = new EditBlock(
+                            getContext(),
+                            t.getTasks(),
+                            t.getColor(),
+                            plannerFrame.getWidth(),
+                            t.getStartHours(),
+                            t.getStartMinutes() / 15);
+                    plannerFrame.addView(block);
+                }
+            }
+        }
+    }
+
+    private PlannerDay createDummyPlanner() {
+        return null;
     }
 
     private void initRows(LinearLayout ll) {

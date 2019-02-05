@@ -9,6 +9,12 @@ import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+
+import java.util.ArrayList;
+
+import de.timecrunch.timecrunch.model.TaskModel;
 
 public class EditBlock extends View {
 
@@ -37,18 +43,28 @@ public class EditBlock extends View {
     private float circleY = 0;
 
     private float circleRadius = dpToPx(6);
+    private ArrayList<TaskModel> tasks;
 
-    private String[] tasks = {"Duschen", "Zähne putzen", "Bett machen", "Frühstücken", "Aufräumen",
-            "Uni vorbereiten", "Stoßlüften", "Noch mehr", "Duschen", "Zähne putzen", "Bett machen",
-            "Frühstücken", "Aufräumen", "Uni vorbereiten", "Stoßlüften", "Noch mehr", "Duschen",
-            "Zähne putzen", "Bett machen", "Frühstücken", "Aufräumen", "Uni vorbereiten",
-            "Stoßlüften", "Noch mehr", "Duschen", "Zähne putzen", "Bett machen", "Frühstücken",
-            "Aufräumen", "Uni vorbereiten", "Stoßlüften", "Noch mehr"};
 
-    public EditBlock(Context context, String colorString, int hour, int quarter) {
+    public EditBlock(Context context, ArrayList<TaskModel> tasks, String colorString, int width, int hour, int quarter) {
         super(context);
         this.colorString = colorString;
         init(null);
+
+        this.tasks = new ArrayList<TaskModel>();
+
+        setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+
+        setLayoutParams(new ViewGroup.LayoutParams(width - dpToPx(60), dpToPx(77)));
+
+        setX(dpToPx(49));
+        setY(dpToPx(19) + (hour * dpToPx(72) + (quarter * dpToPx(18))));
+
+        setElevation(2);
+
+        setOnLongClickListener(new BlockOnLongClickListener());
     }
 
     public EditBlock(Context context, AttributeSet attrs) {
@@ -156,19 +172,19 @@ public class EditBlock extends View {
         }
 
         int counter = 0;
-        if(tasks.length <= calculateTaskEntryCount()) {
-            counter = tasks.length;
+        if(tasks.size() <= calculateTaskEntryCount()) {
+            counter = tasks.size();
         } else {
             counter = calculateTaskEntryCount();
         }
 
         for(int i = 0; i < counter; i++) {
-            int textWidth = (int) tasksTextColor.measureText(tasks[i]);
+            int textWidth = (int) tasksTextColor.measureText(tasks.get(i).getText());
             int posX = (getWidth() / 2) - (textWidth / 2);
             if(i < 1) {
-                canvas.drawText(tasks[i], posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), tasksTextColor);
+                canvas.drawText(tasks.get(i).getText(), posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), tasksTextColor);
             } else {
-                canvas.drawText(tasks[i], posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), ruledTasksTextColor);
+                canvas.drawText(tasks.get(i).getText(), posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), ruledTasksTextColor);
             }
         }
     }

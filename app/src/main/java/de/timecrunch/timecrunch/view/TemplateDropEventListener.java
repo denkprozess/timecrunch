@@ -8,10 +8,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+
+import de.timecrunch.timecrunch.model.TaskModel;
+import de.timecrunch.timecrunch.model.TimeBlock;
+import de.timecrunch.timecrunch.viewModel.PlannerViewModel;
 
 public class TemplateDropEventListener implements View.OnDragListener {
 
     private final int ROW_HEIGHT = 108;
+    private PlannerViewModel plannerViewModel;
+    private ProgressBar progressBar;
+
+    public TemplateDropEventListener(PlannerViewModel plannerViewModel, ProgressBar progressBar) {
+        this.plannerViewModel = plannerViewModel;
+        this.progressBar = progressBar;
+    }
 
     @Override
     public boolean onDrag(View v, DragEvent event) {
@@ -63,35 +75,13 @@ public class TemplateDropEventListener implements View.OnDragListener {
         if(_y - hours > 0.49) {
             quarters = 2;
         }
-
-        EditBlock editBlock = new EditBlock(v.getContext(), color, hours, quarters);
-        editBlock.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-        editBlock.setElevation(2);
-
-        editBlock.setLayoutParams(new ViewGroup.LayoutParams(
-                (v.getWidth() - dpToPx(v, 60)),
-                dpToPx(v, 77))); //72
-
-        editBlock.setX(dpToPx(v, 49));
-        //PADDING_TOP + (hour * HOUR) + (quarter * QUARTER))
-        editBlock.setY(dpToPx(v, 19) + (hours * dpToPx(v, 72)) + (quarters * dpToPx(v, 18)));
-        editBlock.setOnLongClickListener(new BlockOnLongClickListener());
-
-        ((FrameLayout) v).addView(editBlock);
+        // String categoryId, String color, int startHours, int startMinutes, int endHours, int endMinutes
+        TimeBlock blockModel = new TimeBlock("1", color, hours, quarters * 15, hours + 2, quarters * 15);
+        blockModel.addTask(new TaskModel("1", "Duschen"));
+        blockModel.addTask(new TaskModel("1", "Zähne putzen"));
+        blockModel.addTask(new TaskModel("1", "Zeitung lesen"));
+        plannerViewModel.addTimeBlock("1", color, hours, quarters * 15, hours + 2, quarters * 15, progressBar);
     }
-
-//    private final int SQUARE_SIZE = dpToPx(72);
-//
-//    private final int PADDING_TOP = dpToPx(19);
-//    private final int PADDING_LEFT = dpToPx(49);
-//
-//    private final int QUARTER = dpToPx(18);
-//    private final int HALFHOUR = dpToPx(36);
-//    private final int HOUR = dpToPx(72);
-//
-//    private static final int PADDING = 60;
 
     private int dpToPx(View v, int dp) {
         float density = v.getContext().getResources()

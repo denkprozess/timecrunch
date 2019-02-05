@@ -17,7 +17,7 @@ import java.util.Map;
 import de.timecrunch.timecrunch.model.Category;
 import de.timecrunch.timecrunch.utilities.CategoryDBHandler;
 
-public class CategoryViewModel extends AndroidViewModel implements CategoryViewModelDatabaseCallback {
+public class CategoryViewModel extends AndroidViewModel {
     private MutableLiveData<Map<Category, List<Category>>> categoriesLiveData;
     private CategoryDBHandler categoryDBHandler;
 

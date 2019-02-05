@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.widget.ProgressBar;
 
 import de.timecrunch.timecrunch.model.PlannerDay;
@@ -42,7 +43,6 @@ public class PlannerViewModel extends AndroidViewModel {
             currentMonth = month;
             currentDay = day;
             initializePlanner(progressBar);
-
         }
     }
 
@@ -51,8 +51,9 @@ public class PlannerViewModel extends AndroidViewModel {
     }
     public String addTimeBlock(String categoryId, String color, int startHours, int startMinutes, int endHours, int endMinutes, ProgressBar progressBar){
         PlannerDay plannerDay = plannerLiveData.getValue();
-        if(plannerDay==null){
+        if(plannerDay == null){
             plannerDay = new PlannerDay(currentYear, currentMonth, currentDay);
+            plannerLiveData.postValue(plannerDay);
         }
         String id = plannerDay.createBlock(categoryId,color,startHours,startMinutes,endHours,endMinutes);
         plannerDBHandler.savePlanner(plannerDay, progressBar);
