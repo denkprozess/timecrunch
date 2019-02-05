@@ -53,7 +53,7 @@ public class PlannerViewModel extends AndroidViewModel {
         PlannerDay plannerDay = plannerLiveData.getValue();
         if(plannerDay == null){
             plannerDay = new PlannerDay(currentYear, currentMonth, currentDay);
-            plannerLiveData.postValue(plannerDay);
+//            plannerLiveData.postValue(plannerDay);
         }
         String id = plannerDay.createBlock(categoryId,color,startHours,startMinutes,endHours,endMinutes);
         plannerDBHandler.savePlanner(plannerDay, progressBar);
