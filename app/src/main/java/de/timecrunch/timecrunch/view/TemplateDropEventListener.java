@@ -76,11 +76,10 @@ public class TemplateDropEventListener implements View.OnDragListener {
             quarters = 2;
         }
         // String categoryId, String color, int startHours, int startMinutes, int endHours, int endMinutes
-        TimeBlock blockModel = new TimeBlock("1", color, hours, quarters * 15, hours + 2, quarters * 15);
-        blockModel.addTask(new TaskModel("1", "Duschen"));
-        blockModel.addTask(new TaskModel("1", "Zähne putzen"));
-        blockModel.addTask(new TaskModel("1", "Zeitung lesen"));
         plannerViewModel.addTimeBlock("1", color, hours, quarters * 15, hours + 2, quarters * 15, progressBar);
+        // blockModel.addTask(new TaskModel("1", "Duschen"));
+        // blockModel.addTask(new TaskModel("1", "Zähne putzen"));
+        // blockModel.addTask(new TaskModel("1", "Zeitung lesen"));
     }
 
     private int dpToPx(View v, int dp) {

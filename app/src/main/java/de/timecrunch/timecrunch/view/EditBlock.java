@@ -36,6 +36,10 @@ public class EditBlock extends View {
 
     private String colorString;
     private int textHeight;
+    private int startHours;
+    private int startMinutes;
+    private int endHours;
+    private int endMinutes;
 
     private boolean editMode = false;
 
@@ -46,12 +50,21 @@ public class EditBlock extends View {
     private ArrayList<TaskModel> tasks;
 
 
-    public EditBlock(Context context, ArrayList<TaskModel> tasks, String colorString, int width, int hour, int quarter) {
+    public EditBlock(Context context, ArrayList<TaskModel> tasks, String colorString, int width,
+                     int startHours, int startMinutes, int endHours, int endMinutes) {
         super(context);
         this.colorString = colorString;
+        this.startHours = startHours;
+        this.startMinutes = startMinutes;
+        this.endHours = endHours;
+        this.endMinutes = endMinutes;
         init(null);
 
-        this.tasks = new ArrayList<TaskModel>();
+        if(tasks != null) {
+            this.tasks = new ArrayList<>(tasks);
+        } else {
+            this.tasks = new ArrayList<TaskModel>();
+        }
 
         setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -60,7 +73,7 @@ public class EditBlock extends View {
         setLayoutParams(new ViewGroup.LayoutParams(width - dpToPx(60), dpToPx(77)));
 
         setX(dpToPx(49));
-        setY(dpToPx(19) + (hour * dpToPx(72) + (quarter * dpToPx(18))));
+        setY(dpToPx(19) + (startHours * dpToPx(72) + ((startMinutes / 15) * dpToPx(18))));
 
         setElevation(2);
 
@@ -255,5 +268,13 @@ public class EditBlock extends View {
 
     public boolean isEditMode() {
         return editMode;
+    }
+
+    private void calculateSize(int startHours, int startMinutes, int endHours, int endMinutes) {
+        int startTime = (startHours * 60) + startMinutes;
+        int endTime = (endHours * 60) + endMinutes;
+        int time = endTime - startTime;
+
+
     }
 }

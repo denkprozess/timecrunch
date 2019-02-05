@@ -113,20 +113,9 @@ public class PlannerFragment extends Fragment {
             @Override
             public void onChanged(@Nullable PlannerDay planner) {
                 drawPlanner(planner);
+                Log.d("asdfasdfasdfasdf", "Planner drawed.");
             }
         });
-    }
-
-    private PlannerDay getPlannerModel() {
-        // get planner from db
-        return null;
-    }
-
-    private int dpToPx(View v, int dp) {
-        float density = v.getContext().getResources()
-                .getDisplayMetrics()
-                .density;
-        return Math.round((float) dp * density);
     }
 
     private void drawPlanner(PlannerDay planner) {
@@ -140,15 +129,13 @@ public class PlannerFragment extends Fragment {
                             t.getColor(),
                             plannerFrame.getWidth(),
                             t.getStartHours(),
-                            t.getStartMinutes() / 15);
+                            t.getStartMinutes(),
+                            t.getEndHours(),
+                            t.getEndMinutes());
                     plannerFrame.addView(block);
                 }
             }
         }
-    }
-
-    private PlannerDay createDummyPlanner() {
-        return null;
     }
 
     private void initRows(LinearLayout ll) {
