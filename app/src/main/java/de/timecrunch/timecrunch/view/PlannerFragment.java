@@ -71,8 +71,10 @@ public class PlannerFragment extends Fragment {
         sv.requestDisallowInterceptTouchEvent(true);
 
         initRows(plannerContainer);
-        plannerFrame.setOnTouchListener(new PlannerOnTouchListener());
+        plannerFrame.setOnTouchListener(new PlannerOnTouchListener(plannerViewModel, progressBar));
         plannerFrame.setOnDragListener(new TemplateDropEventListener(plannerViewModel, progressBar));
+        
+        updatePlanner(mcv.getSelectedDate().getYear(), mcv.getSelectedDate().getMonth(), mcv.getSelectedDate().getDay());
 
         mcv.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
@@ -104,7 +106,6 @@ public class PlannerFragment extends Fragment {
     }
 
     private void updatePlanner(int year, int month, int day) {
-
         if(plannerViewModel.getPlannerLiveData().hasObservers()) {
             plannerViewModel.getPlannerLiveData().removeObservers(this);
         }
@@ -113,18 +114,21 @@ public class PlannerFragment extends Fragment {
             @Override
             public void onChanged(@Nullable PlannerDay planner) {
                 drawPlanner(planner);
-                Log.d("asdfasdfasdfasdf", "Planner drawed.");
             }
         });
     }
 
     private void drawPlanner(PlannerDay planner) {
+
+        resetPlannerView();
+
         if(planner != null) {
             if(planner.getBlocks() != null) {
                 for(Map.Entry<String, TimeBlock> entry : planner.getBlocks().entrySet()) {
                     TimeBlock t = entry.getValue();
                     EditBlock block = new EditBlock(
                             getContext(),
+                            entry.getKey(),
                             t.getTasks(),
                             t.getColor(),
                             plannerFrame.getWidth(),
@@ -136,6 +140,11 @@ public class PlannerFragment extends Fragment {
                 }
             }
         }
+    }
+
+    private void resetPlannerView() {
+        plannerFrame.removeAllViews();
+        plannerFrame.addView(plannerContainer);
     }
 
     private void initRows(LinearLayout ll) {

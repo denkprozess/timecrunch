@@ -58,6 +58,7 @@ public class BlockOnTouchListener implements View.OnTouchListener {
 
                 if (scale) {
                     if((y > oldCircleY + DISTANCE) && (b.getY() + b.getHeight()) < LOWER_BOUND) {
+                        b.scaleUp();
                         ViewGroup.LayoutParams params = b.getLayoutParams();
                         params.height = params.height + DISTANCE;
                         b.setLayoutParams(params);
@@ -66,6 +67,7 @@ public class BlockOnTouchListener implements View.OnTouchListener {
                         oldCircleY = y;
                         b.invalidate();
                     } else if ((y < oldCircleY - DISTANCE) && (oldCircleY - DISTANCE > DISTANCE)) {
+                        b.scaleDown();
                         ViewGroup.LayoutParams params = b.getLayoutParams();
                         params.height = params.height - DISTANCE;
                         b.setLayoutParams(params);
@@ -77,8 +79,10 @@ public class BlockOnTouchListener implements View.OnTouchListener {
                 } else if (move) {
                     if ((y > (oldY + DISTANCE)) && ((b.getY() + b.getHeight()) < LOWER_BOUND)) {
                         b.setY(b.getY() + DISTANCE);
+                        b.moveDown();
                     } else if ((y < (oldY - DISTANCE)) && ((b.getY() - DISTANCE) > DISTANCE)) {
                         b.setY(b.getY() - DISTANCE);
+                        b.moveUp();
                     }
                 }
 

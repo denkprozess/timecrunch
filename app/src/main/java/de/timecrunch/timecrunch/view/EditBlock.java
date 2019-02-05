@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -35,6 +36,7 @@ public class EditBlock extends View {
     private Paint ruledTasksTextColor;
 
     private String colorString;
+    private String blockId;
     private int textHeight;
     private int startHours;
     private int startMinutes;
@@ -50,9 +52,10 @@ public class EditBlock extends View {
     private ArrayList<TaskModel> tasks;
 
 
-    public EditBlock(Context context, ArrayList<TaskModel> tasks, String colorString, int width,
-                     int startHours, int startMinutes, int endHours, int endMinutes) {
+    public EditBlock(Context context, String blockId, ArrayList<TaskModel> tasks, String colorString,
+                     int width, int startHours, int startMinutes, int endHours, int endMinutes) {
         super(context);
+        this.blockId = blockId;
         this.colorString = colorString;
         this.startHours = startHours;
         this.startMinutes = startMinutes;
@@ -70,7 +73,7 @@ public class EditBlock extends View {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
 
-        setLayoutParams(new ViewGroup.LayoutParams(width - dpToPx(60), dpToPx(77)));
+        setLayoutParams(new ViewGroup.LayoutParams(width - dpToPx(60), (dpToPx(5) + (getCalculatedSize() * dpToPx(18)))));
 
         setX(dpToPx(49));
         setY(dpToPx(19) + (startHours * dpToPx(72) + ((startMinutes / 15) * dpToPx(18))));
@@ -194,10 +197,10 @@ public class EditBlock extends View {
         for(int i = 0; i < counter; i++) {
             int textWidth = (int) tasksTextColor.measureText(tasks.get(i).getText());
             int posX = (getWidth() / 2) - (textWidth / 2);
-            if(i < 1) {
-                canvas.drawText(tasks.get(i).getText(), posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), tasksTextColor);
-            } else {
+            if(tasks.get(i).isChecked()) {
                 canvas.drawText(tasks.get(i).getText(), posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), ruledTasksTextColor);
+            } else {
+                canvas.drawText(tasks.get(i).getText(), posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), tasksTextColor);
             }
         }
     }
@@ -270,11 +273,73 @@ public class EditBlock extends View {
         return editMode;
     }
 
-    private void calculateSize(int startHours, int startMinutes, int endHours, int endMinutes) {
+    private int getCalculatedSize() {
         int startTime = (startHours * 60) + startMinutes;
         int endTime = (endHours * 60) + endMinutes;
-        int time = endTime - startTime;
+        return (endTime - startTime) / 15;
+    }
 
+    public void moveUp() {
+        int startTime = (startHours * 60) + startMinutes;
+        int endTime = (endHours * 60) + endMinutes;
 
+        startTime -= 15;
+        endTime -= 15;
+
+        this.startHours = startTime / 60;
+        this.startMinutes = startTime % 60;
+        this.endHours = endTime / 60;
+        this.endMinutes = endTime % 60;
+    }
+
+    public void moveDown() {
+        int startTime = (startHours * 60) + startMinutes;
+        int endTime = (endHours * 60) + endMinutes;
+
+        startTime += 15;
+        endTime += 15;
+
+        this.startHours = startTime / 60;
+        this.startMinutes = startTime % 60;
+        this.endHours = endTime / 60;
+        this.endMinutes = endTime % 60;
+    }
+
+    public void scaleUp() {
+        int endTime = (endHours * 60) + endMinutes;
+
+        endTime += 15;
+
+        this.endHours = endTime / 60;
+        this.endMinutes = endTime % 60;
+    }
+
+    public void scaleDown() {
+        int endTime = (endHours * 60) + endMinutes;
+
+        endTime -= 15;
+
+        this.endHours = endTime / 60;
+        this.endMinutes = endTime % 60;
+    }
+
+    public String getBlockId() {
+        return blockId;
+    }
+
+    public int getStartHours() {
+        return startHours;
+    }
+
+    public int getStartMinutes() {
+        return startMinutes;
+    }
+
+    public int getEndHours() {
+        return endHours;
+    }
+
+    public int getEndMinutes() {
+        return endMinutes;
     }
 }
