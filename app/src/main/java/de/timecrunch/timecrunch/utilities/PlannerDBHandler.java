@@ -28,7 +28,7 @@ public class PlannerDBHandler extends FireBaseDBHandler {
 
     private ListenerRegistration registration;
 
-    public void getPlannerAndRegisterListener(int day, int month, int year, final MutableLiveData<PlannerDay> plannerLiveData, final ProgressBar progressBar) {
+    public void getPlannerAndRegisterListener(int year, int month, int day, final MutableLiveData<PlannerDay> plannerLiveData, final ProgressBar progressBar) {
         showProgressBar(progressBar);
         final Query query = db.collection(userId).document("data").collection("planner").whereEqualTo("year", year)
                 .whereEqualTo("month", month).whereEqualTo("day", day);

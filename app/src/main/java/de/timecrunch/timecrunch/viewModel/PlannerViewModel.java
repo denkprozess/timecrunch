@@ -14,6 +14,9 @@ public class PlannerViewModel extends AndroidViewModel {
 
     private PlannerDBHandler plannerDBHandler;
     private MutableLiveData<PlannerDay> plannerLiveData;
+    private int currentDay;
+    private int currentMonth;
+    private int currentYear;
 
     public PlannerViewModel(@NonNull Application application) {
         super(application);
@@ -21,24 +24,25 @@ public class PlannerViewModel extends AndroidViewModel {
         plannerLiveData = new MutableLiveData<>();
     }
 
-    private void initializePlanner(int day, int month, int year, ProgressBar progressBar) {
-        plannerDBHandler.getPlannerAndRegisterListener(day, month, year, plannerLiveData, progressBar);
+    private void initializePlanner(ProgressBar progressBar) {
+        plannerDBHandler.getPlannerAndRegisterListener(currentYear, currentMonth, currentDay, plannerLiveData, progressBar);
     }
 
     public MutableLiveData<PlannerDay> getPlannerLiveData() {
         return plannerLiveData;
     }
 
-    public void setUpLiveDataForDate(int day, int month, int year, ProgressBar progressBar) {
+    public void setUpLiveDataForDate(int year, int month, int day, ProgressBar progressBar) {
         PlannerDay currentPlannerDay = plannerLiveData.getValue();
-        if(currentPlannerDay==null){
-            initializePlanner(day,month,year,progressBar);
-        }
         // check if current plannerDay is already the correct one
-        boolean isCorrectPlannerDayAlreadySet = currentPlannerDay != null && currentPlannerDay.getDay() == day &&
-                currentPlannerDay.getMonth() == month && currentPlannerDay.getYear() == year;
+        boolean isCorrectPlannerDayAlreadySet = currentPlannerDay != null && currentDay == day &&
+                currentMonth == month && currentYear == year;
         if (!isCorrectPlannerDayAlreadySet) {
-            initializePlanner(day,month,year,progressBar);
+            currentYear = year;
+            currentMonth = month;
+            currentDay = day;
+            initializePlanner(progressBar);
+
         }
     }
 
@@ -47,6 +51,9 @@ public class PlannerViewModel extends AndroidViewModel {
     }
     public String addTimeBlock(String categoryId, String color, int startHours, int startMinutes, int endHours, int endMinutes, ProgressBar progressBar){
         PlannerDay plannerDay = plannerLiveData.getValue();
+        if(plannerDay==null){
+            plannerDay = new PlannerDay(currentYear, currentMonth, currentDay);
+        }
         String id = plannerDay.createBlock(categoryId,color,startHours,startMinutes,endHours,endMinutes);
         plannerDBHandler.savePlanner(plannerDay, progressBar);
         return id;
