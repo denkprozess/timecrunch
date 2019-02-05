@@ -43,10 +43,6 @@ public class TaskViewModel extends AndroidViewModel {
         taskDBHandler.getTasksAndRegisterListener(categoryId,tasksLiveData,progressBar);
     }
 
-    public Map<String, TaskModel> getTaskList(){
-        return tasksLiveData.getValue();
-    }
-
     public TaskModel getTaskAtPosition(int position){
         Map<String,TaskModel> taskModelMap = tasksLiveData.getValue();
         ArrayList<TaskModel> taskList = new ArrayList<>(taskModelMap.values());
