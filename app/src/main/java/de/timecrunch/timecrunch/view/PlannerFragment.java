@@ -37,6 +37,7 @@ import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.PlannerDay;
 import de.timecrunch.timecrunch.model.TaskModel;
 import de.timecrunch.timecrunch.model.TimeBlock;
+import de.timecrunch.timecrunch.model.TimeBlockTaskModel;
 import de.timecrunch.timecrunch.viewModel.PlannerViewModel;
 
 public class PlannerFragment extends Fragment {
@@ -151,7 +152,7 @@ public class PlannerFragment extends Fragment {
         plannerFrame.addView(plannerContainer);
     }
 
-    private void showEditDialog(ArrayList<TaskModel> tasks) {
+    private void showEditDialog(ArrayList<TimeBlockTaskModel> tasks) {
         FragmentManager fm = getFragmentManager();
         EditBlockTasksDialogFragment editBlockTasksDialogFragment = EditBlockTasksDialogFragment.newInstance("Tasks", tasks);
         editBlockTasksDialogFragment.show(fm, "fragment_edit_block_tasks");
@@ -196,9 +197,9 @@ public class PlannerFragment extends Fragment {
 
     public class BlockOnClickListener implements View.OnClickListener {
 
-        ArrayList<TaskModel> tasks;
+        ArrayList<TimeBlockTaskModel> tasks;
 
-        public BlockOnClickListener(ArrayList<TaskModel> tasks) {
+        public BlockOnClickListener(ArrayList<TimeBlockTaskModel> tasks) {
             this.tasks = tasks;
         }
 

@@ -27,18 +27,19 @@ import java.util.ArrayList;
 
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.TaskModel;
+import de.timecrunch.timecrunch.model.TimeBlockTaskModel;
 
 public class EditBlockTasksDialogFragment extends DialogFragment {
 
     RecyclerView taskListView;
     ItemTouchHelper itemTouchHelper;
-    ArrayList<TaskModel> taskList;
+    ArrayList<TimeBlockTaskModel> taskList;
 
     public EditBlockTasksDialogFragment() {
 
     }
 
-    public static EditBlockTasksDialogFragment newInstance(String title, ArrayList<TaskModel> taskList) {
+    public static EditBlockTasksDialogFragment newInstance(String title, ArrayList<TimeBlockTaskModel> taskList) {
         EditBlockTasksDialogFragment fragment = new EditBlockTasksDialogFragment();
         fragment.taskList = taskList;
         Bundle args = new Bundle();
