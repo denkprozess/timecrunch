@@ -2,8 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="5dp"
-    android:paddingBottom="5dp">
+    android:padding="10dp">
 
 
     <TextView
@@ -11,8 +10,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:padding="15dp"
-        android:textSize="18sp" />
+        android:textSize="16sp"
+        android:paddingLeft="5dp"/>
 
 
 </android.support.constraint.ConstraintLayout>

@@ -199,7 +199,7 @@ public class EditBlockBackup extends View {
 
     public void setEditMode(boolean b) {
         if(b) {
-            this.setOnTouchListener(new BlockOnTouchListener());
+            this.setOnTouchListener(new BlockOnEditModeTouchListener());
             invalidate();
         } else {
             this.setOnTouchListener(null);

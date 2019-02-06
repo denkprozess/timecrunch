@@ -15,9 +15,8 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 import de.timecrunch.timecrunch.model.TaskModel;
-import de.timecrunch.timecrunch.model.TimeBlockTaskModel;
 
-public class EditBlock extends View {
+public class BlockView extends View {
 
     // 18 - 1 = 0.25h
     // 36 - 1 = 0.50h
@@ -49,10 +48,10 @@ public class EditBlock extends View {
     private float circleY = 0;
 
     private float circleRadius = dpToPx(6);
-    private ArrayList<TimeBlockTaskModel> tasks;
+    private ArrayList<TaskModel> tasks;
 
 
-    public EditBlock(Context context, String blockId, ArrayList<TimeBlockTaskModel> tasks, String colorString,
+    public BlockView(Context context, String blockId, ArrayList<TaskModel> tasks, String colorString,
                      int width, int startHours, int startMinutes, int endHours, int endMinutes) {
         super(context);
         this.blockId = blockId;
@@ -66,7 +65,7 @@ public class EditBlock extends View {
         if(tasks != null) {
             this.tasks = new ArrayList<>(tasks);
         } else {
-            this.tasks = new ArrayList<TimeBlockTaskModel>();
+            this.tasks = new ArrayList<TaskModel>();
         }
 
         setLayoutParams(new LinearLayout.LayoutParams(
@@ -83,17 +82,17 @@ public class EditBlock extends View {
         setOnLongClickListener(new BlockOnLongClickListener());
     }
 
-    public EditBlock(Context context, AttributeSet attrs) {
+    public BlockView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(attrs);
     }
 
-    public EditBlock(Context context, AttributeSet attrs, int defStyleAttr) {
+    public BlockView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(attrs);
     }
 
-    public EditBlock(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public BlockView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(attrs);
     }
@@ -195,14 +194,12 @@ public class EditBlock extends View {
         }
 
         for(int i = 0; i < counter; i++) {
-            TaskModel task = tasks.get(i).getTask();
-            boolean isFinished = tasks.get(i).getIsFinished();
-            int textWidth = (int) tasksTextColor.measureText(task.getText());
+            int textWidth = (int) tasksTextColor.measureText(tasks.get(i).getText());
             int posX = (getWidth() / 2) - (textWidth / 2);
-            if(isFinished) {
-                canvas.drawText(task.getText(), posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), ruledTasksTextColor);
+            if(tasks.get(i).isChecked()) {
+                canvas.drawText(tasks.get(i).getText(), posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), ruledTasksTextColor);
             } else {
-                canvas.drawText(task.getText(), posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), tasksTextColor);
+                canvas.drawText(tasks.get(i).getText(), posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), tasksTextColor);
             }
         }
     }
@@ -242,7 +239,7 @@ public class EditBlock extends View {
 
     public void setEditMode(boolean b) {
         if(b) {
-            this.setOnTouchListener(new BlockOnTouchListener());
+            this.setOnTouchListener(new BlockOnEditModeTouchListener());
             invalidate();
         } else {
             this.setOnTouchListener(null);

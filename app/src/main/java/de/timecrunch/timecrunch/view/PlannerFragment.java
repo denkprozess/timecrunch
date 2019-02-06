@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -28,11 +29,13 @@ import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 import org.threeten.bp.format.DateTimeFormatter;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.PlannerDay;
+import de.timecrunch.timecrunch.model.TaskModel;
 import de.timecrunch.timecrunch.model.TimeBlock;
 import de.timecrunch.timecrunch.viewModel.PlannerViewModel;
 
@@ -73,7 +76,7 @@ public class PlannerFragment extends Fragment {
         initRows(plannerContainer);
         plannerFrame.setOnTouchListener(new PlannerOnTouchListener(plannerViewModel, progressBar));
         plannerFrame.setOnDragListener(new TemplateDropEventListener(plannerViewModel, progressBar));
-        
+
         updatePlanner(mcv.getSelectedDate().getYear(), mcv.getSelectedDate().getMonth(), mcv.getSelectedDate().getDay());
 
         mcv.setOnDateChangedListener(new OnDateSelectedListener() {
@@ -126,7 +129,7 @@ public class PlannerFragment extends Fragment {
             if(planner.getBlocks() != null) {
                 for(Map.Entry<String, TimeBlock> entry : planner.getBlocks().entrySet()) {
                     TimeBlock t = entry.getValue();
-                    EditBlock block = new EditBlock(
+                    BlockView block = new BlockView(
                             getContext(),
                             entry.getKey(),
                             t.getTasks(),
@@ -136,6 +139,7 @@ public class PlannerFragment extends Fragment {
                             t.getStartMinutes(),
                             t.getEndHours(),
                             t.getEndMinutes());
+                    block.setOnClickListener(new BlockOnClickListener(t.getTasks()));
                     plannerFrame.addView(block);
                 }
             }
@@ -145,6 +149,12 @@ public class PlannerFragment extends Fragment {
     private void resetPlannerView() {
         plannerFrame.removeAllViews();
         plannerFrame.addView(plannerContainer);
+    }
+
+    private void showEditDialog(ArrayList<TaskModel> tasks) {
+        FragmentManager fm = getFragmentManager();
+        EditBlockTasksDialogFragment editBlockTasksDialogFragment = EditBlockTasksDialogFragment.newInstance("Tasks", tasks);
+        editBlockTasksDialogFragment.show(fm, "fragment_edit_block_tasks");
     }
 
     private void initRows(LinearLayout ll) {
@@ -182,5 +192,19 @@ public class PlannerFragment extends Fragment {
                 .getDisplayMetrics()
                 .density;
         return Math.round((float) dp * density);
+    }
+
+    public class BlockOnClickListener implements View.OnClickListener {
+
+        ArrayList<TaskModel> tasks;
+
+        public BlockOnClickListener(ArrayList<TaskModel> tasks) {
+            this.tasks = tasks;
+        }
+
+        @Override
+        public void onClick(View v) {
+            showEditDialog(tasks);
+        }
     }
 }

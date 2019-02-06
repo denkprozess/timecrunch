@@ -32,16 +32,16 @@ public class PlannerOnTouchListener implements View.OnTouchListener {
             case MotionEvent.ACTION_UP: {
                 ViewGroup vg = (ViewGroup) v;
                 for(int i = 0; i < vg.getChildCount(); i++) {
-                    if(vg.getChildAt(i) instanceof EditBlock) {
-                        if(((EditBlock)vg.getChildAt(i)).isEditMode()) {
-                            EditBlock eb = ((EditBlock)vg.getChildAt(i));
+                    if(vg.getChildAt(i) instanceof BlockView) {
+                        if(((BlockView)vg.getChildAt(i)).isEditMode()) {
+                            BlockView eb = ((BlockView)vg.getChildAt(i));
                             TimeBlock tb = plannerViewModel.getTimeBlock(eb.getBlockId());
                             tb.setStartHours(eb.getStartHours());
                             tb.setStartMinutes(eb.getStartMinutes());
                             tb.setEndHours(eb.getEndHours());
                             tb.setEndMinutes(eb.getEndMinutes());
                             plannerViewModel.changeTimeBlock(eb.getBlockId(), tb, progressBar);
-                            ((EditBlock)vg.getChildAt(i)).setEditMode(false);
+                            ((BlockView)vg.getChildAt(i)).setEditMode(false);
                         }
                     }
                 } return true;

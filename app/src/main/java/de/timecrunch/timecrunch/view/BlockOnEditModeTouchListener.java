@@ -1,11 +1,10 @@
 package de.timecrunch.timecrunch.view;
 
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class BlockOnTouchListener implements View.OnTouchListener {
+public class BlockOnEditModeTouchListener implements View.OnTouchListener {
 
     boolean move = false;
     boolean scale = false;
@@ -16,7 +15,7 @@ public class BlockOnTouchListener implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
 
-        EditBlock b = (EditBlock) v;
+        BlockView b = (BlockView) v;
 
         switch(event.getAction()) {
             case MotionEvent.ACTION_DOWN: {
