@@ -26,7 +26,6 @@ public class TaskSelectionViewModel extends AndroidViewModel {
     private PlannerDBHandler plannerDBHandler;
     private TaskSelectionDBHandler taskSelectionDBHandler;
     private MutableLiveData<Map<TaskModel, Boolean>> selectionLiveData;
-    private String timeBlockId;
 
     private PlannerDay currentPlannerDay;
     private int currentYear;
@@ -60,7 +59,7 @@ public class TaskSelectionViewModel extends AndroidViewModel {
         if (currentPlannerDay != null && categoryTaskList != null) {
             // build hashmap with already selected tasks
             Map<String, TimeBlockTaskModel> plannerTaskMap = new HashMap<>();
-            for (TimeBlockTaskModel task : currentPlannerDay.getTimeBlock(timeBlockId).getTasks()) {
+            for (TimeBlockTaskModel task : currentPlannerDay.getTimeBlock(currentTimeBlockId).getTasks()) {
                 plannerTaskMap.put(task.getTask().getId(), task);
             }
             // map to store all tasks with their selection states in
@@ -77,7 +76,7 @@ public class TaskSelectionViewModel extends AndroidViewModel {
     }
 
     public void initializeSelectedTasks(ProgressBar progressBar) {
-        taskSelectionDBHandler.getTaskSelectionAndRegisterListener(currentYear, currentMonth, currentDay, timeBlockId, this, progressBar);
+        taskSelectionDBHandler.getTaskSelectionAndRegisterListener(currentYear, currentMonth, currentDay, currentTimeBlockId, this, progressBar);
         //taskSelectionDBHandler.getTasksAndRegisterListener(currentCategoryId,this,progressBar);
     }
 

@@ -140,7 +140,7 @@ public class PlannerFragment extends Fragment {
                             t.getStartMinutes(),
                             t.getEndHours(),
                             t.getEndMinutes());
-                    block.setOnClickListener(new BlockOnClickListener(t.getTasks()));
+                    block.setOnClickListener(new BlockOnClickListener(entry.getKey()));
                     plannerFrame.addView(block);
                 }
             }
@@ -152,9 +152,9 @@ public class PlannerFragment extends Fragment {
         plannerFrame.addView(plannerContainer);
     }
 
-    private void showEditDialog(ArrayList<TimeBlockTaskModel> tasks) {
+    private void showEditDialog(String timeblockId) {
         FragmentManager fm = getFragmentManager();
-        EditBlockTasksDialogFragment editBlockTasksDialogFragment = EditBlockTasksDialogFragment.newInstance("Tasks", tasks);
+        EditBlockTasksDialogFragment editBlockTasksDialogFragment = EditBlockTasksDialogFragment.newInstance("", mcv.getSelectedDate().getYear(), mcv.getSelectedDate().getMonth(), mcv.getSelectedDate().getDay(), timeblockId);
         editBlockTasksDialogFragment.show(fm, "fragment_edit_block_tasks");
     }
 
@@ -197,15 +197,15 @@ public class PlannerFragment extends Fragment {
 
     public class BlockOnClickListener implements View.OnClickListener {
 
-        ArrayList<TimeBlockTaskModel> tasks;
+        String timeblockId;
 
-        public BlockOnClickListener(ArrayList<TimeBlockTaskModel> tasks) {
-            this.tasks = tasks;
+        public BlockOnClickListener(String timeblockId) {
+            this.timeblockId = timeblockId;
         }
 
         @Override
         public void onClick(View v) {
-            showEditDialog(tasks);
+            showEditDialog(timeblockId);
         }
     }
 }

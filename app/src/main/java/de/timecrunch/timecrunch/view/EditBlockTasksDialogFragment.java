@@ -1,8 +1,9 @@
 package de.timecrunch.timecrunch.view;
 
-import android.app.Dialog;
+import android.annotation.SuppressLint;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -22,26 +23,42 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.TaskModel;
 import de.timecrunch.timecrunch.model.TimeBlockTaskModel;
+import de.timecrunch.timecrunch.viewModel.TaskSelectionViewModel;
 
 public class EditBlockTasksDialogFragment extends DialogFragment {
 
     RecyclerView taskListView;
     ItemTouchHelper itemTouchHelper;
     ArrayList<TimeBlockTaskModel> taskList;
+    private TaskSelectionViewModel taskSelectionViewModel;
+    private ProgressBar progressBar;
+    private int year;
+    private int month;
+    private int day;
+    private String timeblockId;
 
     public EditBlockTasksDialogFragment() {
 
     }
 
-    public static EditBlockTasksDialogFragment newInstance(String title, ArrayList<TimeBlockTaskModel> taskList) {
-        EditBlockTasksDialogFragment fragment = new EditBlockTasksDialogFragment();
-        fragment.taskList = taskList;
+    @SuppressLint("ValidFragment")
+    public EditBlockTasksDialogFragment(int year, int month, int day, String timeblockId) {
+        this.year = year;
+        this.month = month;
+        this.day = day;
+        this.timeblockId = timeblockId;
+    }
+
+    public static EditBlockTasksDialogFragment newInstance(String title, int year, int month, int day, String timeblockId) {
+        EditBlockTasksDialogFragment fragment = new EditBlockTasksDialogFragment(year, month, day, timeblockId);
         Bundle args = new Bundle();
         args.putString("title", title);
         fragment.setArguments(args);
@@ -52,6 +69,15 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        taskSelectionViewModel = ViewModelProviders.of(getActivity()).get(TaskSelectionViewModel.class);
+        progressBar = getActivity().findViewById(R.id.tasks_progress_bar);
+        taskSelectionViewModel.setUpLiveData(year, month, day, timeblockId, progressBar);
+        taskSelectionViewModel.getTaskSelectionLiveData().observe(this, new Observer<Map<TaskModel, Boolean>>() {
+            @Override
+            public void onChanged(@Nullable Map<TaskModel, Boolean> taskModelBooleanMap) {
+                setUpListAdapter(taskModelBooleanMap);
+            }
+        });
         return inflater.inflate(R.layout.fragment_edit_block_tasks, container);
     }
 
@@ -65,7 +91,7 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setUpDataView(view);
-        setUpListAdapter();
+        // setUpListAdapter(taskModelBooleanMap);
     }
 
     private void setUpDataView(View view) {
@@ -78,9 +104,9 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
         taskListView.addOnItemTouchListener(new EditBlockRecyclerTouchListener(this.getContext(), taskListView));
     }
 
-    private void setUpListAdapter() {
-        if (taskList != null) {
-            EditBlockTaskListAdapter adapter = new EditBlockTaskListAdapter(taskList);
+    private void setUpListAdapter(Map<TaskModel, Boolean> taskModelMap) {
+        if (taskModelMap != null) {
+            EditBlockCategoryTaskListAdapter adapter = new EditBlockCategoryTaskListAdapter(new ArrayList<TaskModel>(taskModelMap.keySet()));
             taskListView.setLayoutManager(new LinearLayoutManager(getContext()));
             taskListView.setAdapter(adapter);
             if(itemTouchHelper!=null){
@@ -92,11 +118,11 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
     }
 
     private class EditBlockSwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
-        private EditBlockTaskListAdapter adapter;
+        private EditBlockCategoryTaskListAdapter adapter;
         private Drawable icon;
         private ColorDrawable background;
 
-        public EditBlockSwipeToDeleteCallback(EditBlockTaskListAdapter adapter, Context context) {
+        public EditBlockSwipeToDeleteCallback(EditBlockCategoryTaskListAdapter adapter, Context context) {
             super(0, ItemTouchHelper.LEFT);
             this.adapter = adapter;
             this.icon = ContextCompat.getDrawable(context,
