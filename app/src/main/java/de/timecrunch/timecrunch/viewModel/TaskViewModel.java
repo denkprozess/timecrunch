@@ -95,6 +95,13 @@ public class TaskViewModel extends AndroidViewModel {
         taskDBHandler.changeTask(task, progressBar);
     }
 
+    public void changeTaskToSurviveConfigChange(TaskModel task){
+        String taskId = task.getId();
+        Map<String,TaskModel> taskModelMap = tasksLiveData.getValue();
+        taskModelMap.put(taskId, task);
+        tasksLiveData.setValue(taskModelMap);
+    }
+
     public void invalidate(){
         invalidated = true;
     }

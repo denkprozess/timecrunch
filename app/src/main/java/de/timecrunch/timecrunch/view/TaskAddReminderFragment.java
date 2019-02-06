@@ -4,11 +4,14 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -49,6 +53,7 @@ public class TaskAddReminderFragment extends Fragment {
     private Button deleteButton;
     private TextView dateText, timeText, repeatText, repeatNoText, repeatTypeText;
     private Calendar calendar;
+    private ProgressBar progressBar;
 
     private int year, month, hour, mMinute, day;
     private String time, date, mRepeat, mRepeatNo, mRepeatType;
@@ -91,10 +96,22 @@ public class TaskAddReminderFragment extends Fragment {
         setRetainInstance(true);
         setHasOptionsMenu(true);
         taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
-        task = taskViewModel.getTask(taskId);
-        taskText = task.getText();
-        taskLocation = task.getLocation();
-        alarmData = task.getAlarm();
+        LiveData<Map<String,TaskModel>> taskMapLiveData = taskViewModel.getTaskMapLiveData();
+        if(taskMapLiveData.hasObservers()) {
+            taskMapLiveData.removeObservers(this);
+        }
+        taskMapLiveData.observe(this, new Observer<Map<String, TaskModel>>() {
+            @Override
+            public void onChanged(@Nullable final Map<String, TaskModel> taskMapLiveData) {
+                task = taskViewModel.getTask(taskId);
+                if(task!=null) {
+                    taskText = task.getText();
+                    taskLocation = task.getLocation();
+                    alarmData = task.getAlarm();
+                    setUpDataView();
+                }
+            }
+        });
     }
 
     @Override
@@ -112,8 +129,34 @@ public class TaskAddReminderFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Activity parentActivity = getActivity();
+        progressBar = parentActivity.findViewById(R.id.task_reminder_progress_bar);
+        taskViewModel.setUpLiveData(categoryId, progressBar);
+    }
 
-        RelativeLayout dateLayout = getActivity().findViewById(R.id.date_layout);
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // save made changes before configuration changes
+        if(alarmData == null) {
+            alarmData = new TaskAlarm(year, month, hour, mMinute, day, Boolean.parseBoolean(mRepeat), Integer.parseInt(mRepeatNo), mRepeatType);
+        } else {
+            alarmData.setYear(year);
+            alarmData.setMonth(month);
+            alarmData.setMinute(mMinute);
+            alarmData.setHour(hour);
+            alarmData.setDay(day);
+            alarmData.setRepeat(Boolean.parseBoolean(mRepeat));
+            alarmData.setRepeatNo(Integer.parseInt(mRepeatNo));
+            alarmData.setRepeatType(mRepeatType);
+        }
+        task.setAlarm(alarmData);
+        taskViewModel.changeTaskToSurviveConfigChange(task);
+    }
+
+    private void setUpDataView(){
+        Activity parentActivity = getActivity();
+        RelativeLayout dateLayout = parentActivity.findViewById(R.id.date_layout);
         dateLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,7 +164,7 @@ public class TaskAddReminderFragment extends Fragment {
             }
         });
 
-        RelativeLayout timeLayout = getActivity().findViewById(R.id.time_layout);
+        RelativeLayout timeLayout = parentActivity.findViewById(R.id.time_layout);
         timeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,7 +172,7 @@ public class TaskAddReminderFragment extends Fragment {
             }
         });
 
-        RelativeLayout repeatNoLayout = getActivity().findViewById(R.id.repeat_no_layout);
+        RelativeLayout repeatNoLayout = parentActivity.findViewById(R.id.repeat_no_layout);
         repeatNoLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,7 +180,7 @@ public class TaskAddReminderFragment extends Fragment {
             }
         });
 
-        RelativeLayout repeatTypeLayout = getActivity().findViewById(R.id.RepeatType_layout);
+        RelativeLayout repeatTypeLayout = parentActivity.findViewById(R.id.RepeatType_layout);
         repeatTypeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -145,7 +188,7 @@ public class TaskAddReminderFragment extends Fragment {
             }
         });
 
-        deleteButton = getActivity().findViewById(R.id.delete_reminder_button);
+        deleteButton = parentActivity.findViewById(R.id.delete_reminder_button);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,12 +196,12 @@ public class TaskAddReminderFragment extends Fragment {
             }
         });
 
-        dateText = (TextView) getActivity().findViewById(R.id.set_date);
-        timeText = (TextView) getActivity().findViewById(R.id.set_time);
-        repeatText = (TextView) getActivity().findViewById(R.id.set_repeat);
-        repeatNoText = (TextView) getActivity().findViewById(R.id.set_repeat_no);
-        repeatTypeText = (TextView) getActivity().findViewById(R.id.set_repeat_type);
-        repeatSwitch = (Switch) getActivity().findViewById(R.id.repeat_switch);
+        dateText = (TextView) parentActivity.findViewById(R.id.set_date);
+        timeText = (TextView) parentActivity.findViewById(R.id.set_time);
+        repeatText = (TextView) parentActivity.findViewById(R.id.set_repeat);
+        repeatNoText = (TextView) parentActivity.findViewById(R.id.set_repeat_no);
+        repeatTypeText = (TextView)parentActivity.findViewById(R.id.set_repeat_type);
+        repeatSwitch = (Switch) parentActivity.findViewById(R.id.repeat_switch);
 
         repeatSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -218,15 +261,8 @@ public class TaskAddReminderFragment extends Fragment {
             case R.id.action_bar_finished:
                 saveReminder();
                 task.setAlarm(alarmData);
-                taskViewModel.changeTask(task, null);
-                TaskEditFragment fragment = new TaskEditFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("CATEGORY_ID", categoryId);
-                bundle.putString("CATEGORY_NAME", categoryName);
-                bundle.putString("TASK_ID", taskId);
-                fragment.setArguments(bundle);
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        fragment).commit();
+                taskViewModel.changeTask(task, progressBar);
+                getActivity().finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -401,15 +437,8 @@ public class TaskAddReminderFragment extends Fragment {
                 Toast.LENGTH_SHORT).show();
 
         task.setAlarm(null);
-        taskViewModel.changeTask(task, null);
-
-        TaskOverviewFragment fragment = new TaskOverviewFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("CATEGORY_ID", categoryId);
-        bundle.putString("CATEGORY_NAME", categoryName);
-        fragment.setArguments(bundle);
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                fragment).commit();
+        taskViewModel.changeTask(task, progressBar);
+        getActivity().finish();
 
     }
 }

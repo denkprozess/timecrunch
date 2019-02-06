@@ -1,5 +1,6 @@
 package de.timecrunch.timecrunch.view;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -45,7 +46,7 @@ import de.timecrunch.timecrunch.viewModel.TaskViewModel;
 
 public class TaskOverviewFragment extends Fragment {
 
-    private final int REQUEST_EDIT_TASK=1;
+    private final int REQUEST_EDIT_TASK = 1;
 
     private String categoryId;
     private String categeoryName;
@@ -84,8 +85,11 @@ public class TaskOverviewFragment extends Fragment {
         setRetainInstance(true);
         //taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
         taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
-        taskViewModel.setUpLiveData(categoryId, progressBar);
-        taskViewModel.getTaskMapLiveData().observe(this, new Observer<Map<String, TaskModel>>() {
+        LiveData<Map<String,TaskModel>> taskMapLiveData = taskViewModel.getTaskMapLiveData();
+        if(taskMapLiveData.hasObservers()) {
+            taskMapLiveData.removeObservers(this);
+        }
+        taskMapLiveData.observe(this, new Observer<Map<String, TaskModel>>() {
             @Override
             public void onChanged(@Nullable final Map<String, TaskModel> taskMapLiveData) {
                 setUpListAdapter(taskMapLiveData);
@@ -97,10 +101,10 @@ public class TaskOverviewFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         progressBar = getActivity().findViewById(R.id.tasks_progress_bar);
+        taskViewModel.setUpLiveData(categoryId, progressBar);
         setUpActionBar();
         setUpFloatingActionButton(view);
         setUpDataView(view);
-
     }
 
     private void setUpActionBar() {
@@ -131,10 +135,11 @@ public class TaskOverviewFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case REQUEST_EDIT_TASK:
                 taskViewModel.invalidate();
-                taskViewModel.setUpLiveData(categoryId, progressBar);;
+                taskViewModel.setUpLiveData(categoryId, progressBar);
+                ;
         }
     }
 
@@ -143,7 +148,7 @@ public class TaskOverviewFragment extends Fragment {
             TaskListAdapter adapter = new TaskListAdapter(new ArrayList<>(taskMap.values()));
             taskListView.setLayoutManager(new LinearLayoutManager(getContext()));
             taskListView.setAdapter(adapter);
-            if(itemTouchHelper!=null){
+            if (itemTouchHelper != null) {
                 itemTouchHelper.attachToRecyclerView(null);
             }
             itemTouchHelper = new ItemTouchHelper(new SwipeToDeleteCallback(adapter, this.getContext()));
@@ -183,7 +188,7 @@ public class TaskOverviewFragment extends Fragment {
     }
 
     private void addNewTask(String text) {
-        taskViewModel.addTask(categoryId, new TaskModel(categoryId,text), progressBar);
+        taskViewModel.addTask(categoryId, new TaskModel(categoryId, text), progressBar);
     }
 
     private class SwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
@@ -208,7 +213,7 @@ public class TaskOverviewFragment extends Fragment {
         public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
             int position = viewHolder.getAdapterPosition();
             TaskModel deletedTask = adapter.deleteItem(position);
-           taskViewModel.removeTask(deletedTask, progressBar);
+            taskViewModel.removeTask(deletedTask, progressBar);
         }
 
         @Override
@@ -231,52 +236,56 @@ public class TaskOverviewFragment extends Fragment {
                         itemView.getTop(), itemView.getRight(), itemView.getBottom());
             } else { // view is unSwiped
                 background.setBounds(0, 0, 0, 0);
-                icon.setBounds(0,0,0,0);
+                icon.setBounds(0, 0, 0, 0);
             }
             background.draw(c);
             icon.draw(c);
         }
     }
 
-    private class RecyclerTouchListener implements RecyclerView.OnItemTouchListener{
+    private class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
 
         private GestureDetector gestureDetector;
 
         public RecyclerTouchListener(Context context, final RecyclerView recycleView) {
-            this.gestureDetector = new GestureDetector(context,new GestureDetector.SimpleOnGestureListener(){
+            this.gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public boolean onSingleTapUp(MotionEvent e) {
                     return true;
                 }
 
                 @Override
-                public void onLongPress(MotionEvent e) {}
+                public void onLongPress(MotionEvent e) {
+                }
             });
         }
 
         @Override
         public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent motionEvent) {
-            View child = recyclerView.findChildViewUnder(motionEvent.getX(),motionEvent.getY());
-            if(child != null && gestureDetector.onTouchEvent(motionEvent)) {
+            View child = recyclerView.findChildViewUnder(motionEvent.getX(), motionEvent.getY());
+            if (child != null && gestureDetector.onTouchEvent(motionEvent)) {
                 int position = recyclerView.getChildAdapterPosition(child);
                 TaskModel task = taskViewModel.getTaskAtPosition(position);
                 Intent intent = new Intent(getContext(), TaskEditActivity.class);
                 intent.putExtra("CATEGORY_ID", categoryId);
                 intent.putExtra("CATEGORY_NAME", categeoryName);
                 intent.putExtra("TASK_ID", task.getId());
-                TaskEditFragment fragment = new TaskEditFragment();
-                fragment.setArguments(intent.getExtras());
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        fragment).commit();
+                startActivity(intent);
+//                TaskEditFragment fragment = new TaskEditFragment();
+//                fragment.setArguments(intent.getExtras());
+//                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+//                        fragment).commit();
                 //startActivityForResult(intent,1);
             }
             return false;
         }
 
         @Override
-        public void onTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent motionEvent) {}
+        public void onTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent motionEvent) {
+        }
 
         @Override
-        public void onRequestDisallowInterceptTouchEvent(boolean b) {}
+        public void onRequestDisallowInterceptTouchEvent(boolean b) {
+        }
     }
 }

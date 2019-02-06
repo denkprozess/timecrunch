@@ -2,6 +2,8 @@ package de.timecrunch.timecrunch.view;
 
 import android.Manifest;
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -34,6 +37,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import java.util.Map;
 
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.TaskAlarm;
@@ -63,6 +68,7 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
     private CheckBox repeatCheckBox;
     private MapView mapView;
     private GoogleMap map;
+    private ProgressBar progressBar;
 
     public TaskEditFragment() {
         // Required empty public constructor
@@ -88,11 +94,22 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
         setRetainInstance(true);
         setHasOptionsMenu(true);
         taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
-        task = taskViewModel.getTask(taskId);
-        taskText = task.getText();
-        taskLocation = task.getLocation();
-        alarmData = task.getAlarm();
-
+        LiveData<Map<String,TaskModel>> taskMapLiveData = taskViewModel.getTaskMapLiveData();
+        if(taskMapLiveData.hasObservers()) {
+            taskMapLiveData.removeObservers(this);
+        }
+        taskMapLiveData.observe(this, new Observer<Map<String, TaskModel>>() {
+            @Override
+            public void onChanged(@Nullable final Map<String, TaskModel> taskMapLiveData) {
+                task = taskViewModel.getTask(taskId);
+                if(task!=null) {
+                    taskText = task.getText();
+                    taskLocation = task.getLocation();
+                    alarmData = task.getAlarm();
+                    setUpDataView();
+                }
+            }
+        });
     }
 
     @Override
@@ -109,14 +126,8 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
                 task.setText(taskText);
                 task.setLocation(taskLocation);
                 task.setRepeating(repeatCheckBox.isChecked());
-                taskViewModel.changeTask(task, null);
-                TaskOverviewFragment fragment = new TaskOverviewFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("CATEGORY_ID", categoryId);
-                bundle.putString("CATEGORY_NAME", categoryName);
-                fragment.setArguments(bundle);
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    fragment).commit();
+                taskViewModel.changeTask(task, progressBar);
+                getActivity().finish();
             default:
                 break;
         }
@@ -134,11 +145,17 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Activity parentActivity = getActivity();
+        progressBar = parentActivity.findViewById(R.id.task_edit_progress_bar);
+        initMap(savedInstanceState);
+        taskViewModel.setUpLiveData(categoryId, progressBar);
+    }
+
+    private void setUpDataView(){
+        Activity parentActivity = getActivity();
         taskEditText = parentActivity.findViewById(R.id.edittext_task);
         taskEditText.setText(taskText);
         repeatCheckBox = parentActivity.findViewById(R.id.repeating_task_check);
         repeatCheckBox.setChecked(task.getIsRepeating());
-        initMap(savedInstanceState);
         reminderText = getView().findViewById(R.id.set_task_edit_reminder_text);
         String dateText = getString(R.string.no_reminder_set);
         String time = "";
@@ -157,16 +174,17 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
         addReminderLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), TaskEditActivity.class);
+                Intent intent = new Intent(getContext(), TaskAddReminderActivity.class);
                 intent.putExtra("CATEGORY_ID", categoryId);
                 intent.putExtra("CATEGORY_NAME", categoryName);
                 intent.putExtra("TASK_ID", taskId);
-                TaskAddReminderFragment fragment = new TaskAddReminderFragment();
-                fragment.setArguments(intent.getExtras());
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        fragment).commit();
+                startActivity(intent);
             }
         });
+        if(map != null) {
+            putSavedMarkerOnMap();
+            setLocationOnMap();
+        }
     }
 
     public void initMap(Bundle savedInstanceState) {
@@ -260,6 +278,17 @@ public class TaskEditFragment extends Fragment implements OnMapReadyCallback {
     public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        // save made changes before configuration changes
+        taskText = taskEditText.getText().toString();
+        task.setText(taskText);
+        task.setLocation(taskLocation);
+        task.setRepeating(repeatCheckBox.isChecked());
+        taskViewModel.changeTaskToSurviveConfigChange(task);
     }
 
     private void putMarkerOnMap(LatLng position) {

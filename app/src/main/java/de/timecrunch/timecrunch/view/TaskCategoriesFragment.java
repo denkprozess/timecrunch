@@ -1,6 +1,7 @@
 package de.timecrunch.timecrunch.view;
 
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -26,6 +27,7 @@ import java.util.Map;
 
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.Category;
+import de.timecrunch.timecrunch.model.TaskModel;
 import de.timecrunch.timecrunch.viewModel.CategoryViewModel;
 
 public class TaskCategoriesFragment extends Fragment {
@@ -51,12 +53,6 @@ public class TaskCategoriesFragment extends Fragment {
         setHasOptionsMenu(true);
         //get ViewModel from parent activity to sync with other fragments
         categoryViewModel = ViewModelProviders.of(getActivity()).get(CategoryViewModel.class);
-        categoryViewModel.getSubCategoryMapLiveData().observe(this, new Observer<Map<Category, List<Category>>>() {
-            @Override
-            public void onChanged(@Nullable final Map<Category, List<Category>> subcategoryMap) {
-                setUpListAdapter(subcategoryMap);
-            }
-        });
     }
 
     @Nullable
@@ -77,6 +73,13 @@ public class TaskCategoriesFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         progressBar = getActivity().findViewById(R.id.category_progress_bar);
         setUpDataView(view);
+        LiveData<Map<Category,List<Category>>> categoryMapLiveData = categoryViewModel.getSubCategoryMapLiveData();
+        categoryMapLiveData.observe(getViewLifecycleOwner(), new Observer<Map<Category, List<Category>>>() {
+            @Override
+            public void onChanged(@Nullable final Map<Category, List<Category>> subcategoryMap) {
+                setUpListAdapter(subcategoryMap);
+            }
+        });
 
     }
 
