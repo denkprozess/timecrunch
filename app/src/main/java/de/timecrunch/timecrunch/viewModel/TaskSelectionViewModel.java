@@ -2,6 +2,7 @@ package de.timecrunch.timecrunch.viewModel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.widget.ProgressBar;
@@ -39,6 +40,10 @@ public class TaskSelectionViewModel extends AndroidViewModel {
         plannerDBHandler = new PlannerDBHandler();
         taskSelectionDBHandler = new TaskSelectionDBHandler();
 
+    }
+
+    public LiveData<Map<TaskModel, Boolean>> getTaskSelectionLiveData(){
+        return selectionLiveData;
     }
 
     public void updateTimeBlockTaskListFromDB(PlannerDay plannerDay) {
@@ -102,7 +107,7 @@ public class TaskSelectionViewModel extends AndroidViewModel {
         changeTimeBlock(timeBlockId, timeBlock, progressBar);
     }
 
-    public void changeTimeBlock(String timeBlockId, TimeBlock timeBlock, ProgressBar progressBar){
+    private void changeTimeBlock(String timeBlockId, TimeBlock timeBlock, ProgressBar progressBar){
         currentPlannerDay.changeBlock(timeBlockId, timeBlock);
         plannerDBHandler.savePlanner(currentPlannerDay,progressBar);
     }
