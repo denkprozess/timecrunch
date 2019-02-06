@@ -14,6 +14,7 @@ public class TaskModel {
     private TaskAlarm alarm;
     private int sorting;
     private boolean isRepeating;
+    private boolean isChecked;
 
     // needed for serialization
     public TaskModel() {
@@ -25,6 +26,7 @@ public class TaskModel {
         this.text = text;
         setLocation(location);
         this.isRepeating = isRepeating;
+        this.isChecked = false;
     }
 
     public TaskModel(String categoryId, String id, String text, LatLng location, TaskAlarm alarm, boolean isRepeating) {
@@ -105,6 +107,14 @@ public class TaskModel {
 
     public void setRepeating(boolean repeating) {
         isRepeating = repeating;
+    }
+
+    public void setChecked(boolean check) {
+        this.isChecked = check;
+    }
+
+    public boolean isChecked() {
+        return this.isChecked;
     }
 
     @Override
