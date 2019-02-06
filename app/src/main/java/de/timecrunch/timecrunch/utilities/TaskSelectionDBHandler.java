@@ -85,7 +85,7 @@ public class TaskSelectionDBHandler extends FireBaseDBHandler {
 
     public void getTasksAndRegisterListener(final String categoryId, final TaskSelectionViewModel viewModel, final ProgressBar progressBar) {
         showProgressBar(progressBar);
-        final Query query = db.collection(userId).document("data").collection("tasks").whereEqualTo("isArchived", false).whereEqualTo("categoryId", categoryId).orderBy("sorting", Query.Direction.ASCENDING);
+        final Query query = db.collection(userId).document("data").collection("tasks").whereEqualTo("categoryId", categoryId).orderBy("sorting", Query.Direction.ASCENDING);
         if (tasksRegistration != null) {
             tasksRegistration.remove();
         }
