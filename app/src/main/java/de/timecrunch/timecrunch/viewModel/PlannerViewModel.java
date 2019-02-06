@@ -4,7 +4,6 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.widget.ProgressBar;
 
 import de.timecrunch.timecrunch.model.PlannerDay;
@@ -66,16 +65,14 @@ public class PlannerViewModel extends AndroidViewModel {
         plannerDBHandler.savePlanner(plannerDay,progressBar);
     }
 
-    public void addTaskToTimeBlock(String timeBlockId, TimeBlockTaskModel task, ProgressBar progressBar){
-        TimeBlock timeBlock = getTimeBlock(timeBlockId);
-        timeBlock.addTask(task);
-        changeTimeBlock(timeBlockId, timeBlock, progressBar);
-
-    }
-
-    public void removeTaskFromTimeBlock(String timeBlockId, String taskId, ProgressBar progressBar){
-        TimeBlock timeBlock = getTimeBlock(timeBlockId);
-        timeBlock.removeTask(taskId);
-        changeTimeBlock(timeBlockId, timeBlock, progressBar);
+    public void changeFinishedStatusOfTask(String timeBlockId, String taskId, ProgressBar progressBar){
+        PlannerDay plannerDay = plannerLiveData.getValue();
+        TimeBlock timeBlock = plannerDay.getTimeBlock(timeBlockId);
+        for(TimeBlockTaskModel task: timeBlock.getTasks()){
+            if(task.getTask().getId().equals(taskId)){
+                task.setIsFinished(!task.getIsFinished());
+            }
+        }
+        plannerDBHandler.savePlanner(plannerDay,progressBar);
     }
 }

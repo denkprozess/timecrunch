@@ -8,7 +8,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -197,7 +196,7 @@ public class EditBlock extends View {
 
         for(int i = 0; i < counter; i++) {
             TaskModel task = tasks.get(i).getTask();
-            boolean isFinished = tasks.get(i).isFinished();
+            boolean isFinished = tasks.get(i).getIsFinished();
             int textWidth = (int) tasksTextColor.measureText(task.getText());
             int posX = (getWidth() / 2) - (textWidth / 2);
             if(isFinished) {
