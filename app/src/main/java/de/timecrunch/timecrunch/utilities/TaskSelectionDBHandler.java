@@ -34,7 +34,6 @@ public class TaskSelectionDBHandler extends FireBaseDBHandler {
             plannerRegistration.remove();
         }
         // needs to be array to be accessed from within listener
-        final String[] categoryId = new String[1];
         plannerRegistration = query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -46,7 +45,8 @@ public class TaskSelectionDBHandler extends FireBaseDBHandler {
                     // there only ever is at most one document for the specified date
                     DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
                     PlannerDay plannerDay = documentSnapshot.toObject(PlannerDay.class);
-                    categoryId[0] = plannerDay.getTimeBlock(timeBlockId).getCategoryId();
+                    String categoryId = plannerDay.getTimeBlock(timeBlockId).getCategoryId();
+                    getTasksAndRegisterListener(categoryId, viewModel, progressBar);
                     viewModel.updateTimeBlockTaskListFromDB(plannerDay);
                 } else {
                     viewModel.updateTimeBlockTaskListFromDB(null);
@@ -54,7 +54,7 @@ public class TaskSelectionDBHandler extends FireBaseDBHandler {
                 hideProgressBar(progressBar);
             }
         });
-        getTasksAndRegisterListener(categoryId[0], viewModel, progressBar);
+        //getTasksAndRegisterListener(categoryId[0], viewModel, progressBar);
     }
 //    public void getPlannerAndRegisterListener(int year, int month, int day, final TaskSelectionViewModel viewModel, final ProgressBar progressBar) {
 //        showProgressBar(progressBar);

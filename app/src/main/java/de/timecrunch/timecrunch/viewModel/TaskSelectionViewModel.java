@@ -66,15 +66,17 @@ public class TaskSelectionViewModel extends AndroidViewModel {
                 }
             }
             // map to store all tasks with their selection states in
-            Map<TaskModel, Boolean> selctionMap = new LinkedHashMap<>();
+            Map<TaskModel, Boolean> selectionMap = new LinkedHashMap<>();
             // compare against all tasks from category to build list of tasks with selected flag
             for (TaskModel task : categoryTaskList) {
                 // if task is already selected
                 if (plannerTaskMap.containsKey(task.getId())) {
-                    selctionMap.put(task, true);
+                    selectionMap.put(task, true);
+                }else{
+                    selectionMap.put(task,false);
                 }
             }
-            selectionLiveData.postValue(selctionMap);
+            selectionLiveData.postValue(selectionMap);
         }
     }
 
