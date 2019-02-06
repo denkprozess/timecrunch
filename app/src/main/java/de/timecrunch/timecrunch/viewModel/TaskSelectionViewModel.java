@@ -41,7 +41,7 @@ public class TaskSelectionViewModel extends AndroidViewModel {
 
     }
 
-    public LiveData<Map<TaskModel, Boolean>> getTaskSelectionLiveData(){
+    public LiveData<Map<TaskModel, Boolean>> getTaskSelectionLiveData() {
         return selectionLiveData;
     }
 
@@ -59,8 +59,11 @@ public class TaskSelectionViewModel extends AndroidViewModel {
         if (currentPlannerDay != null && categoryTaskList != null) {
             // build hashmap with already selected tasks
             Map<String, TimeBlockTaskModel> plannerTaskMap = new HashMap<>();
-            for (TimeBlockTaskModel task : currentPlannerDay.getTimeBlock(currentTimeBlockId).getTasks()) {
-                plannerTaskMap.put(task.getTask().getId(), task);
+            List<TimeBlockTaskModel> taskModelList = currentPlannerDay.getTimeBlock(currentTimeBlockId).getTasks();
+            if (taskModelList != null) {
+                for (TimeBlockTaskModel task : currentPlannerDay.getTimeBlock(currentTimeBlockId).getTasks()) {
+                    plannerTaskMap.put(task.getTask().getId(), task);
+                }
             }
             // map to store all tasks with their selection states in
             Map<TaskModel, Boolean> selctionMap = new LinkedHashMap<>();
@@ -106,8 +109,8 @@ public class TaskSelectionViewModel extends AndroidViewModel {
         changeTimeBlock(timeBlockId, timeBlock, progressBar);
     }
 
-    private void changeTimeBlock(String timeBlockId, TimeBlock timeBlock, ProgressBar progressBar){
+    private void changeTimeBlock(String timeBlockId, TimeBlock timeBlock, ProgressBar progressBar) {
         currentPlannerDay.changeBlock(timeBlockId, timeBlock);
-        plannerDBHandler.savePlanner(currentPlannerDay,progressBar);
+        plannerDBHandler.savePlanner(currentPlannerDay, progressBar);
     }
 }
