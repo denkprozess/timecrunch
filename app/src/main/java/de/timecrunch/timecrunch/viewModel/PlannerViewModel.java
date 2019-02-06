@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 
 import de.timecrunch.timecrunch.model.PlannerDay;
 import de.timecrunch.timecrunch.model.TimeBlock;
+import de.timecrunch.timecrunch.model.TimeBlockTaskModel;
 import de.timecrunch.timecrunch.utilities.PlannerDBHandler;
 
 public class PlannerViewModel extends AndroidViewModel {
@@ -63,5 +64,18 @@ public class PlannerViewModel extends AndroidViewModel {
         PlannerDay plannerDay = plannerLiveData.getValue();
         plannerDay.changeBlock(timeBlockId, timeBlock);
         plannerDBHandler.savePlanner(plannerDay,progressBar);
+    }
+
+    public void addTaskToTimeBlock(String timeBlockId, TimeBlockTaskModel task, ProgressBar progressBar){
+        TimeBlock timeBlock = getTimeBlock(timeBlockId);
+        timeBlock.addTask(task);
+        changeTimeBlock(timeBlockId, timeBlock, progressBar);
+
+    }
+
+    public void removeTaskFromTimeBlock(String timeBlockId, String taskId, ProgressBar progressBar){
+        TimeBlock timeBlock = getTimeBlock(timeBlockId);
+        timeBlock.removeTask(taskId);
+        changeTimeBlock(timeBlockId, timeBlock, progressBar);
     }
 }

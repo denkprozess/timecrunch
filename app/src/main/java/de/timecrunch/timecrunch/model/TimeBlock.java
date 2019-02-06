@@ -10,7 +10,7 @@ public class TimeBlock {
     private int startMinutes;
     private int endHours;
     private int endMinutes;
-    private ArrayList<TaskModel> tasks;
+    private ArrayList<TimeBlockTaskModel> tasks;
 
     public TimeBlock() {
 
@@ -73,25 +73,27 @@ public class TimeBlock {
         this.endMinutes = endMinutes;
     }
 
-    public ArrayList<TaskModel> getTasks() {
+    public ArrayList<TimeBlockTaskModel> getTasks() {
         return tasks;
     }
 
-    public void setTasks(ArrayList<TaskModel> tasks) {
+    public void setTasks(ArrayList<TimeBlockTaskModel> tasks) {
         this.tasks = tasks;
     }
 
-    public void addTask(TaskModel task) {
+    public void addTask(TimeBlockTaskModel task) {
         if(tasks == null) {
-            this.tasks = new ArrayList<TaskModel>();
+            this.tasks = new ArrayList<TimeBlockTaskModel>();
         }
 
-        tasks.add(new TaskModel(
-                getCategoryId(),
-                task.getId(),
-                task.getText(),
-                task.getLocation(),
-                task.getAlarm(),
-                task.getIsRepeating()));
+        tasks.add(task);
+    }
+
+    public void removeTask(String taskId){
+        for(TimeBlockTaskModel task:tasks){
+            if(task.getTask().getId().equals(taskId)){
+                tasks.remove(task);
+            }
+        }
     }
 }

@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 import de.timecrunch.timecrunch.model.TaskModel;
+import de.timecrunch.timecrunch.model.TimeBlockTaskModel;
 
 public class EditBlock extends View {
 
@@ -49,10 +50,10 @@ public class EditBlock extends View {
     private float circleY = 0;
 
     private float circleRadius = dpToPx(6);
-    private ArrayList<TaskModel> tasks;
+    private ArrayList<TimeBlockTaskModel> tasks;
 
 
-    public EditBlock(Context context, String blockId, ArrayList<TaskModel> tasks, String colorString,
+    public EditBlock(Context context, String blockId, ArrayList<TimeBlockTaskModel> tasks, String colorString,
                      int width, int startHours, int startMinutes, int endHours, int endMinutes) {
         super(context);
         this.blockId = blockId;
@@ -66,7 +67,7 @@ public class EditBlock extends View {
         if(tasks != null) {
             this.tasks = new ArrayList<>(tasks);
         } else {
-            this.tasks = new ArrayList<TaskModel>();
+            this.tasks = new ArrayList<TimeBlockTaskModel>();
         }
 
         setLayoutParams(new LinearLayout.LayoutParams(
@@ -195,12 +196,14 @@ public class EditBlock extends View {
         }
 
         for(int i = 0; i < counter; i++) {
-            int textWidth = (int) tasksTextColor.measureText(tasks.get(i).getText());
+            TaskModel task = tasks.get(i).getTask();
+            boolean isFinished = tasks.get(i).isFinished();
+            int textWidth = (int) tasksTextColor.measureText(task.getText());
             int posX = (getWidth() / 2) - (textWidth / 2);
-            if(tasks.get(i).isChecked()) {
-                canvas.drawText(tasks.get(i).getText(), posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), ruledTasksTextColor);
+            if(isFinished) {
+                canvas.drawText(task.getText(), posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), ruledTasksTextColor);
             } else {
-                canvas.drawText(tasks.get(i).getText(), posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), tasksTextColor);
+                canvas.drawText(task.getText(), posX, (ENTRY_FIRSTLINE_SPACING + (i * textHeight)), tasksTextColor);
             }
         }
     }
