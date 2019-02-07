@@ -9,7 +9,7 @@ public class Category {
     private int sorting;
 
 
-    public Category(){
+    public Category() {
     }
 
     public Category(String id, String name, int color, boolean hasTimeBlock) {
@@ -27,13 +27,24 @@ public class Category {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public int getColor() {
         return color;
     }
 
-    public boolean hasTimeBlock() {
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public boolean getHasTimeBlock() {
         return hasTimeBlock;
+    }
+
+    public void setHasTimeBlock(boolean hasTimeBlock) {
+        this.hasTimeBlock = hasTimeBlock;
     }
 
     public int getSorting() {

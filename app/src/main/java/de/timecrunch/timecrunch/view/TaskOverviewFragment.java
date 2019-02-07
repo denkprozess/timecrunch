@@ -1,5 +1,6 @@
 package de.timecrunch.timecrunch.view;
 
+import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -10,7 +11,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +28,9 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,33 +39,36 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.Category;
 import de.timecrunch.timecrunch.model.TaskModel;
+import de.timecrunch.timecrunch.viewModel.CategoryViewModel;
 import de.timecrunch.timecrunch.viewModel.TaskViewModel;
 
 public class TaskOverviewFragment extends Fragment {
 
     private final int REQUEST_EDIT_TASK = 1;
+    private final int EDIT_CATEGORY_REQUEST = 1337;
 
     private String categoryId;
-    private String categeoryName;
+    private String categoryName;
 
-    ActionBar actionBar;
-    RecyclerView taskListView;
-    TaskViewModel taskViewModel;
-    FloatingActionButton floatingActionButton;
-    ProgressBar progressBar;
-    ItemTouchHelper itemTouchHelper;
+    private ActionBar actionBar;
+    private RecyclerView taskListView;
+    private TaskViewModel taskViewModel;
+    private CategoryViewModel categoryViewModel;
+
+    private FloatingActionButton floatingActionButton;
+    private ProgressBar progressBar;
+    private ItemTouchHelper itemTouchHelper;
 
     @Override
     public void setArguments(@Nullable Bundle args) {
         super.setArguments(args);
         categoryId = args.getString("CATEGORY_ID");
-        categeoryName = args.getString("CATEGORY_NAME");
+        categoryName = args.getString("CATEGORY_NAME");
 
     }
 
@@ -82,9 +88,10 @@ public class TaskOverviewFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         setRetainInstance(true);
-        //taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
         taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
+        categoryViewModel = ViewModelProviders.of(getActivity()).get(CategoryViewModel.class);
         LiveData<Map<String,TaskModel>> taskMapLiveData = taskViewModel.getTaskMapLiveData();
         if(taskMapLiveData.hasObservers()) {
             taskMapLiveData.removeObservers(this);
@@ -98,17 +105,39 @@ public class TaskOverviewFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.action_bar_task_overview, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_bar_edit_category:
+                editCategory();
+                break;
+            case R.id.action_bar_delete_category:
+                showDeleteCategoryDialog();
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         progressBar = getActivity().findViewById(R.id.tasks_progress_bar);
         taskViewModel.setUpLiveData(categoryId, progressBar);
+        categoryViewModel.setUpLiveData(progressBar);
         setUpActionBar();
         setUpFloatingActionButton(view);
         setUpDataView(view);
     }
 
     private void setUpActionBar() {
-        actionBar.setTitle(categeoryName);
+        actionBar.setTitle(categoryName);
     }
 
     private void setUpFloatingActionButton(View view) {
@@ -136,10 +165,18 @@ public class TaskOverviewFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_EDIT_TASK:
-                taskViewModel.invalidate();
-                taskViewModel.setUpLiveData(categoryId, progressBar);
-                ;
+            case EDIT_CATEGORY_REQUEST:
+                if (resultCode == Activity.RESULT_OK) {
+                    categoryName = data.getStringExtra("name");
+                    int categoryColor = data.getIntExtra("color", -1);
+                    boolean hasTimeBlock = data.getBooleanExtra("getHasTimeBlock", false);
+                    Category category = categoryViewModel.getCategory(categoryId);
+                    category.setName(categoryName);
+                    category.setColor(categoryColor);
+                    category.setHasTimeBlock(hasTimeBlock);
+                    categoryViewModel.changeCategory(category, progressBar);
+                    actionBar.setTitle(categoryName);
+                }
         }
     }
 
@@ -268,14 +305,9 @@ public class TaskOverviewFragment extends Fragment {
                 TaskModel task = taskViewModel.getTaskAtPosition(position);
                 Intent intent = new Intent(getContext(), TaskEditActivity.class);
                 intent.putExtra("CATEGORY_ID", categoryId);
-                intent.putExtra("CATEGORY_NAME", categeoryName);
+                intent.putExtra("CATEGORY_NAME", categoryName);
                 intent.putExtra("TASK_ID", task.getId());
                 startActivity(intent);
-//                TaskEditFragment fragment = new TaskEditFragment();
-//                fragment.setArguments(intent.getExtras());
-//                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-//                        fragment).commit();
-                //startActivityForResult(intent,1);
             }
             return false;
         }
@@ -287,5 +319,34 @@ public class TaskOverviewFragment extends Fragment {
         @Override
         public void onRequestDisallowInterceptTouchEvent(boolean b) {
         }
+    }
+    private void editCategory(){
+        Category category = categoryViewModel.getCategory(categoryId);
+        Intent intent = new Intent(getContext(), EditCategoryActivity.class);
+        intent.putExtra("name",category.getName());
+        intent.putExtra("color", category.getColor());
+        intent.putExtra("getHasTimeBlock", category.getHasTimeBlock());
+        startActivityForResult(intent, EDIT_CATEGORY_REQUEST);
+    }
+
+    private void showDeleteCategoryDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this.getContext(), R.style.AlertDialogCustom));
+        builder.setTitle(R.string.delete_category_question).setMessage(R.string.delete_category_consequences);
+        // Set up the buttons
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                categoryViewModel.removeCategory(categoryId, progressBar);
+                getActivity().finish();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

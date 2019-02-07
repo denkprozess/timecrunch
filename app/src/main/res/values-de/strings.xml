@@ -37,4 +37,15 @@
     <string name="is_task_repeating">Aufgabe wiederholt sich</string>
     <string name="reminder">Erinnerung</string>
     <string name="no_reminder_set">Keine Erinnerung gesetzt</string>
+    <string name="repeat_type">Wiederholungsart</string>
+    <string name="delete_reminder">Erinnerung löschen</string>
+    <string name="repetition_interval">Wiederholungsintervall</string>
+    <string name="on">Ein</string>
+    <string name="off">Aus</string>
+    <string name="menu_delete_category">Kategorie löschen</string>
+    <string name="menu_edit_category">Kategorie bearbeiten</string>
+    <string name="prompt_color_too_light">Die gewählte Farbe ist zu hell. Sie wird geändert!</string>
+    <string name="delete_category_question">Kategorie löschen?</string>
+    <string name="delete_category_consequences">Alle zugehörigen Aufgaben und Zeitblöcke werden dadurch ebenfalls gelöscht!</string>
+    <string name="edit_category">Kategorie bearbeiten</string>
 </resources>
