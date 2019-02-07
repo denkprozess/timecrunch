@@ -10,10 +10,12 @@ import de.timecrunch.timecrunch.model.PlannerDay;
 import de.timecrunch.timecrunch.model.TimeBlock;
 import de.timecrunch.timecrunch.model.TimeBlockTaskModel;
 import de.timecrunch.timecrunch.utilities.PlannerDBHandler;
+import de.timecrunch.timecrunch.utilities.TaskDBHandler;
 
 public class PlannerViewModel extends AndroidViewModel {
 
     private PlannerDBHandler plannerDBHandler;
+    private TaskDBHandler taskDBHandler;
     private MutableLiveData<PlannerDay> plannerLiveData;
     private int currentDay;
     private int currentMonth;
@@ -22,6 +24,7 @@ public class PlannerViewModel extends AndroidViewModel {
     public PlannerViewModel(@NonNull Application application) {
         super(application);
         plannerDBHandler = new PlannerDBHandler();
+        taskDBHandler = new TaskDBHandler();
         plannerLiveData = new MutableLiveData<>();
     }
 
@@ -70,7 +73,12 @@ public class PlannerViewModel extends AndroidViewModel {
         TimeBlock timeBlock = plannerDay.getTimeBlock(timeBlockId);
         for(TimeBlockTaskModel task: timeBlock.getTasks()){
             if(task.getTask().getId().equals(taskId)){
-                task.setIsFinished(!task.getIsFinished());
+                boolean newIsFinished = !task.getIsFinished();
+                task.setIsFinished(newIsFinished);
+                // If task is set to be finished and is not a repeating task, delete it from tasklist of category
+                if(newIsFinished && !task.getTask().getIsRepeating()){
+                    taskDBHandler.removeTask(task.getTask().getId(), progressBar);
+                }
             }
         }
         plannerDBHandler.savePlanner(plannerDay,progressBar);
