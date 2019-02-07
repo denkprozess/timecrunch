@@ -59,4 +59,5 @@
     <string name="delete_category_question">Delete category?</string>
     <string name="delete_category_consequences">All associated tasks and Timeblocks will be deleted as well!</string>
     <string name="edit_category">Edit category</string>
+    <string name="logout">Logout</string>
 </resources>

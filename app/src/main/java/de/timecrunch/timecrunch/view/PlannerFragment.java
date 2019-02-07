@@ -15,6 +15,8 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -94,8 +96,8 @@ public class PlannerFragment extends Fragment {
     }
 
     /*
-        Updates month and year in the action bar
-     */
+            Updates month and year in the action bar
+         */
     private void updateActionBar(CalendarDay date, boolean selected) {
         String title = (selected ? FORMATTER.format(date.getDate()) : FORMATTER.format(CalendarDay.today().getDate()));
         TextView textView = new TextView(getActivity());
