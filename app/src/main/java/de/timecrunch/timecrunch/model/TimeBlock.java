@@ -94,6 +94,7 @@ public class TimeBlock {
         for (TimeBlockTaskModel task : tasks) {
             if (task.getTask().getId().equals(taskId)) {
                 tasks.remove(task);
+                return;
             }
         }
     }

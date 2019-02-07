@@ -7,6 +7,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.widget.ProgressBar;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -54,6 +55,28 @@ public class TaskSelectionViewModel extends AndroidViewModel {
 
     public LiveData<Map<TaskModel, Boolean>> getTaskSelectionLiveData() {
         return selectionLiveData;
+    }
+
+    public ArrayList<TaskModel> getSelectedTasks() {
+        ArrayList<TaskModel> selectedTasks = new ArrayList<>();
+        ArrayList<TaskModel> allTasks = new ArrayList<>(selectionLiveData.getValue().keySet());
+        for(TaskModel t : allTasks) {
+            if(selectionLiveData.getValue().get(t)) {
+                selectedTasks.add(t);
+            }
+        }
+        return selectedTasks;
+    }
+
+    public ArrayList<TaskModel> getUnselectedTasks() {
+        ArrayList<TaskModel> nonSelectedTasks = new ArrayList<TaskModel>();
+        ArrayList<TaskModel> allTasks = new ArrayList<TaskModel>(selectionLiveData.getValue().keySet());
+        for(TaskModel t : allTasks) {
+            if(!selectionLiveData.getValue().get(t)) {
+                nonSelectedTasks.add(t);
+            }
+        }
+        return nonSelectedTasks;
     }
 
     public void updateTimeBlockTaskListFromDB(PlannerDay plannerDay) {

@@ -33,7 +33,6 @@ public class EditBlockTaskListAdapter extends RecyclerView.Adapter<EditBlockTask
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         String taskText = taskList.get(i).getText();
         viewHolder.taskText.setText(taskText);
-
     }
 
     @Override
