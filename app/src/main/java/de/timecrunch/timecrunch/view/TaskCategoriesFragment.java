@@ -27,7 +27,6 @@ import java.util.Map;
 
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.Category;
-import de.timecrunch.timecrunch.model.TaskModel;
 import de.timecrunch.timecrunch.viewModel.CategoryViewModel;
 
 public class TaskCategoriesFragment extends Fragment {
@@ -98,7 +97,7 @@ public class TaskCategoriesFragment extends Fragment {
                 if (resultCode == Activity.RESULT_OK) {
                     String categoryName = data.getStringExtra("name");
                     int categoryColor = data.getIntExtra("color", -1);
-                    boolean hasTimeBlock = data.getBooleanExtra("hasTimeBlock", false);
+                    boolean hasTimeBlock = data.getBooleanExtra("getHasTimeBlock", false);
                     Category newCategory = new Category("1",categoryName, categoryColor, hasTimeBlock);
                     categoryViewModel.addCategory(newCategory, progressBar);
                 }
@@ -132,7 +131,7 @@ public class TaskCategoriesFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_bar_add:
-                Intent intent = new Intent(getContext(), NewTaskCategoryActivity.class);
+                Intent intent = new Intent(getContext(), EditCategoryActivity.class);
                 startActivityForResult(intent, NEW_CATEGORY_REQUEST);
             default:
                 break;

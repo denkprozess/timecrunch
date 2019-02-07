@@ -43,6 +43,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         authentication = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = authentication.getCurrentUser();
+        if (currentUser != null) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        }
         setContentView(R.layout.activity_login);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -66,16 +71,6 @@ public class LoginActivity extends AppCompatActivity {
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
 
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
-        FirebaseUser currentUser = authentication.getCurrentUser();
-        if (currentUser != null) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        }
     }
 
     @Override

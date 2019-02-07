@@ -163,7 +163,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 int subcategoryId = c.getInt((c.getColumnIndex(CategoryEntry.COLUMN_NAME_CATEGORY_ID)));
                 String subcategoryTitle = c.getString((c.getColumnIndex(CategoryEntry.COLUMN_NAME_TITLE)));
                 int subcategoryColor = c.getInt(c.getColumnIndex(CategoryEntry.COLUMN_NAME_COLOR));
-                //TODO get hasTimeBlock
+                //TODO get getHasTimeBlock
                 //categoryList.add(new Category(subcategoryId, subcategoryTitle, subcategoryColor,false));
             } while (c.moveToNext());
         }

@@ -6,6 +6,6 @@
         android:icon="@drawable/ic_check_black_24dp"
         app:iconTint="@color/colorNavigationButton"
         android:id="@+id/action_bar_finished"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:title="@string/menu_finish"/>
 </menu>

@@ -154,8 +154,8 @@
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="16dp"
                     android:checked="false"
-                    android:textOff="Off"
-                    android:textOn="On" />
+                    android:textOff="@string/off"
+                    android:textOn="@string/on" />
 
             </RelativeLayout>
 
@@ -186,7 +186,7 @@
                         android:id="@+id/repeat_no_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Repetition Interval"
+                        android:text="@string/repetition_interval"
                         android:textSize="15dp" />
 
                     <TextView
@@ -228,7 +228,7 @@
                         android:id="@+id/repeat_type_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Repeat Type"
+                        android:text="@string/repeat_type"
                         android:textSize="15dp" />
 
                     <TextView
@@ -253,7 +253,7 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:backgroundTint="@color/materialcolorpicker__red"
-                    android:text="Delete Reminder"
+                    android:text="@string/delete_reminder"
                     android:textColor="@color/materialcolorpicker__white" />
 
             </RelativeLayout>

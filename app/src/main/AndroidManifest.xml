@@ -34,7 +34,7 @@
             android:name=".view.MainActivity"
             android:launchMode="singleTop" />
         <activity
-            android:name=".view.NewTaskCategoryActivity"
+            android:name=".view.EditCategoryActivity"
             android:label="@string/title_activity_new_category"
             android:parentActivityName=".view.MainActivity" />
         <activity

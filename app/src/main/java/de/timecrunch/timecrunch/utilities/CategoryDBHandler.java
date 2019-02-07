@@ -5,8 +5,10 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.ProgressBar;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -27,6 +29,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import de.timecrunch.timecrunch.model.Category;
+import de.timecrunch.timecrunch.model.TaskModel;
 
 import static android.support.constraint.Constraints.TAG;
 
@@ -57,7 +60,7 @@ public class CategoryDBHandler extends FireBaseDBHandler{
         });
     }
 
-    public void addCategory(final Category category, final MutableLiveData<Map<Category, List<Category>>> categoryLiveData, final ProgressBar progressBar) {
+    public void addCategory(final Category category, final ProgressBar progressBar) {
         showProgressBar(progressBar);
         final CollectionReference categoriesCollection = db.collection(userId).document("data").collection("categories");
         categoriesCollection.add(category).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -76,5 +79,39 @@ public class CategoryDBHandler extends FireBaseDBHandler{
                     }
                 });
     }
+
+    public void changeCategory(final Category category, final ProgressBar progressBar){
+        showProgressBar(progressBar);
+        String categoryId = category.getId();
+        final DocumentReference categoryDocument = db.collection(userId).document("data").collection("categories").document(categoryId);
+        categoryDocument.set(category).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                hideProgressBar(progressBar);
+            }
+        });
+    }
+
+    public void removeCategory(final String categoryId, final ProgressBar progressBar){
+        showProgressBar(progressBar);
+        final DocumentReference categoryDocument = db.collection(userId).document("data").collection("categories").document(categoryId);
+        categoryDocument.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                final Query query = db.collection(userId).document("data").collection("tasks").whereEqualTo("categoryId", categoryId);
+                query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            documentSnapshot.getReference().delete();
+                        }
+                        hideProgressBar(progressBar);
+                    }
+                });
+            }
+        });
+
+    }
+
 }
 

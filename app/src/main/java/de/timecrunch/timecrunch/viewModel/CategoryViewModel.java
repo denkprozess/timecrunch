@@ -44,6 +44,22 @@ public class CategoryViewModel extends AndroidViewModel {
         categoryDBHandler.getCategoriesAndRegisterListener(categoriesLiveData, progressBar);
     }
 
+    public Category getCategory(String categoryId){
+        Map<Category, List<Category>> categoryMap = categoriesLiveData.getValue();
+        for(Map.Entry<Category, List<Category>> entry:categoryMap.entrySet()){
+            Category currentCategory =  entry.getKey();
+            if(categoryId.equals(currentCategory.getId())){
+                return currentCategory;
+            }
+            for(Category currentSubCategory:entry.getValue()){
+                if(categoryId.equals(currentSubCategory.getId())){
+                    return currentCategory;
+                }
+            }
+        }
+        return null;
+    }
+
     public void addCategory(Category userCategory, ProgressBar progressBar) {
         Map<Category, List<Category>> categoryMap = categoriesLiveData.getValue();
         ArrayList<Category> categoryList = new ArrayList<>(categoryMap.keySet());
@@ -63,10 +79,14 @@ public class CategoryViewModel extends AndroidViewModel {
             userCategory.setSorting(1);
         }
         // DB-Calls are asynchronous by default, so no need for AsyncTask
-        categoryDBHandler.addCategory(userCategory, categoriesLiveData, progressBar);
+        categoryDBHandler.addCategory(userCategory, progressBar);
     }
 
-    public void addSubCategory() {
+    public void changeCategory(Category userCategory, ProgressBar progressBar){
+        categoryDBHandler.changeCategory(userCategory, progressBar);
+    }
 
+    public void removeCategory(String categoryId, ProgressBar progressBar){
+        categoryDBHandler.removeCategory(categoryId, progressBar);
     }
 }
