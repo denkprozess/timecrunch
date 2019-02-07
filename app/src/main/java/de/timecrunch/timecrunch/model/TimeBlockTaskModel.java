@@ -25,4 +25,19 @@ public class TimeBlockTaskModel {
     public void setIsFinished(boolean finished) {
         isFinished = finished;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof TimeBlockTaskModel)) {
+            return false;
+        }
+        if (((TimeBlockTaskModel) other).getTask().getId().equals(this.getTask().getId())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

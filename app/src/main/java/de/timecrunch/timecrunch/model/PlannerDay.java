@@ -35,6 +35,10 @@ public class PlannerDay {
         blocks.put(timeBlockId,timeBlock);
     }
 
+    public void removeTimeBlock(String timeBlockId){
+        blocks.remove(timeBlockId);
+    }
+
     public int getYear() {
         return year;
     }

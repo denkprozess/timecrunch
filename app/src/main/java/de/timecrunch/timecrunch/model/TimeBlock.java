@@ -82,16 +82,17 @@ public class TimeBlock {
     }
 
     public void addTask(TimeBlockTaskModel task) {
-        if(tasks == null) {
+        if (tasks == null) {
             this.tasks = new ArrayList<TimeBlockTaskModel>();
         }
-
-        tasks.add(task);
+        if (!tasks.contains(task)) {
+            tasks.add(task);
+        }
     }
 
-    public void removeTask(String taskId){
-        for(TimeBlockTaskModel task:tasks){
-            if(task.getTask().getId().equals(taskId)){
+    public void removeTask(String taskId) {
+        for (TimeBlockTaskModel task : tasks) {
+            if (task.getTask().getId().equals(taskId)) {
                 tasks.remove(task);
             }
         }
