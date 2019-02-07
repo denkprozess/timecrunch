@@ -1,6 +1,7 @@
 package de.timecrunch.timecrunch.view;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -17,13 +18,18 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -38,12 +44,14 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
     RecyclerView taskListView;
     ItemTouchHelper itemTouchHelper;
     ArrayList<TimeBlockTaskModel> taskList;
+    private Button addTasksBtn;
     private TaskSelectionViewModel taskSelectionViewModel;
     private ProgressBar progressBar;
     private int year;
     private int month;
     private int day;
     private String timeblockId;
+    private boolean editMode = false;
 
     public EditBlockTasksDialogFragment() {
 
@@ -72,13 +80,44 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
         taskSelectionViewModel = ViewModelProviders.of(getActivity()).get(TaskSelectionViewModel.class);
         progressBar = getActivity().findViewById(R.id.tasks_progress_bar);
         taskSelectionViewModel.setUpLiveData(year, month, day, timeblockId, progressBar);
+
+        taskList = new ArrayList<TimeBlockTaskModel>();
+
+        taskList.add(new TimeBlockTaskModel(
+                new TaskModel("", "Task 1"), false
+        ));
+
+        taskList.add(new TimeBlockTaskModel(
+                new TaskModel("", "Task 2"), false
+        ));
+
+        taskList.add(new TimeBlockTaskModel(
+                new TaskModel("", "Task 3"), false
+        ));
+
+        return inflater.inflate(R.layout.fragment_edit_block_tasks, container);
+    }
+
+    private void initializeSelectedTaskList() {
         taskSelectionViewModel.getTaskSelectionLiveData().observe(this, new Observer<Map<TaskModel, Boolean>>() {
             @Override
             public void onChanged(@Nullable Map<TaskModel, Boolean> taskModelBooleanMap) {
-                setUpListAdapter(taskModelBooleanMap);
+                if(!editMode) {
+                    setUpTimeBlockTaskListAdapter(taskModelBooleanMap);
+                }
             }
         });
-        return inflater.inflate(R.layout.fragment_edit_block_tasks, container);
+    }
+
+    private void initializeCategoryList() {
+        taskSelectionViewModel.getTaskSelectionLiveData().observe(this, new Observer<Map<TaskModel, Boolean>>() {
+            @Override
+            public void onChanged(@Nullable Map<TaskModel, Boolean> taskModelBooleanMap) {
+                if(editMode) {
+                    setUpCategoryListAdapter(taskModelBooleanMap);
+                }
+            }
+        });
     }
 
     @Override
@@ -90,8 +129,74 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        addTasksBtn = view.findViewById(R.id.add_tasks_button);
+        final View tempView = view;
+            addTasksBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switchToTaskListEditMode(tempView);
+                }
+            });
         setUpDataView(view);
-        // setUpListAdapter(taskModelBooleanMap);
+        initializeSelectedTaskList();
+    }
+
+    private void switchToTaskListEditMode(View v) {
+        final View tempView = v;
+        editMode = true;
+
+        TextView blockDialogTitle = v.findViewById(R.id.time_block_dialog_title);
+        blockDialogTitle.setText("Add more tasks");
+        initializeCategoryList();
+
+        Button deleteButton = v.findViewById(R.id.delete_block_button);
+        deleteButton.setBackgroundTintList(v.getResources().getColorStateList(R.color.common_google_signin_btn_text_light_default));
+        deleteButton.setText("BACK");
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchToTaskListViewMode(tempView);
+            }
+        });
+
+        Button addTasksButton = v.findViewById(R.id.add_tasks_button);
+        addTasksButton.setText("SAVE TASKS");
+        addTasksButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Save Selection
+                // Go Back
+            }
+        });
+    }
+
+    private void switchToTaskListViewMode(View v) {
+        final View tempView = v;
+        editMode = false;
+
+        TextView blockDialogTitle = v.findViewById(R.id.time_block_dialog_title);
+        blockDialogTitle.setText("Clear your tasks");
+
+        initializeSelectedTaskList();
+
+        Button deleteButton = v.findViewById(R.id.delete_block_button);
+        deleteButton.setBackgroundTintList(v.getResources().getColorStateList(R.color.materialcolorpicker__red));
+        deleteButton.setText("DELETE BLOCK");
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // DELETE BLOCK
+            }
+        });
+
+        Button addTasksButton = v.findViewById(R.id.add_tasks_button);
+        addTasksButton.setText("ADD TASKS");
+        addTasksButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchToTaskListEditMode(tempView);
+            }
+        });
     }
 
     private void setUpDataView(View view) {
@@ -101,12 +206,18 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
                 DividerItemDecoration.VERTICAL);
         dividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.divider));
         taskListView.addItemDecoration(dividerItemDecoration);
-        taskListView.addOnItemTouchListener(new EditBlockRecyclerTouchListener(this.getContext(), taskListView));
     }
 
-    private void setUpListAdapter(Map<TaskModel, Boolean> taskModelMap) {
+    private void setUpTimeBlockTaskListAdapter(Map<TaskModel, Boolean> taskModelMap) {
         if (taskModelMap != null) {
-            EditBlockCategoryTaskListAdapter adapter = new EditBlockCategoryTaskListAdapter(new ArrayList<TaskModel>(taskModelMap.keySet()));
+            ArrayList<TaskModel> selectedTasks = new ArrayList<TaskModel>();
+            ArrayList<TaskModel> allTasks = new ArrayList<TaskModel>(taskModelMap.keySet());
+            for(TaskModel t : allTasks) {
+                if(taskModelMap.get(t)) {
+                    selectedTasks.add(t);
+                }
+            }
+            EditBlockTaskListAdapter adapter = new EditBlockTaskListAdapter(selectedTasks);
             taskListView.setLayoutManager(new LinearLayoutManager(getContext()));
             taskListView.setAdapter(adapter);
             if(itemTouchHelper!=null){
@@ -114,15 +225,37 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
             }
             itemTouchHelper = new ItemTouchHelper(new EditBlockSwipeToDeleteCallback(adapter, this.getContext()));
             itemTouchHelper.attachToRecyclerView(taskListView);
+            // taskListView.addOnItemTouchListener(new EditBlockRecyclerTouchListener(this.getContext(), taskListView));
+        }
+    }
+
+    private void setUpCategoryListAdapter(Map<TaskModel, Boolean> taskModelMap) {
+        if (taskModelMap != null) {
+            ArrayList<TaskModel> nonSelectedTasks = new ArrayList<TaskModel>();
+            ArrayList<TaskModel> allTasks = new ArrayList<TaskModel>(taskModelMap.keySet());
+            for(TaskModel t : allTasks) {
+                if(!taskModelMap.get(t)) {
+                    nonSelectedTasks.add(t);
+                }
+            }
+            EditBlockCategoryTaskListAdapter adapter = new EditBlockCategoryTaskListAdapter(nonSelectedTasks);
+            taskListView.setLayoutManager(new LinearLayoutManager(getContext()));
+            taskListView.setAdapter(adapter);
+            if(itemTouchHelper!=null){
+                itemTouchHelper.attachToRecyclerView(null);
+            }
+            taskListView.addOnItemTouchListener(new EditBlockCategoryListRecyclerTouchListener(this.getContext(), taskListView));
+            // itemTouchHelper = new ItemTouchHelper();
+            // itemTouchHelper.attachToRecyclerView(taskListView);
         }
     }
 
     private class EditBlockSwipeToDeleteCallback extends ItemTouchHelper.SimpleCallback {
-        private EditBlockCategoryTaskListAdapter adapter;
+        private EditBlockTaskListAdapter adapter;
         private Drawable icon;
         private ColorDrawable background;
 
-        public EditBlockSwipeToDeleteCallback(EditBlockCategoryTaskListAdapter adapter, Context context) {
+        public EditBlockSwipeToDeleteCallback(EditBlockTaskListAdapter adapter, Context context) {
             super(0, ItemTouchHelper.LEFT);
             this.adapter = adapter;
             this.icon = ContextCompat.getDrawable(context,
@@ -191,6 +324,40 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
             if(child != null && gestureDetector.onTouchEvent(motionEvent)) {
                 int position = recyclerView.getChildAdapterPosition(child);
                 // task abhaken
+            }
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent motionEvent) {}
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean b) {}
+    }
+
+    private class EditBlockCategoryListRecyclerTouchListener implements RecyclerView.OnItemTouchListener{
+
+        private GestureDetector gestureDetector;
+
+        public EditBlockCategoryListRecyclerTouchListener(Context context, final RecyclerView recycleView) {
+            this.gestureDetector = new GestureDetector(context,new GestureDetector.SimpleOnGestureListener(){
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {}
+            });
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(@NonNull RecyclerView recyclerView, @NonNull MotionEvent motionEvent) {
+            View child = recyclerView.findChildViewUnder(motionEvent.getX(),motionEvent.getY());
+            if(child != null && gestureDetector.onTouchEvent(motionEvent)) {
+                int position = recyclerView.getChildAdapterPosition(child);
+                TaskModel t = taskSelectionViewModel.getTaskAtPosition(position);
+                // taskSelectionViewModel.addTaskToTimeBlock(timeblockId, new TimeBlockTaskModel(t, false), progressBar);
             }
             return false;
         }

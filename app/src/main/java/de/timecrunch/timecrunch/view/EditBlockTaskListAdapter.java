@@ -15,9 +15,9 @@ import de.timecrunch.timecrunch.model.TimeBlockTaskModel;
 
 public class EditBlockTaskListAdapter extends RecyclerView.Adapter<EditBlockTaskListAdapter.ViewHolder> {
 
-    private List<TimeBlockTaskModel> taskList;
+    private List<TaskModel> taskList;
 
-    public EditBlockTaskListAdapter(List<TimeBlockTaskModel> taskList){
+    public EditBlockTaskListAdapter(List<TaskModel> taskList){
         this.taskList = taskList;
     }
 
@@ -31,7 +31,7 @@ public class EditBlockTaskListAdapter extends RecyclerView.Adapter<EditBlockTask
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        String taskText = taskList.get(i).getTask().getText();
+        String taskText = taskList.get(i).getText();
         viewHolder.taskText.setText(taskText);
 
     }
@@ -41,8 +41,8 @@ public class EditBlockTaskListAdapter extends RecyclerView.Adapter<EditBlockTask
         return taskList.size();
     }
 
-    public TimeBlockTaskModel deleteItem(int position){
-        TimeBlockTaskModel taskToRemove = taskList.get(position);
+    public TaskModel deleteItem(int position){
+        TaskModel taskToRemove = taskList.get(position);
         taskList.remove(position);
         notifyItemRemoved(position);
         return taskToRemove;

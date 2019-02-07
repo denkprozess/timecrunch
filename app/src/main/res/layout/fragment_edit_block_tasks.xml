@@ -10,6 +10,7 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/time_block_dialog_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Clear your tasks"
@@ -43,6 +44,7 @@
                     android:layout_margin="10dp" />
 
                 <Button
+                    android:id="@+id/add_tasks_button"
                     android:layout_width="120dp"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/common_google_signin_btn_text_light_default"

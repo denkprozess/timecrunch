@@ -7,6 +7,7 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.widget.ProgressBar;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,6 +40,16 @@ public class TaskSelectionViewModel extends AndroidViewModel {
         plannerDBHandler = new PlannerDBHandler();
         taskSelectionDBHandler = new TaskSelectionDBHandler();
 
+    }
+
+    public TaskModel getTaskAtPosition(int position){
+        Map<TaskModel, Boolean> taskModelMap = selectionLiveData.getValue();
+        ArrayList<TaskModel> taskList = new ArrayList<>(taskModelMap.keySet());
+        if(taskList.size()>position){
+            return taskList.get(position);
+        } else {
+            return null;
+        }
     }
 
     public LiveData<Map<TaskModel, Boolean>> getTaskSelectionLiveData() {
