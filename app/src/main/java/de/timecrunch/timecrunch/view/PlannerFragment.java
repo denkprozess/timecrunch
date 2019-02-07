@@ -154,7 +154,14 @@ public class PlannerFragment extends Fragment {
 
     private void showEditDialog(String timeblockId) {
         FragmentManager fm = getFragmentManager();
-        EditBlockTasksDialogFragment editBlockTasksDialogFragment = EditBlockTasksDialogFragment.newInstance("", mcv.getSelectedDate().getYear(), mcv.getSelectedDate().getMonth(), mcv.getSelectedDate().getDay(), timeblockId);
+        EditBlockTasksDialogFragment editBlockTasksDialogFragment =
+                EditBlockTasksDialogFragment.newInstance(
+                        "",
+                        mcv.getSelectedDate().getYear(),
+                        mcv.getSelectedDate().getMonth(),
+                        mcv.getSelectedDate().getDay(),
+                        timeblockId,
+                        plannerViewModel);
         editBlockTasksDialogFragment.show(fm, "fragment_edit_block_tasks");
     }
 

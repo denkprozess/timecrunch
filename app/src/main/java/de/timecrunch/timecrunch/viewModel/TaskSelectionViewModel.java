@@ -43,16 +43,6 @@ public class TaskSelectionViewModel extends AndroidViewModel {
 
     }
 
-    public TaskModel getTaskAtPosition(int position){
-        Map<TaskModel, Boolean> taskModelMap = selectionLiveData.getValue();
-        ArrayList<TaskModel> taskList = new ArrayList<>(taskModelMap.keySet());
-        if(taskList.size()>position){
-            return taskList.get(position);
-        } else {
-            return null;
-        }
-    }
-
     public LiveData<Map<TaskModel, Boolean>> getTaskSelectionLiveData() {
         return selectionLiveData;
     }
