@@ -48,4 +48,5 @@
     <string name="delete_category_question">Kategorie löschen?</string>
     <string name="delete_category_consequences">Alle zugehörigen Aufgaben und Zeitblöcke werden dadurch ebenfalls gelöscht!</string>
     <string name="edit_category">Kategorie bearbeiten</string>
+    <string name="logout">Ausloggen</string>
 </resources>
