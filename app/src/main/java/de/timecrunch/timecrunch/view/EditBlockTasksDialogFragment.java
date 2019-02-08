@@ -39,6 +39,7 @@ import java.util.Map;
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.model.TaskModel;
 import de.timecrunch.timecrunch.model.TimeBlockTaskModel;
+import de.timecrunch.timecrunch.viewModel.PlannerViewModel;
 import de.timecrunch.timecrunch.viewModel.TaskSelectionViewModel;
 
 public class EditBlockTasksDialogFragment extends DialogFragment {
@@ -57,21 +58,23 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
     private boolean categoryListInitialized = false;
     private EditBlockCategoryListRecyclerTouchListener categoryListRecyclerTouchListener;
     private EditBlockRecyclerTouchListener recyclerTouchListener;
+    private PlannerViewModel plannerViewModel;
 
     public EditBlockTasksDialogFragment() {
 
     }
 
     @SuppressLint("ValidFragment")
-    public EditBlockTasksDialogFragment(int year, int month, int day, String timeblockId) {
+    public EditBlockTasksDialogFragment(int year, int month, int day, String timeblockId, PlannerViewModel plannerViewModel) {
         this.year = year;
         this.month = month;
         this.day = day;
         this.timeblockId = timeblockId;
+        this.plannerViewModel = plannerViewModel;
     }
 
-    public static EditBlockTasksDialogFragment newInstance(String title, int year, int month, int day, String timeblockId) {
-        EditBlockTasksDialogFragment fragment = new EditBlockTasksDialogFragment(year, month, day, timeblockId);
+    public static EditBlockTasksDialogFragment newInstance(String title, int year, int month, int day, String timeblockId, PlannerViewModel plannerViewModel) {
+        EditBlockTasksDialogFragment fragment = new EditBlockTasksDialogFragment(year, month, day, timeblockId, plannerViewModel);
         Bundle args = new Bundle();
         args.putString("title", title);
         fragment.setArguments(args);
@@ -223,8 +226,7 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
                 taskListView.removeOnItemTouchListener(categoryListRecyclerTouchListener);
                 categoryListRecyclerTouchListener.clearList();
             }
-
-            EditBlockTaskListAdapter adapter = new EditBlockTaskListAdapter(taskSelectionViewModel.getSelectedTasks());
+            EditBlockTaskListAdapter adapter = new EditBlockTaskListAdapter(plannerViewModel.getTimeBlock(timeblockId).getTasks());
             taskListView.setLayoutManager(new LinearLayoutManager(getContext()));
             taskListView.setAdapter(adapter);
 
@@ -241,7 +243,7 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
     }
 
     private void updateTimeBlockTaskListAdapter() {
-        EditBlockTaskListAdapter adapter = new EditBlockTaskListAdapter(taskSelectionViewModel.getSelectedTasks());
+        EditBlockTaskListAdapter adapter = new EditBlockTaskListAdapter(plannerViewModel.getTimeBlock(timeblockId).getTasks());
         taskListView.setLayoutManager(new LinearLayoutManager(getContext()));
         taskListView.setAdapter(adapter);
     }
@@ -264,8 +266,6 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
                 categoryListRecyclerTouchListener = new EditBlockCategoryListRecyclerTouchListener(this.getContext(), taskListView);
             }
             taskListView.addOnItemTouchListener(categoryListRecyclerTouchListener);
-            // itemTouchHelper = new ItemTouchHelper();
-            // itemTouchHelper.attachToRecyclerView(taskListView);
         }
     }
 
@@ -349,7 +349,7 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
             if(child != null && gestureDetector.onTouchEvent(motionEvent)) {
                 int position = recyclerView.getChildAdapterPosition(child);
                 TaskModel t = taskSelectionViewModel.getSelectedTasks().get(position);
-                Log.d("asdfasdfasdfasdf", t.getText());
+                plannerViewModel.changeFinishedStatusOfTask(timeblockId, t.getId(), progressBar);
             }
             return false;
         }
