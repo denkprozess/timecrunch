@@ -362,7 +362,8 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
             View child = recyclerView.findChildViewUnder(motionEvent.getX(),motionEvent.getY());
             if(child != null && gestureDetector.onTouchEvent(motionEvent)) {
                 int position = recyclerView.getChildAdapterPosition(child);
-                TaskModel t = taskSelectionViewModel.getSelectedTasks().get(position);
+                //TaskModel t = taskSelectionViewModel.getSelectedTasks().get(position);
+                TaskModel t = plannerViewModel.getTimeBlock(timeblockId).getTasks().get(position).getTask();
                 plannerViewModel.changeFinishedStatusOfTask(timeblockId, t.getId(), progressBar);
             }
             return false;

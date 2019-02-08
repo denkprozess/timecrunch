@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
         if (currentUser != null) {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+            finish();
         }
         setContentView(R.layout.activity_login);
         // Create the adapter that will return a fragment for each of the three
