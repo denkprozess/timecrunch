@@ -70,6 +70,10 @@ public class TaskCategoriesFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
+        ActionBar actionBar = parentActivity.getSupportActionBar();
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE);
+        actionBar.setTitle(R.string.categories);
         progressBar = getActivity().findViewById(R.id.category_progress_bar);
         setUpDataView(view);
         LiveData<Map<Category,List<Category>>> categoryMapLiveData = categoryViewModel.getSubCategoryMapLiveData();
@@ -114,16 +118,16 @@ public class TaskCategoriesFragment extends Fragment {
                 startActivity(intent);
             }
 
-            @Override
-            public void onIndicatorClick(ImageButton indicator, boolean isExpanded, int position) {
-                if (isExpanded) {
-                    indicator.setImageResource(R.drawable.ic_keyboard_arrow_down_white_24dp);
-                    categoryList.collapseGroup(position);
-                } else {
-                    indicator.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp);
-                    categoryList.expandGroup(position);
-                }
-            }
+//            @Override
+//            public void onIndicatorClick(ImageButton indicator, boolean isExpanded, int position) {
+//                if (isExpanded) {
+//                    indicator.setImageResource(R.drawable.ic_keyboard_arrow_down_white_24dp);
+//                    categoryList.collapseGroup(position);
+//                } else {
+//                    indicator.setImageResource(R.drawable.ic_keyboard_arrow_up_white_24dp);
+//                    categoryList.expandGroup(position);
+//                }
+//            }
         });
     }
 

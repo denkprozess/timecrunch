@@ -16,11 +16,13 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -55,9 +57,10 @@ public class TaskAddReminderFragment extends Fragment {
     private Calendar calendar;
     private ProgressBar progressBar;
 
-    private int year, month, hour, mMinute, day;
-    private String time, date, mRepeat, mRepeatNo, mRepeatType;
+    private int year, month, hour, mMinute, day, mRepeatType, mRepeatNo;
+    private String time, date;
     private long repeatTime;
+    private boolean mRepeat;
 
     private String categoryId, taskId;
     private String categoryName, taskText;
@@ -71,6 +74,8 @@ public class TaskAddReminderFragment extends Fragment {
     private static final long milDay = 86400000L;
     private static final long milWeek = 604800000L;
     private static final long milMonth = 2592000000L;
+
+    private Resources resources;
 
     public TaskAddReminderFragment() {
 
@@ -95,17 +100,20 @@ public class TaskAddReminderFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         setHasOptionsMenu(true);
+        resources = getResources();
         taskViewModel = ViewModelProviders.of(getActivity()).get(TaskViewModel.class);
-        LiveData<Map<String,TaskModel>> taskMapLiveData = taskViewModel.getTaskMapLiveData();
-        if(taskMapLiveData.hasObservers()) {
+        LiveData<Map<String, TaskModel>> taskMapLiveData = taskViewModel.getTaskMapLiveData();
+        if (taskMapLiveData.hasObservers()) {
             taskMapLiveData.removeObservers(this);
         }
         taskMapLiveData.observe(this, new Observer<Map<String, TaskModel>>() {
             @Override
             public void onChanged(@Nullable final Map<String, TaskModel> taskMapLiveData) {
                 task = taskViewModel.getTask(taskId);
-                if(task!=null) {
+                if (task != null) {
                     taskText = task.getText();
+                    AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
+                    parentActivity.getSupportActionBar().setTitle(taskText);
                     taskLocation = task.getLocation();
                     alarmData = task.getAlarm();
                     setUpDataView();
@@ -129,7 +137,7 @@ public class TaskAddReminderFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Activity parentActivity = getActivity();
+        AppCompatActivity parentActivity = (AppCompatActivity) getActivity();
         progressBar = parentActivity.findViewById(R.id.task_reminder_progress_bar);
         taskViewModel.setUpLiveData(categoryId, progressBar);
     }
@@ -138,23 +146,23 @@ public class TaskAddReminderFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         // save made changes before configuration changes
-        if(alarmData == null) {
-            alarmData = new TaskAlarm(year, month, hour, mMinute, day, Boolean.parseBoolean(mRepeat), Integer.parseInt(mRepeatNo), mRepeatType);
+        if (alarmData == null) {
+            alarmData = new TaskAlarm(year, month, hour, mMinute, day, mRepeat, mRepeatNo, getRepeatTypeStringFromResId(mRepeatType));
         } else {
             alarmData.setYear(year);
             alarmData.setMonth(month);
             alarmData.setMinute(mMinute);
             alarmData.setHour(hour);
             alarmData.setDay(day);
-            alarmData.setRepeat(Boolean.parseBoolean(mRepeat));
-            alarmData.setRepeatNo(Integer.parseInt(mRepeatNo));
-            alarmData.setRepeatType(mRepeatType);
+            alarmData.setRepeat(mRepeat);
+            alarmData.setRepeatNo(mRepeatNo);
+            alarmData.setRepeatType(getRepeatTypeStringFromResId(mRepeatType));
         }
         task.setAlarm(alarmData);
         taskViewModel.changeTaskToSurviveConfigChange(task);
     }
 
-    private void setUpDataView(){
+    private void setUpDataView() {
         Activity parentActivity = getActivity();
         RelativeLayout dateLayout = parentActivity.findViewById(R.id.date_layout);
         dateLayout.setOnClickListener(new View.OnClickListener() {
@@ -200,7 +208,7 @@ public class TaskAddReminderFragment extends Fragment {
         timeText = (TextView) parentActivity.findViewById(R.id.set_time);
         repeatText = (TextView) parentActivity.findViewById(R.id.set_repeat);
         repeatNoText = (TextView) parentActivity.findViewById(R.id.set_repeat_no);
-        repeatTypeText = (TextView)parentActivity.findViewById(R.id.set_repeat_type);
+        repeatTypeText = (TextView) parentActivity.findViewById(R.id.set_repeat_type);
         repeatSwitch = (Switch) parentActivity.findViewById(R.id.repeat_switch);
 
         repeatSwitch.setOnClickListener(new View.OnClickListener() {
@@ -211,10 +219,10 @@ public class TaskAddReminderFragment extends Fragment {
         });
 
         calendar = Calendar.getInstance();
-        if(alarmData != null) {
-            mRepeat = Boolean.toString(alarmData.isRepeat());
-            mRepeatNo = Integer.toString(alarmData.getRepeatNo());
-            mRepeatType = alarmData.getRepeatType();
+        if (alarmData != null) {
+            mRepeat = alarmData.isRepeat();
+            mRepeatNo = alarmData.getRepeatNo();
+            mRepeatType = getResIdFromRepeatTypeString(alarmData.getRepeatType());
 
             hour = alarmData.getHour();
             mMinute = alarmData.getMinute();
@@ -224,9 +232,10 @@ public class TaskAddReminderFragment extends Fragment {
         } else {
             initTexts();
         }
-        if(mRepeat.equals("true")) {
+        if (mRepeat) {
             repeatSwitch.setChecked(true);
-        } onSwitchRepeat(repeatSwitch);
+        }
+        onSwitchRepeat(repeatSwitch);
 
         date = day + "." + (month) + "." + year;
         if (mMinute < 10) {
@@ -237,15 +246,15 @@ public class TaskAddReminderFragment extends Fragment {
 
         dateText.setText(date);
         timeText.setText(time);
-        repeatNoText.setText(mRepeatNo);
-        repeatTypeText.setText(mRepeatType);
+        repeatNoText.setText(Integer.toString(mRepeatNo));
+        repeatTypeText.setText(resources.getQuantityString(mRepeatType,1));
 
     }
 
     private void initTexts() {
-        mRepeat = "false";
-        mRepeatNo = Integer.toString(1);
-        mRepeatType = "Day";
+        mRepeat = false;
+        mRepeatNo = 1;
+        mRepeatType = getResIdFromRepeatTypeString("Day");
 
         calendar = Calendar.getInstance();
         hour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -268,7 +277,7 @@ public class TaskAddReminderFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    public void setTime(View v){
+    public void setTime(View v) {
         TimePickerDialog mTimePicker;
         mTimePicker = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
             @Override
@@ -283,88 +292,92 @@ public class TaskAddReminderFragment extends Fragment {
                 timeText.setText(time);
             }
         }, hour, mMinute, true);
-        mTimePicker.setTitle("Select Time");
+        mTimePicker.setTitle(R.string.select_time);
         mTimePicker.show();
     }
 
-    public void setDate(View v){
+    public void setDate(View v) {
         Calendar now = Calendar.getInstance();
         DatePickerDialog mDatePicker;
         mDatePicker = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker datepicker, int year, int monthOfYear, int dayOfMonth) {
                 day = dayOfMonth;
-                month = monthOfYear+1;
+                month = monthOfYear + 1;
                 year = year;
                 date = day + "." + month + "." + year;
                 dateText.setText(date);
             }
-        }, year, month-1, day);
-        mDatePicker.setTitle("Select Date");
+        }, year, month - 1, day);
+        mDatePicker.setTitle(getString(R.string.select_date));
         mDatePicker.show();
     }
 
     public void onSwitchRepeat(View view) {
         boolean on = ((Switch) view).isChecked();
         if (on) {
-            mRepeat = "true";
-            repeatText.setText("Every " + mRepeatNo + " " + mRepeatType + "(s)");
+            mRepeat = true;
+            repeatText.setText(buildRepeatText(mRepeatNo, mRepeatType));
         } else {
-            mRepeat = "false";
-            // repeatText.setText(R.string.repeat_off);
-            repeatText.setText("Off");
+            mRepeat = false;
+            repeatText.setText(getString(R.string.off));
         }
     }
 
-    public void selectRepeatType(View v){
+    public void selectRepeatType(View v) {
         final String[] items = new String[5];
+        final int[] resIds = new int[5];
 
-        items[0] = "Minute";
-        items[1] = "Hour";
-        items[2] = "Day";
-        items[3] = "Week";
-        items[4] = "Month";
+        resIds[0] = R.plurals.minute_plural;
+        items[0] = resources.getQuantityString(resIds[0], 1);
+        resIds[1] = R.plurals.hour_plural;
+        items[1] = resources.getQuantityString(resIds[1], 1);
+        resIds[2] = R.plurals.day_plural;
+        items[2] = resources.getQuantityString(resIds[2], 1);
+        resIds[3] = R.plurals.week_plural;
+        items[3] = resources.getQuantityString(resIds[3], 1);
+        resIds[4] = R.plurals.month_plural;
+        items[4] = resources.getQuantityString(resIds[4], 1);
 
         // Create List Dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle("Select Type");
+        builder.setTitle(getString(R.string.select_type));
         builder.setItems(items, new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int item) {
 
-                mRepeatType = items[item];
-                repeatTypeText.setText(mRepeatType);
-                repeatText.setText("Every " + mRepeatNo + " " + mRepeatType + "(s)");
+                mRepeatType = resIds[item];
+                repeatTypeText.setText(resources.getQuantityString(mRepeatType, 1));
+                repeatText.setText(buildRepeatText(mRepeatNo, mRepeatType));
             }
         });
         AlertDialog alert = builder.create();
         alert.show();
     }
 
-    public void setRepeatNo(View v){
+    public void setRepeatNo(View v) {
         AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-        alert.setTitle("Enter Number");
+        alert.setTitle(getString(R.string.prompt_enter_number));
 
         // Create EditText box to input repeat number
         final EditText input = new EditText(getContext());
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
         alert.setView(input);
-        alert.setPositiveButton("Ok",
+        alert.setPositiveButton(getString(R.string.ok),
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
 
                         if (input.getText().toString().length() == 0) {
-                            mRepeatNo = Integer.toString(1);
-                            repeatNoText.setText(mRepeatNo);
-                            repeatText.setText("Every " + mRepeatNo + " " + mRepeatType + "(s)");
-                        }
-                        else {
-                            mRepeatNo = input.getText().toString().trim();
-                            repeatNoText.setText(mRepeatNo);
-                            repeatText.setText("Every " + mRepeatNo + " " + mRepeatType + "(s)");
+                            mRepeatNo = 1;
+                            repeatNoText.setText(Integer.toString(mRepeatNo));
+                            repeatText.setText(buildRepeatText(mRepeatNo, mRepeatType));
+                        } else {
+                            mRepeatNo = Integer.parseInt(input.getText().toString().trim());
+                            repeatNoText.setText(Integer.toString(mRepeatNo));
+                            repeatText.setText(buildRepeatText(mRepeatNo, mRepeatType));
                         }
                     }
                 });
-        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        alert.setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 // do nothing
             }
@@ -372,19 +385,19 @@ public class TaskAddReminderFragment extends Fragment {
         alert.show();
     }
 
-    public void saveReminder(){
-
-        if(alarmData == null) {
-            alarmData = new TaskAlarm(year, month, hour, mMinute, day, Boolean.parseBoolean(mRepeat), Integer.parseInt(mRepeatNo), mRepeatType);
+    public void saveReminder() {
+        String repeatTypeString = getRepeatTypeStringFromResId(mRepeatType);
+        if (alarmData == null) {
+            alarmData = new TaskAlarm(year, month, hour, mMinute, day, mRepeat, mRepeatNo, repeatTypeString);
         } else {
             alarmData.setYear(year);
             alarmData.setMonth(month);
             alarmData.setMinute(mMinute);
             alarmData.setHour(hour);
             alarmData.setDay(day);
-            alarmData.setRepeat(Boolean.parseBoolean(mRepeat));
-            alarmData.setRepeatNo(Integer.parseInt(mRepeatNo));
-            alarmData.setRepeatType(mRepeatType);
+            alarmData.setRepeat(mRepeat);
+            alarmData.setRepeatNo(mRepeatNo);
+            alarmData.setRepeatType(repeatTypeString);
         }
 
         calendar.setTimeInMillis(System.currentTimeMillis());
@@ -395,19 +408,19 @@ public class TaskAddReminderFragment extends Fragment {
         calendar.set(Calendar.MINUTE, mMinute);
         calendar.set(Calendar.SECOND, 0);
 
-        long selectedTimestamp =  calendar.getTimeInMillis();
+        long selectedTimestamp = calendar.getTimeInMillis();
 
         // Check repeat type
-        if (mRepeatType.equals("Minute")) {
-            repeatTime = Integer.parseInt(mRepeatNo) * milMinute;
-        } else if (mRepeatType.equals("Hour")) {
-            repeatTime = Integer.parseInt(mRepeatNo) * milHour;
-        } else if (mRepeatType.equals("Day")) {
-            repeatTime = Integer.parseInt(mRepeatNo) * milDay;
-        } else if (mRepeatType.equals("Week")) {
-            repeatTime = Integer.parseInt(mRepeatNo) * milWeek;
-        } else if (mRepeatType.equals("Month")) {
-            repeatTime = Integer.parseInt(mRepeatNo) * milMonth;
+        if (mRepeatType == R.plurals.minute_plural) {
+            repeatTime = mRepeatNo * milMinute;
+        } else if (mRepeatType == R.plurals.hour_plural) {
+            repeatTime = mRepeatNo * milHour;
+        } else if (mRepeatType == R.plurals.day_plural) {
+            repeatTime = mRepeatNo * milDay;
+        } else if (mRepeatType == R.plurals.week_plural) {
+            repeatTime = mRepeatNo * milWeek;
+        } else if (mRepeatType == R.plurals.month_plural) {
+            repeatTime = mRepeatNo * milMonth;
         }
 
         AlarmManager alarmMgr;
@@ -433,12 +446,53 @@ public class TaskAddReminderFragment extends Fragment {
 
         alarmMgr.cancel(alarmIntent);
 
-        Toast.makeText(getActivity(), "Alarm was removed!",
+        Toast.makeText(getActivity(), getString(R.string.reminder_removed),
                 Toast.LENGTH_SHORT).show();
 
         task.setAlarm(null);
         taskViewModel.changeTask(task, progressBar);
         getActivity().finish();
 
+    }
+
+    private String buildRepeatText(int repeatNo, int repeatTypeResId){
+        String repeatText = getString(R.string.every);
+        repeatText += " " + repeatNo + " ";
+        repeatText += resources.getQuantityString(repeatTypeResId, repeatNo);
+        return repeatText;
+    }
+
+    private int getResIdFromRepeatTypeString(String repeatType) {
+        switch (repeatType) {
+            case "Minute":
+                return R.plurals.minute_plural;
+            case "Hour":
+                return R.plurals.hour_plural;
+            case "Day":
+                return R.plurals.day_plural;
+            case "Week":
+                return R.plurals.week_plural;
+            case "Month":
+                return R.plurals.month_plural;
+            default:
+                return 0;
+        }
+    }
+
+    private String getRepeatTypeStringFromResId(int resId) {
+        switch (resId) {
+            case R.plurals.minute_plural:
+                return "Minute";
+            case R.plurals.hour_plural:
+                return "Hour";
+            case R.plurals.day_plural:
+                return "Day";
+            case R.plurals.week_plural:
+                return "Week";
+            case R.plurals.month_plural:
+                return "Month";
+            default:
+                return null;
+        }
     }
 }

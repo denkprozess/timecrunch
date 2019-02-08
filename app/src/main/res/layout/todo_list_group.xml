@@ -31,14 +31,14 @@
             android:textSize="17dp"
             android:textColor="@color/colorPrimary" />
 
-        <ImageButton
+        <!--<ImageButton
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:id="@+id/category_indicator"
             android:layout_alignParentEnd="true"
             android:background="@null"
             android:src="@drawable/ic_keyboard_arrow_down_white_24dp"
-            android:tint="@color/materialcolorpicker__black"/>
+            android:tint="@color/materialcolorpicker__black"/>-->
 
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>

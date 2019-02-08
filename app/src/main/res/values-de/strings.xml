@@ -49,4 +49,40 @@
     <string name="delete_category_consequences">Alle zugehörigen Aufgaben und Zeitblöcke werden dadurch ebenfalls gelöscht!</string>
     <string name="edit_category">Kategorie bearbeiten</string>
     <string name="logout">Ausloggen</string>
+    <string name="categories">Kategorien</string>
+    <string name="repeat">Wiederholung</string>
+    <string name="time">Zeit</string>
+    <string name="date">Datum</string>
+    <string name="set_reminder">Erinnerung einstellen</string>
+    <string name="minute">Minute</string>
+    <string name="hour">Stunde</string>
+    <string name="day">Tag</string>
+    <string name="week">Woche</string>
+    <string name="month">Monat</string>
+    <string name="reminder_removed">Erinnerung wurde entfernt!</string>
+    <string name="select_type">Art auswählen</string>
+    <plurals name="minute_plural">
+        <item quantity="one">"Minute"</item>
+        <item quantity="other">"Minuten"</item>
+    </plurals>
+    <plurals name="hour_plural">
+        <item quantity="one">"Stunde"</item>
+        <item quantity="other">"Stunden"</item>
+    </plurals>
+    <plurals name="day_plural">
+        <item quantity="one">"Tag"</item>
+        <item quantity="other">"Tage"</item>
+    </plurals>
+    <plurals name="week_plural">
+        <item quantity="one">"Woche"</item>
+        <item quantity="other">"Wochen"</item>
+    </plurals>
+    <plurals name="month_plural">
+        <item quantity="one">"Monat"</item>
+        <item quantity="other">"Monate"</item>
+    </plurals>
+    <string name="every">Alle</string>
+    <string name="prompt_enter_number">Zahl eingeben</string>
+    <string name="select_date">Datum auswählen</string>
+    <string name="select_time">Zeit auswählen</string>
 </resources>

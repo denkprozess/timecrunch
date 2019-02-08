@@ -100,8 +100,8 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         setUpCategoryText(categoryText, headerCategory);
         ImageView categoryColor = (ImageView) convertView.findViewById(R.id.category_color);
         setUpCategoryColor(categoryColor, headerCategory);
-        ImageButton indicator = (ImageButton) convertView.findViewById(R.id.category_indicator);
-        setUpGroupIndicator(indicator,groupPosition,isExpanded);
+        //ImageButton indicator = (ImageButton) convertView.findViewById(R.id.category_indicator);
+        //setUpGroupIndicator(indicator,groupPosition,isExpanded);
         return convertView;
     }
 

@@ -60,4 +60,40 @@
     <string name="delete_category_consequences">All associated tasks and Timeblocks will be deleted as well!</string>
     <string name="edit_category">Edit category</string>
     <string name="logout">Logout</string>
+    <string name="categories">Categories</string>
+    <string name="repeat">Repeat</string>
+    <string name="time">Time</string>
+    <string name="date">Date</string>
+    <string name="set_reminder">Set your reminder</string>
+    <string name="select_type">Select type</string>
+    <string name="minute">Minute</string>
+    <string name="hour">Hour</string>
+    <string name="day">Day</string>
+    <string name="week">Week</string>
+    <string name="month">Month</string>
+    <string name="reminder_removed">Reminder was removed!</string>
+    <plurals name="minute_plural">
+        <item quantity="one">"Minute"</item>
+        <item quantity="other">"Minutes"</item>
+    </plurals>
+    <plurals name="hour_plural">
+        <item quantity="one">"Hour"</item>
+        <item quantity="other">"Hours"</item>
+    </plurals>
+    <plurals name="day_plural">
+        <item quantity="one">"Day"</item>
+        <item quantity="other">"Days"</item>
+    </plurals>
+    <plurals name="week_plural">
+        <item quantity="one">"Week"</item>
+        <item quantity="other">"Weeks"</item>
+    </plurals>
+    <plurals name="month_plural">
+        <item quantity="one">"Month"</item>
+        <item quantity="other">"Months"</item>
+    </plurals>
+    <string name="every">Every</string>
+    <string name="prompt_enter_number">Enter number</string>
+    <string name="select_date">Select date</string>
+    <string name="select_time">Select time</string>
 </resources>
