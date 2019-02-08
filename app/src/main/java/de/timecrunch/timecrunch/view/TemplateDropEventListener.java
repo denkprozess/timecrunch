@@ -49,8 +49,11 @@ public class TemplateDropEventListener implements View.OnDragListener {
                 ClipData.Item item = event.getClipData().getItemAt(0);
                 String color = (String) item.getText();
 
+                ClipData.Item item2 = event.getClipData().getItemAt(1);
+                String categoryId = (String) item2.getText();
+
                 if(v instanceof FrameLayout) {
-                    createNewEditBlock(event.getY(), color, v);
+                    createNewEditBlock(event.getY(), color, categoryId, v);
                 }
                 return true;
 
@@ -62,7 +65,7 @@ public class TemplateDropEventListener implements View.OnDragListener {
         return false;
     }
 
-    private void createNewEditBlock(float y, String color, View v) {
+    private void createNewEditBlock(float y, String color, String categoryId, View v) {
 
         int hours = 0;
         int quarters = 0;
@@ -75,12 +78,8 @@ public class TemplateDropEventListener implements View.OnDragListener {
         if(_y - hours > 0.49) {
             quarters = 2;
         }
-        // String categoryId, String color, int startHours, int startMinutes, int endHours, int endMinutes
-        String blockId = plannerViewModel.addTimeBlock("1", color, hours, quarters * 15, hours + 2, quarters * 15, progressBar);
-        //TimeBlock blockModel = plannerViewModel.getTimeBlock(blockId);
-        // blockModel.addTask(new TaskModel("1", "Duschen"));
-        // blockModel.addTask(new TaskModel("1", "Zähne putzen"));
-        // blockModel.addTask(new TaskModel("1", "Zeitung lesen"));
+
+        plannerViewModel.addTimeBlock(categoryId, color, hours, quarters * 15, hours + 1, quarters * 15, progressBar);
     }
 
     private int dpToPx(View v, int dp) {

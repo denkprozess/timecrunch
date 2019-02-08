@@ -47,6 +47,7 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
     RecyclerView taskListView;
     ItemTouchHelper itemTouchHelper;
     private Button addTasksBtn;
+    private Button deleteButton;
     private TaskSelectionViewModel taskSelectionViewModel;
     private ProgressBar progressBar;
     private int year;
@@ -135,15 +136,28 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         addTasksBtn = view.findViewById(R.id.add_tasks_button);
+        deleteButton = view.findViewById(R.id.delete_block_button);
         final View tempView = view;
-            addTasksBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    switchToTaskListEditMode(tempView);
-                }
-            });
+        addTasksBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchToTaskListEditMode(tempView);
+            }
+        });
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteBlock();
+            }
+        });
         setUpDataView(view);
         initializeSelectedTaskList();
+    }
+
+    private void deleteBlock() {
+        taskSelectionViewModel.unregisterFromDatabase();
+        plannerViewModel.removeTimeBlock(timeblockId, progressBar);
+        dismiss();
     }
 
     private void switchToTaskListEditMode(View v) {
@@ -196,7 +210,7 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // DELETE BLOCK
+                deleteBlock();
             }
         });
 

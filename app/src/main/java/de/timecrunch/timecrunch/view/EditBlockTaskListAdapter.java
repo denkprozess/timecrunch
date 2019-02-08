@@ -42,7 +42,9 @@ public class EditBlockTaskListAdapter extends RecyclerView.Adapter<EditBlockTask
 
     @Override
     public int getItemCount() {
-        return taskList.size();
+        if(taskList != null) {
+            return taskList.size();
+        } else return 0;
     }
 
     public TimeBlockTaskModel deleteItem(int position){

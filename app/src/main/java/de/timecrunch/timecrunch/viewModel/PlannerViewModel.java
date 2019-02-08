@@ -87,5 +87,6 @@ public class PlannerViewModel extends AndroidViewModel {
     public void removeTimeBlock(String timeBlockId, ProgressBar progressBar){
         PlannerDay plannerDay = plannerLiveData.getValue();
         plannerDay.removeTimeBlock(timeBlockId);
+        plannerDBHandler.savePlanner(plannerDay,progressBar);
     }
 }
