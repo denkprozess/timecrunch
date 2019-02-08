@@ -33,7 +33,6 @@ public class TaskSelectionDBHandler extends FireBaseDBHandler {
         if (plannerRegistration != null) {
             plannerRegistration.remove();
         }
-        // needs to be array to be accessed from within listener
         plannerRegistration = query.addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
@@ -54,34 +53,7 @@ public class TaskSelectionDBHandler extends FireBaseDBHandler {
                 hideProgressBar(progressBar);
             }
         });
-        //getTasksAndRegisterListener(categoryId[0], viewModel, progressBar);
     }
-//    public void getPlannerAndRegisterListener(int year, int month, int day, final TaskSelectionViewModel viewModel, final ProgressBar progressBar) {
-//        showProgressBar(progressBar);
-//        final Query query = db.collection(userId).document("data").collection("plannerDays").whereEqualTo("year", year)
-//                .whereEqualTo("month", month).whereEqualTo("day", day);
-//        if (plannerRegistration != null) {
-//            plannerRegistration.remove();
-//        }
-//        plannerRegistration = query.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
-//                if (e != null) {
-//                    Log.w(TAG, "Listen failed.", e);
-//                    return;
-//                }
-//                if (!queryDocumentSnapshots.isEmpty()) {
-//                    // there only ever is at most one document for the specified date
-//                    DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
-//                    PlannerDay plannerDay = documentSnapshot.toObject(PlannerDay.class);
-//                    viewModel.updateTimeBlockTaskListFromDB(plannerDay);
-//                } else {
-//                    viewModel.updateTimeBlockTaskListFromDB(null);
-//                }
-//                hideProgressBar(progressBar);
-//            }
-//        });
-//    }
 
     public void getTasksAndRegisterListener(final String categoryId, final TaskSelectionViewModel viewModel, final ProgressBar progressBar) {
         showProgressBar(progressBar);

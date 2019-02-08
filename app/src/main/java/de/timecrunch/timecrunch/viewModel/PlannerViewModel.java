@@ -68,21 +68,6 @@ public class PlannerViewModel extends AndroidViewModel {
         plannerDBHandler.savePlanner(plannerDay,progressBar);
     }
 
-    public void changeFinishedStatusOfTask(String timeBlockId, String taskId, ProgressBar progressBar){
-        PlannerDay plannerDay = plannerLiveData.getValue();
-        TimeBlock timeBlock = plannerDay.getTimeBlock(timeBlockId);
-        for(TimeBlockTaskModel task: timeBlock.getTasks()){
-            if(task.getTask().getId().equals(taskId)){
-                boolean newIsFinished = !task.getIsFinished();
-                task.setIsFinished(newIsFinished);
-                // If task is set to be finished and is not a repeating task, delete it from tasklist of category
-                if(newIsFinished && !task.getTask().getIsRepeating()){
-                    taskDBHandler.removeTask(task.getTask().getId(), progressBar);
-                }
-            }
-        }
-        plannerDBHandler.savePlanner(plannerDay,progressBar);
-    }
 
     public void removeTimeBlock(String timeBlockId, ProgressBar progressBar){
         PlannerDay plannerDay = plannerLiveData.getValue();

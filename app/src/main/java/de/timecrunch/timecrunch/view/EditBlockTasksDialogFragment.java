@@ -363,8 +363,12 @@ public class EditBlockTasksDialogFragment extends DialogFragment {
             if(child != null && gestureDetector.onTouchEvent(motionEvent)) {
                 int position = recyclerView.getChildAdapterPosition(child);
                 //TaskModel t = taskSelectionViewModel.getSelectedTasks().get(position);
-                TaskModel t = plannerViewModel.getTimeBlock(timeblockId).getTasks().get(position).getTask();
-                plannerViewModel.changeFinishedStatusOfTask(timeblockId, t.getId(), progressBar);
+                TimeBlockTaskModel timeBlockTaskModel = plannerViewModel.getTimeBlock(timeblockId).getTasks().get(position);
+                TaskModel t = timeBlockTaskModel.getTask();
+                // dont change back for tasks that are not repeating and finished. Those tasks were erase upon finishing them
+                if(t.getIsRepeating() || !timeBlockTaskModel.getIsFinished()) {
+                    taskSelectionViewModel.changeFinishedStatusOfTask(timeblockId, t.getId(), progressBar);
+                }
             }
             return false;
         }

@@ -19,6 +19,7 @@ import de.timecrunch.timecrunch.model.TaskModel;
 import de.timecrunch.timecrunch.model.TimeBlock;
 import de.timecrunch.timecrunch.model.TimeBlockTaskModel;
 import de.timecrunch.timecrunch.utilities.PlannerDBHandler;
+import de.timecrunch.timecrunch.utilities.TaskDBHandler;
 import de.timecrunch.timecrunch.utilities.TaskSelectionDBHandler;
 
 public class TaskSelectionViewModel extends AndroidViewModel {
@@ -27,6 +28,7 @@ public class TaskSelectionViewModel extends AndroidViewModel {
     private List<TaskModel> categoryTaskList;
     private PlannerDBHandler plannerDBHandler;
     private TaskSelectionDBHandler taskSelectionDBHandler;
+    private TaskDBHandler taskDBHandler;
     private MutableLiveData<Map<TaskModel, Boolean>> selectionLiveData;
 
     private PlannerDay currentPlannerDay;
@@ -40,7 +42,7 @@ public class TaskSelectionViewModel extends AndroidViewModel {
         selectionLiveData = new MutableLiveData<>();
         plannerDBHandler = new PlannerDBHandler();
         taskSelectionDBHandler = new TaskSelectionDBHandler();
-
+        taskDBHandler = new TaskDBHandler();
     }
 
     public LiveData<Map<TaskModel, Boolean>> getTaskSelectionLiveData() {
@@ -142,5 +144,29 @@ public class TaskSelectionViewModel extends AndroidViewModel {
     private void changeTimeBlock(String timeBlockId, TimeBlock timeBlock, ProgressBar progressBar) {
         currentPlannerDay.changeBlock(timeBlockId, timeBlock);
         plannerDBHandler.savePlanner(currentPlannerDay, progressBar);
+    }
+
+    public void changeFinishedStatusOfTask(String timeBlockId, String taskId, ProgressBar progressBar){
+        PlannerDay plannerDay = currentPlannerDay;
+        TimeBlock timeBlock = plannerDay.getTimeBlock(timeBlockId);
+        for(TimeBlockTaskModel timeBlockTask: timeBlock.getTasks()){
+            if(timeBlockTask.getTask().getId().equals(taskId)){
+                boolean newIsFinished = !timeBlockTask.getIsFinished();
+                timeBlockTask.setIsFinished(newIsFinished);
+                // task might have been modified in between -> check tasks from taskmodel
+                for(TaskModel task :categoryTaskList){
+                    if(task.getId().equals(taskId)){
+                        // If task is set to be finished and is not a repeating task, delete it from tasklist of category
+                        if(newIsFinished && !task.getIsRepeating()){
+                            timeBlockTask.getTask().setRepeating(false);
+                            taskDBHandler.removeTask(timeBlockTask.getTask().getId(), progressBar);
+                        }
+                        break;
+                    }
+                }
+
+            }
+        }
+        plannerDBHandler.savePlanner(plannerDay,progressBar);
     }
 }
