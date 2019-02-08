@@ -12,6 +12,7 @@ import android.util.Log;
 
 import de.timecrunch.timecrunch.R;
 import de.timecrunch.timecrunch.view.MainActivity;
+import de.timecrunch.timecrunch.view.TaskEditActivity;
 
 public class AlarmService extends JobIntentService {
     private NotificationManager alarmNotificationManager;
@@ -23,16 +24,21 @@ public class AlarmService extends JobIntentService {
 
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
-        sendNotification("Hey, look into your TimeCrunch App!");
+        sendNotification("Hey, look into your TimeCrunch App!", intent);
     }
 
-    private void sendNotification(String msg) {
+    private void sendNotification(String msg, Intent intent) {
         Log.d("AlarmService", "Preparing to send notification...: " + msg);
         alarmNotificationManager = (NotificationManager) this
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
-                new Intent(this, MainActivity.class), 0);
+        Intent activityStartIntent = new Intent(this, TaskEditActivity.class);
+        activityStartIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        String categoryId = intent.getStringExtra("CATEGORY_ID");
+        activityStartIntent.putExtras(intent.getExtras());
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, activityStartIntent
+                , PendingIntent.FLAG_UPDATE_CURRENT);
+
 
         NotificationCompat.Builder alarmNotificationBuilder = new NotificationCompat.Builder(
                 this, NOTIFICATION_CHANNEL_ID).setContentTitle("Alarm").setSmallIcon(R.mipmap.ic_launcher)

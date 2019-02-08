@@ -22,6 +22,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -247,7 +249,7 @@ public class TaskAddReminderFragment extends Fragment {
         dateText.setText(date);
         timeText.setText(time);
         repeatNoText.setText(Integer.toString(mRepeatNo));
-        repeatTypeText.setText(resources.getQuantityString(mRepeatType,1));
+        repeatTypeText.setText(resources.getQuantityString(mRepeatType, 1));
 
     }
 
@@ -273,9 +275,28 @@ public class TaskAddReminderFragment extends Fragment {
                 taskViewModel.changeTask(task, progressBar);
                 getActivity().finish();
                 return true;
+
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                Intent upIntent = NavUtils.getParentActivityIntent(getActivity());
+                if (NavUtils.shouldUpRecreateTask(getActivity(), upIntent)) {
+                    // This activity is NOT part of this app's task, so create a new task
+                    // when navigating up, with a synthesized back stack.
+                    TaskStackBuilder.create(getActivity())
+                            // Add all of this activity's parents to the back stack
+                            .addNextIntentWithParentStack(upIntent)
+                            // Navigate up to the closest parent
+                            .startActivities();
+                } else {
+                    // This activity is part of this app's task, so simply
+                    // navigate up to the logical parent activity.
+                    NavUtils.navigateUpTo(getActivity(), upIntent);
+                }
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
 
     public void setTime(View v) {
         TimePickerDialog mTimePicker;
@@ -428,7 +449,11 @@ public class TaskAddReminderFragment extends Fragment {
 
         alarmMgr = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getContext(), AlarmReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(getContext(), taskId.hashCode(), intent, 0);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("CATEGORY_ID", categoryId);
+        intent.putExtra("CATEGORY_NAME", categoryName);
+        intent.putExtra("TASK_ID", taskId);
+        alarmIntent = PendingIntent.getBroadcast(getContext(), taskId.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP,
                 selectedTimestamp, repeatTime, alarmIntent);
@@ -442,7 +467,8 @@ public class TaskAddReminderFragment extends Fragment {
 
         alarmMgr = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(getContext(), AlarmReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(getContext(), taskId.hashCode(), intent, 0);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        alarmIntent = PendingIntent.getBroadcast(getContext(), taskId.hashCode(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         alarmMgr.cancel(alarmIntent);
 
@@ -455,7 +481,7 @@ public class TaskAddReminderFragment extends Fragment {
 
     }
 
-    private String buildRepeatText(int repeatNo, int repeatTypeResId){
+    private String buildRepeatText(int repeatNo, int repeatTypeResId) {
         String repeatText = getString(R.string.every);
         repeatText += " " + repeatNo + " ";
         repeatText += resources.getQuantityString(repeatTypeResId, repeatNo);

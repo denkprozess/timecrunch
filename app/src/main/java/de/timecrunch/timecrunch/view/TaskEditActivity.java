@@ -1,6 +1,7 @@
 package de.timecrunch.timecrunch.view;
 
 import android.content.Intent;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -18,6 +19,11 @@ public class TaskEditActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
+        if(!(bundle.containsKey("TASK_ID") && bundle.containsKey("CATEGORY_ID")&& bundle.containsKey("CATEGORY_NAME"))){
+            Intent mainActivityIntent = new Intent(this, MainActivity.class);
+            startActivity(mainActivityIntent);
+            finish();
+        }
         TaskEditFragment fragment = new TaskEditFragment();
         fragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,

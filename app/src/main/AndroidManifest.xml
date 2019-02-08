@@ -39,7 +39,8 @@
             android:parentActivityName=".view.MainActivity" />
         <activity
             android:name=".view.TaskOverviewActivity"
-            android:parentActivityName=".view.MainActivity" />
+            android:parentActivityName=".view.MainActivity"
+            android:launchMode="singleTop"/>
         <activity
             android:name=".view.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -50,9 +51,11 @@
         </activity>
         <activity
             android:name=".view.TaskEditActivity"
-            android:parentActivityName=".view.MainActivity" />
+            android:parentActivityName=".view.TaskOverviewActivity"
+            android:launchMode="singleTop"/>
         <activity android:name=".view.TaskAddReminderActivity"
-            android:parentActivityName=".view.MainActivity"/>
+            android:parentActivityName=".view.TaskEditActivity"
+            android:launchMode="singleTop"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
