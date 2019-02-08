@@ -108,4 +108,13 @@ public class TaskSelectionDBHandler extends FireBaseDBHandler {
             }
         });
     }
+
+    public void unregisterListeners(){
+        if (plannerRegistration != null) {
+            plannerRegistration.remove();
+        }
+        if (tasksRegistration != null) {
+            tasksRegistration.remove();
+        }
+    }
 }

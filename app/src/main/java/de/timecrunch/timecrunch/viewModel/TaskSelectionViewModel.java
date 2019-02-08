@@ -145,6 +145,10 @@ public class TaskSelectionViewModel extends AndroidViewModel {
         changeTimeBlock(timeBlockId, timeBlock, progressBar);
     }
 
+    public void unregisterFromDatabase(){
+        taskSelectionDBHandler.unregisterListeners();
+    }
+
     private void changeTimeBlock(String timeBlockId, TimeBlock timeBlock, ProgressBar progressBar) {
         currentPlannerDay.changeBlock(timeBlockId, timeBlock);
         plannerDBHandler.savePlanner(currentPlannerDay, progressBar);
