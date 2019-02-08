@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".view.TaskAddReminderFragment">
+    tools:context=".fragments.TaskAddReminderFragment"
+    android:background="@color/materialcolorpicker__white">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -39,7 +40,8 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="32dp"
-                    android:src="@drawable/ic_date_range_black_24dp" />
+                    android:src="@drawable/ic_date_range_black_24dp"
+                    android:tint="@color/blueHorizon"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -80,7 +82,8 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="32dp"
-                    android:src="@drawable/ic_access_time_black_24dp" />
+                    android:src="@drawable/ic_access_time_black_24dp"
+                    android:tint="@color/blueHorizon"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -120,7 +123,8 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="32dp"
-                    android:src="@drawable/ic_sync_black_24dp" />
+                    android:src="@drawable/ic_sync_black_24dp"
+                    android:tint="@color/blueHorizon"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -173,7 +177,8 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="32dp"
-                    android:src="@drawable/ic_timelapse_black_24dp" />
+                    android:src="@drawable/ic_timelapse_black_24dp"
+                    android:tint="@color/blueHorizon"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -215,7 +220,8 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="32dp"
-                    android:src="@drawable/ic_subject_black_24dp" />
+                    android:src="@drawable/ic_subject_black_24dp"
+                    android:tint="@color/blueHorizon"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"

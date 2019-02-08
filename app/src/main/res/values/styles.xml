@@ -3,10 +3,10 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorSecondary</item>
-        <item name="android:colorControlActivated">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/blueHorizon</item>
+        <item name="colorPrimaryDark">@color/blueGrey</item>
+        <item name="colorAccent">@color/twinkleBlue</item>
+        <item name="android:colorControlActivated">@color/blueGrey</item>
         <!--
         <item name="android:windowBackground">@color/colorWindowBackground</item>
         <item name="android:background">@color/colorBackground</item>
@@ -36,8 +36,18 @@
     </style>
 
     <style name="AlertDialogCustom" parent="@android:style/Theme.Dialog">
-        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:windowBackground">@color/materialcolorpicker__white</item>
+        <item name="android:textColor">@color/blueHorizon</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
     </style>
 
+    <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/blueGrey</item>
+    </style>
+
+    <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/blueHorizon</item>
+    </style>
 
 </resources>

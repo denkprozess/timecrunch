@@ -16,11 +16,4 @@
         android:title="@string/dayView"
         app:showAsAction="ifRoom"/>
 
-    <item
-        android:id="@+id/action_templates"
-        android:enabled="true"
-        android:icon="@drawable/ic_content_copy_black_24dp"
-        android:title="@string/templates"
-        app:showAsAction="ifRoom"/>
-
 </menu>

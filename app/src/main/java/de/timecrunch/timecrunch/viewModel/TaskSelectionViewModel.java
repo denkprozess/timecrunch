@@ -7,20 +7,19 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.widget.ProgressBar;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.timecrunch.timecrunch.database.PlannerDBHandler;
+import de.timecrunch.timecrunch.database.TaskDBHandler;
+import de.timecrunch.timecrunch.database.TaskSelectionDBHandler;
 import de.timecrunch.timecrunch.model.PlannerDay;
 import de.timecrunch.timecrunch.model.TaskModel;
 import de.timecrunch.timecrunch.model.TimeBlock;
 import de.timecrunch.timecrunch.model.TimeBlockTaskModel;
-import de.timecrunch.timecrunch.utilities.PlannerDBHandler;
-import de.timecrunch.timecrunch.utilities.TaskDBHandler;
-import de.timecrunch.timecrunch.utilities.TaskSelectionDBHandler;
 
 public class TaskSelectionViewModel extends AndroidViewModel {
 
@@ -52,8 +51,8 @@ public class TaskSelectionViewModel extends AndroidViewModel {
     public ArrayList<TaskModel> getSelectedTasks() {
         ArrayList<TaskModel> selectedTasks = new ArrayList<>();
         ArrayList<TaskModel> allTasks = new ArrayList<>(selectionLiveData.getValue().keySet());
-        for(TaskModel t : allTasks) {
-            if(selectionLiveData.getValue().get(t)) {
+        for (TaskModel t : allTasks) {
+            if (selectionLiveData.getValue().get(t)) {
                 selectedTasks.add(t);
             }
         }
@@ -63,8 +62,8 @@ public class TaskSelectionViewModel extends AndroidViewModel {
     public ArrayList<TaskModel> getUnselectedTasks() {
         ArrayList<TaskModel> nonSelectedTasks = new ArrayList<TaskModel>();
         ArrayList<TaskModel> allTasks = new ArrayList<TaskModel>(selectionLiveData.getValue().keySet());
-        for(TaskModel t : allTasks) {
-            if(!selectionLiveData.getValue().get(t)) {
+        for (TaskModel t : allTasks) {
+            if (!selectionLiveData.getValue().get(t)) {
                 nonSelectedTasks.add(t);
             }
         }
@@ -98,8 +97,8 @@ public class TaskSelectionViewModel extends AndroidViewModel {
                 // if task is already selected
                 if (plannerTaskMap.containsKey(task.getId())) {
                     selectionMap.put(task, true);
-                }else{
-                    selectionMap.put(task,false);
+                } else {
+                    selectionMap.put(task, false);
                 }
             }
             selectionLiveData.postValue(selectionMap);
@@ -108,7 +107,6 @@ public class TaskSelectionViewModel extends AndroidViewModel {
 
     public void initializeSelectedTasks(ProgressBar progressBar) {
         taskSelectionDBHandler.getTaskSelectionAndRegisterListener(currentYear, currentMonth, currentDay, currentTimeBlockId, this, progressBar);
-        //taskSelectionDBHandler.getTasksAndRegisterListener(currentCategoryId,this,progressBar);
     }
 
     public void setUpLiveData(int year, int month, int day, String timeBlockId, ProgressBar progressBar) {
@@ -137,7 +135,7 @@ public class TaskSelectionViewModel extends AndroidViewModel {
         changeTimeBlock(timeBlockId, timeBlock, progressBar);
     }
 
-    public void unregisterFromDatabase(){
+    public void unregisterFromDatabase() {
         taskSelectionDBHandler.unregisterListeners();
     }
 
@@ -146,18 +144,18 @@ public class TaskSelectionViewModel extends AndroidViewModel {
         plannerDBHandler.savePlanner(currentPlannerDay, progressBar);
     }
 
-    public void changeFinishedStatusOfTask(String timeBlockId, String taskId, ProgressBar progressBar){
+    public void changeFinishedStatusOfTask(String timeBlockId, String taskId, ProgressBar progressBar) {
         PlannerDay plannerDay = currentPlannerDay;
         TimeBlock timeBlock = plannerDay.getTimeBlock(timeBlockId);
-        for(TimeBlockTaskModel timeBlockTask: timeBlock.getTasks()){
-            if(timeBlockTask.getTask().getId().equals(taskId)){
+        for (TimeBlockTaskModel timeBlockTask : timeBlock.getTasks()) {
+            if (timeBlockTask.getTask().getId().equals(taskId)) {
                 boolean newIsFinished = !timeBlockTask.getIsFinished();
                 timeBlockTask.setIsFinished(newIsFinished);
                 // task might have been modified in between -> check tasks from taskmodel
-                for(TaskModel task :categoryTaskList){
-                    if(task.getId().equals(taskId)){
+                for (TaskModel task : categoryTaskList) {
+                    if (task.getId().equals(taskId)) {
                         // If task is set to be finished and is not a repeating task, delete it from tasklist of category
-                        if(newIsFinished && !task.getIsRepeating()){
+                        if (newIsFinished && !task.getIsRepeating()) {
                             timeBlockTask.getTask().setRepeating(false);
                             taskDBHandler.removeTask(timeBlockTask.getTask().getId(), progressBar);
                         }
@@ -167,6 +165,6 @@ public class TaskSelectionViewModel extends AndroidViewModel {
 
             }
         }
-        plannerDBHandler.savePlanner(plannerDay,progressBar);
+        plannerDBHandler.savePlanner(plannerDay, progressBar);
     }
 }

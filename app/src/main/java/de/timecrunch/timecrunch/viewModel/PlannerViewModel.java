@@ -6,11 +6,10 @@ import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
 import android.widget.ProgressBar;
 
+import de.timecrunch.timecrunch.database.PlannerDBHandler;
+import de.timecrunch.timecrunch.database.TaskDBHandler;
 import de.timecrunch.timecrunch.model.PlannerDay;
 import de.timecrunch.timecrunch.model.TimeBlock;
-import de.timecrunch.timecrunch.model.TimeBlockTaskModel;
-import de.timecrunch.timecrunch.utilities.PlannerDBHandler;
-import de.timecrunch.timecrunch.utilities.TaskDBHandler;
 
 public class PlannerViewModel extends AndroidViewModel {
 
@@ -49,29 +48,29 @@ public class PlannerViewModel extends AndroidViewModel {
         }
     }
 
-    public TimeBlock getTimeBlock(String timeBlockId){
+    public TimeBlock getTimeBlock(String timeBlockId) {
         return plannerLiveData.getValue().getTimeBlock(timeBlockId);
     }
-    public String addTimeBlock(String categoryId, String color, int startHours, int startMinutes, int endHours, int endMinutes, ProgressBar progressBar){
+
+    public String addTimeBlock(String categoryId, String color, int startHours, int startMinutes, int endHours, int endMinutes, ProgressBar progressBar) {
         PlannerDay plannerDay = plannerLiveData.getValue();
-        if(plannerDay == null){
+        if (plannerDay == null) {
             plannerDay = new PlannerDay(currentYear, currentMonth, currentDay);
         }
-        String id = plannerDay.createBlock(categoryId,color,startHours,startMinutes,endHours,endMinutes);
+        String id = plannerDay.createBlock(categoryId, color, startHours, startMinutes, endHours, endMinutes);
         plannerDBHandler.savePlanner(plannerDay, progressBar);
         return id;
     }
 
-    public void changeTimeBlock(String timeBlockId, TimeBlock timeBlock, ProgressBar progressBar){
+    public void changeTimeBlock(String timeBlockId, TimeBlock timeBlock, ProgressBar progressBar) {
         PlannerDay plannerDay = plannerLiveData.getValue();
         plannerDay.changeBlock(timeBlockId, timeBlock);
-        plannerDBHandler.savePlanner(plannerDay,progressBar);
+        plannerDBHandler.savePlanner(plannerDay, progressBar);
     }
 
-
-    public void removeTimeBlock(String timeBlockId, ProgressBar progressBar){
+    public void removeTimeBlock(String timeBlockId, ProgressBar progressBar) {
         PlannerDay plannerDay = plannerLiveData.getValue();
         plannerDay.removeTimeBlock(timeBlockId);
-        plannerDBHandler.savePlanner(plannerDay,progressBar);
+        plannerDBHandler.savePlanner(plannerDay, progressBar);
     }
 }

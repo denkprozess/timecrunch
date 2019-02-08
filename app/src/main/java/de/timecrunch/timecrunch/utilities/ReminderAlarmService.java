@@ -12,7 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
 import de.timecrunch.timecrunch.R;
-import de.timecrunch.timecrunch.view.TaskAddReminderFragment;
+import de.timecrunch.timecrunch.fragments.TaskAddReminderFragment;
 
 public class ReminderAlarmService extends IntentService {
     private static final String TAG = ReminderAlarmService.class.getSimpleName();

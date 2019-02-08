@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.TaskEditActivity">
+    tools:context=".activities.TaskEditActivity"
+    android:background="@color/materialcolorpicker__white">
 
     <FrameLayout
         android:id="@+id/fragment_container"

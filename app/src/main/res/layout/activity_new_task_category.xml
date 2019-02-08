@@ -5,7 +5,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.EditCategoryActivity">
+    tools:context=".activities.TaskEditCategoryActivity"
+    android:background="@color/materialcolorpicker__white">
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/category_name_input"
@@ -58,7 +59,7 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_apps_black_24dp"
-            android:tint="@color/colorPrimary" />
+            android:tint="@color/blueHorizon" />
 
         <TextView
             android:id="@+id/color_text"
@@ -108,7 +109,7 @@
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:src="@drawable/ic_star_black_24dp"
-            android:tint="@color/colorPrimary" />
+            android:tint="@color/blueHorizon" />
 
         <TextView
             android:id="@+id/time_block_text"

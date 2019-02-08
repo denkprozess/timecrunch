@@ -21,7 +21,6 @@ public class TimeBlockTaskModel {
         return isFinished;
     }
 
-
     public void setIsFinished(boolean finished) {
         isFinished = finished;
     }

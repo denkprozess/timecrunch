@@ -59,7 +59,4 @@ public class PlannerDay {
         return blocks.get(id);
     }
 
-    public void setBlocks(Map<String, TimeBlock> blocks) {
-        this.blocks = blocks;
-    }
 }

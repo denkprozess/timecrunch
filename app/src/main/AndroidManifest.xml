@@ -31,18 +31,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".view.MainActivity"
+            android:name=".activities.MainActivity"
             android:launchMode="singleTop" />
         <activity
-            android:name=".view.EditCategoryActivity"
+            android:name=".activities.TaskEditCategoryActivity"
             android:label="@string/title_activity_new_category"
-            android:parentActivityName=".view.MainActivity" />
+            android:parentActivityName=".activities.MainActivity" />
         <activity
-            android:name=".view.TaskOverviewActivity"
-            android:parentActivityName=".view.MainActivity"
+            android:name=".activities.TaskOverviewActivity"
+            android:parentActivityName=".activities.MainActivity"
             android:launchMode="singleTop"/>
         <activity
-            android:name=".view.LoginActivity"
+            android:name=".activities.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,11 +50,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.TaskEditActivity"
-            android:parentActivityName=".view.TaskOverviewActivity"
+            android:name=".activities.TaskEditActivity"
+            android:parentActivityName=".activities.TaskOverviewActivity"
             android:launchMode="singleTop"/>
-        <activity android:name=".view.TaskAddReminderActivity"
-            android:parentActivityName=".view.TaskEditActivity"
+        <activity android:name=".activities.TaskAddReminderActivity"
+            android:parentActivityName=".activities.TaskEditActivity"
             android:launchMode="singleTop"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

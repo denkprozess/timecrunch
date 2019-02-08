@@ -13,17 +13,12 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import de.timecrunch.timecrunch.model.TaskAlarm;
+import de.timecrunch.timecrunch.database.TaskDBHandler;
 import de.timecrunch.timecrunch.model.TaskModel;
-import de.timecrunch.timecrunch.utilities.DBHandler;
-import de.timecrunch.timecrunch.utilities.TaskDBHandler;
 
 public class TaskViewModel extends AndroidViewModel {
     private MutableLiveData<Map<String, TaskModel>> tasksLiveData;
     private TaskDBHandler taskDBHandler;
-    private TaskModel lastRemovedTask;
-    private String lastRemovedCategoryId;
-    private boolean invalidated;
 
     public TaskViewModel(@NonNull Application application) {
         super(application);
@@ -40,15 +35,15 @@ public class TaskViewModel extends AndroidViewModel {
 
     private void initializeTasks(String categoryId, ProgressBar progressBar) {
         // DB-Calls are asynchronous by default, so no need for AsyncTask
-        taskDBHandler.getTasksAndRegisterListener(categoryId,tasksLiveData,progressBar);
+        taskDBHandler.getTasksAndRegisterListener(categoryId, tasksLiveData, progressBar);
     }
 
-    public TaskModel getTaskAtPosition(int position){
-        Map<String,TaskModel> taskModelMap = tasksLiveData.getValue();
+    public TaskModel getTaskAtPosition(int position) {
+        Map<String, TaskModel> taskModelMap = tasksLiveData.getValue();
         ArrayList<TaskModel> taskList = new ArrayList<>(taskModelMap.values());
-        if(taskList.size()>position){
+        if (taskList.size() > position) {
             return taskList.get(position);
-        }else{
+        } else {
             return null;
         }
     }
@@ -56,7 +51,7 @@ public class TaskViewModel extends AndroidViewModel {
     public void setUpLiveData(String categoryId, ProgressBar progressBar) {
         Map<String, TaskModel> taskMap = tasksLiveData.getValue();
         boolean categoryIdMatchesTaskList = false;
-        if(!taskMap.isEmpty()){
+        if (!taskMap.isEmpty()) {
             categoryIdMatchesTaskList = categoryId.equals(getTaskAtPosition(0).getCategoryId());
         }
         if (!categoryIdMatchesTaskList) {
@@ -64,17 +59,18 @@ public class TaskViewModel extends AndroidViewModel {
         }
     }
 
-    public TaskModel getTask(String taskId){
+    public TaskModel getTask(String taskId) {
         return tasksLiveData.getValue().get(taskId);
     }
+
     public void removeTask(TaskModel task, ProgressBar progressBar) {
         taskDBHandler.removeTask(task.getId(), progressBar);
     }
 
     public void addTask(String categoryId, TaskModel userTask, ProgressBar progressBar) {
-        Map<String,TaskModel> taskModelMap = tasksLiveData.getValue();
+        Map<String, TaskModel> taskModelMap = tasksLiveData.getValue();
         ArrayList<TaskModel> taskList = new ArrayList<>(taskModelMap.values());
-        if(!taskList.isEmpty()) {
+        if (!taskList.isEmpty()) {
             Collections.sort(taskList, new Comparator<TaskModel>() {
                 @Override
                 public int compare(TaskModel o1, TaskModel o2) {
@@ -85,7 +81,7 @@ public class TaskViewModel extends AndroidViewModel {
             int highestSorting = lastTask.getSorting();
             // append new entry at the end of the list via the sorting field users can move their Tasks in the list in the future
             userTask.setSorting(highestSorting + 1);
-        }else{
+        } else {
             userTask.setSorting(1);
         }
         taskDBHandler.addTask(categoryId, userTask, progressBar);
@@ -95,15 +91,10 @@ public class TaskViewModel extends AndroidViewModel {
         taskDBHandler.changeTask(task, progressBar);
     }
 
-    public void changeTaskToSurviveConfigChange(TaskModel task){
+    public void changeTaskToSurviveConfigChange(TaskModel task) {
         String taskId = task.getId();
-        Map<String,TaskModel> taskModelMap = tasksLiveData.getValue();
+        Map<String, TaskModel> taskModelMap = tasksLiveData.getValue();
         taskModelMap.put(taskId, task);
         tasksLiveData.setValue(taskModelMap);
     }
-
-    public void invalidate(){
-        invalidated = true;
-    }
-
 }

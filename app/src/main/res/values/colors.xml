@@ -8,4 +8,7 @@
     <color name="colorSecondary">#BCE0FD</color>
     <color name="colorWindowBackground">#F1F9FF</color>
     <color name="colorBackground">#ffffff</color>
+    <color name="blueGrey">#778ca3</color>
+    <color name="blueHorizon">#4b6584</color>
+    <color name="twinkleBlue">#d1d8e0</color>
 </resources>

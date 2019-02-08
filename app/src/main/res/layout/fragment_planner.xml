@@ -9,14 +9,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context=".view.MainActivity">
+        tools:context=".activities.MainActivity">
 
         <com.prolificinteractive.materialcalendarview.MaterialCalendarView
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:mcv_selectionColor="#aeaeae"
+            app:mcv_selectionColor="@color/blueGrey"
             app:mcv_showOtherDates="all"
             app:mcv_calendarMode="week"
             app:mcv_firstDayOfWeek="monday"

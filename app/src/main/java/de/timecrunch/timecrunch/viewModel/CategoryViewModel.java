@@ -14,8 +14,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.timecrunch.timecrunch.database.CategoryDBHandler;
 import de.timecrunch.timecrunch.model.Category;
-import de.timecrunch.timecrunch.utilities.CategoryDBHandler;
 
 public class CategoryViewModel extends AndroidViewModel {
     private MutableLiveData<Map<Category, List<Category>>> categoriesLiveData;
@@ -44,15 +44,15 @@ public class CategoryViewModel extends AndroidViewModel {
         categoryDBHandler.getCategoriesAndRegisterListener(categoriesLiveData, progressBar);
     }
 
-    public Category getCategory(String categoryId){
+    public Category getCategory(String categoryId) {
         Map<Category, List<Category>> categoryMap = categoriesLiveData.getValue();
-        for(Map.Entry<Category, List<Category>> entry:categoryMap.entrySet()){
-            Category currentCategory =  entry.getKey();
-            if(categoryId.equals(currentCategory.getId())){
+        for (Map.Entry<Category, List<Category>> entry : categoryMap.entrySet()) {
+            Category currentCategory = entry.getKey();
+            if (categoryId.equals(currentCategory.getId())) {
                 return currentCategory;
             }
-            for(Category currentSubCategory:entry.getValue()){
-                if(categoryId.equals(currentSubCategory.getId())){
+            for (Category currentSubCategory : entry.getValue()) {
+                if (categoryId.equals(currentSubCategory.getId())) {
                     return currentCategory;
                 }
             }
@@ -63,30 +63,30 @@ public class CategoryViewModel extends AndroidViewModel {
     public void addCategory(Category userCategory, ProgressBar progressBar) {
         Map<Category, List<Category>> categoryMap = categoriesLiveData.getValue();
         ArrayList<Category> categoryList = new ArrayList<>(categoryMap.keySet());
-        if(!categoryList.isEmpty()){
-        Collections.sort(categoryList, new Comparator<Category>() {
-                    @Override
-                    public int compare(Category o1, Category o2) {
-                        return o1.getSorting() - o2.getSorting();
-                    }
-                });
+        if (!categoryList.isEmpty()) {
+            Collections.sort(categoryList, new Comparator<Category>() {
+                @Override
+                public int compare(Category o1, Category o2) {
+                    return o1.getSorting() - o2.getSorting();
+                }
+            });
 
-            Category lastCategory = categoryList.get(categoryList.size()-1);
+            Category lastCategory = categoryList.get(categoryList.size() - 1);
             int highestSorting = lastCategory.getSorting();
             // append new entry at the end of the list via the sorting field users can move their Categories in the list in the future
-            userCategory.setSorting(highestSorting+1);
-        }else{
+            userCategory.setSorting(highestSorting + 1);
+        } else {
             userCategory.setSorting(1);
         }
         // DB-Calls are asynchronous by default, so no need for AsyncTask
         categoryDBHandler.addCategory(userCategory, progressBar);
     }
 
-    public void changeCategory(Category userCategory, ProgressBar progressBar){
+    public void changeCategory(Category userCategory, ProgressBar progressBar) {
         categoryDBHandler.changeCategory(userCategory, progressBar);
     }
 
-    public void removeCategory(String categoryId, ProgressBar progressBar){
+    public void removeCategory(String categoryId, ProgressBar progressBar) {
         categoryDBHandler.removeCategory(categoryId, progressBar);
     }
 }

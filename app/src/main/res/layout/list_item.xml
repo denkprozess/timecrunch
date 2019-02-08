@@ -25,7 +25,7 @@
             android:layout_gravity="center_vertical"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:textSize="17dip"
+            android:textSize="17dp"
             android:layout_toEndOf="@id/subcategory_color"
             android:paddingStart="5dp" />
 

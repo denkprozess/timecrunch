@@ -1,6 +1,5 @@
 package de.timecrunch.timecrunch.utilities;
 
-import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -11,8 +10,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import de.timecrunch.timecrunch.R;
-import de.timecrunch.timecrunch.view.MainActivity;
-import de.timecrunch.timecrunch.view.TaskEditActivity;
+import de.timecrunch.timecrunch.activities.TaskEditActivity;
 
 public class AlarmService extends JobIntentService {
     private NotificationManager alarmNotificationManager;
