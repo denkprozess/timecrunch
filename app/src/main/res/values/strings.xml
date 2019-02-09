@@ -96,4 +96,10 @@
     <string name="prompt_enter_number">Enter number</string>
     <string name="select_date">Select date</string>
     <string name="select_time">Select time</string>
+    <string name="add_more_tasks">Add more tasks</string>
+    <string name="BACK">BACK</string>
+    <string name="SAVE_TASKS">SAVE TASKS</string>
+    <string name="clear_your_tasks">Clear your tasks</string>
+    <string name="DELETE_BLOCK">DELETE BLOCK</string>
+    <string name="ADD_TASKS">ADD TASKS</string>
 </resources>

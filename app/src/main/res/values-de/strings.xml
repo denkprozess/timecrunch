@@ -85,4 +85,10 @@
     <string name="prompt_enter_number">Zahl eingeben</string>
     <string name="select_date">Datum auswählen</string>
     <string name="select_time">Zeit auswählen</string>
+    <string name="add_more_tasks">Mehr Aufgaben hinzufügen</string>
+    <string name="BACK">ZURÜCK</string>
+    <string name="SAVE_TASKS">AUFGABEN SPEICHERN</string>
+    <string name="clear_your_tasks">Aufgaben abschließen</string>
+    <string name="DELETE_BLOCK">BLOCK LÖSCHEN</string>
+    <string name="ADD_TASKS">AUFGABEN HINZUFÜGEN</string>
 </resources>

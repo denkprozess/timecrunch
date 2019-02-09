@@ -148,13 +148,13 @@ public class TimeBlockTasksDialogFragment extends DialogFragment {
         editMode = true;
 
         TextView blockDialogTitle = v.findViewById(R.id.time_block_dialog_title);
-        blockDialogTitle.setText("Add more tasks");
+        blockDialogTitle.setText(getString(R.string.add_more_tasks));
 
         setUpCategoryListAdapter();
 
         Button deleteButton = v.findViewById(R.id.delete_block_button);
         deleteButton.setBackgroundTintList(v.getResources().getColorStateList(R.color.common_google_signin_btn_text_light_default));
-        deleteButton.setText("BACK");
+        deleteButton.setText(getString(R.string.BACK));
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -163,7 +163,7 @@ public class TimeBlockTasksDialogFragment extends DialogFragment {
         });
 
         Button addTasksButton = v.findViewById(R.id.add_tasks_button);
-        addTasksButton.setText("SAVE TASKS");
+        addTasksButton.setText(getString(R.string.SAVE_TASKS));
         addTasksButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -186,13 +186,13 @@ public class TimeBlockTasksDialogFragment extends DialogFragment {
         editMode = false;
 
         TextView blockDialogTitle = v.findViewById(R.id.time_block_dialog_title);
-        blockDialogTitle.setText("Clear your tasks");
+        blockDialogTitle.setText(getString(R.string.clear_your_tasks));
 
         setUpTimeBlockTaskListAdapter();
 
         Button deleteButton = v.findViewById(R.id.delete_block_button);
         deleteButton.setBackgroundTintList(v.getResources().getColorStateList(R.color.materialcolorpicker__red));
-        deleteButton.setText("DELETE BLOCK");
+        deleteButton.setText(getString(R.string.DELETE_BLOCK));
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -201,7 +201,7 @@ public class TimeBlockTasksDialogFragment extends DialogFragment {
         });
 
         Button addTasksButton = v.findViewById(R.id.add_tasks_button);
-        addTasksButton.setText("ADD TASKS");
+        addTasksButton.setText(getString(R.string.ADD_TASKS));
         addTasksButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
